@@ -1,0 +1,154 @@
+.contFormulario {
+    /*height: auto;*/
+    /*display: flex;
+    flex-flow: column;*/
+    /*background: #F7F7F7;*/
+    /*background-color: rgba(35,170,104, 0.3);*/
+    background-color: rgba(155, 190, 231, 0.7);
+    /*background-color: #fafafa;*/
+}
+
+.contenedor {
+    /*position: relative;*/
+    /*width: 608px;*/
+    /*height: auto;*/
+    /*border: 1px solid black;*/
+    background: #FFFFFF;
+    margin-bottom: 15px;
+}
+
+.titSeccion {
+    /*padding-left: 15px;*/
+    font-size: 1.25rem;
+    font-family: Fira Sans;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.fila {
+    margin: 15px 15px 0px 15px;
+    box-sizing: border-box;
+    align-content: center;
+    /*border: 1px solid black;
+    padding: 15px 0px 0px 15px;*/
+}
+
+label {
+    /*position: relative;
+    display: inline-block;
+    /*margin: 0px 10px 0px 0px;
+    padding: 5px 10px 5px 10px;
+    width: 166px;
+    height: 30px;*/
+    /*background: #E1E1E1;*/
+    /*background-color: rgba(255, 255, 255, 0.87);*/
+    /*background-color: rgb(242,239,0);*/
+    /*background-color: rgb(251,152,54);*/
+    background-color: rgb(222, 222, 222);
+    padding: px-3;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+/*input {
+    position: relative;
+    display: inline-block;
+    height: 30px;
+    padding: 0px 15px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid black;
+}*/
+
+/*.enLinea {
+    margin-left: 13px;
+}*/
+
+.nombreEscuela {
+    width: fit-content;
+    padding-right: 15px;
+}
+
+.fecha {
+    width: 160px;
+    padding-right: 5px;
+}
+
+.sacramento {
+    position: relative;
+    margin: 10px 15px;
+    padding: 0.5px 0px;
+    /*background: #D6D6D6;*/
+    background-color: rgba(177, 204, 235, 0.50);
+    border-radius: 5px;
+    align-content: center;
+}
+
+.nombreSacr {
+    position: relative;
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.checkbox {
+    position: relative;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+}
+
+.contFoto2 {
+    margin-right: 15px;
+    margin-top: 15px;
+    position: absolute;
+    right: 0%;
+    top: 0%;
+    width: auto;
+    height: auto;
+}
+
+.fotoAlumno {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    background-color: black;
+    opacity: 0.5;
+}
+
+.direccion {
+    width: auto;
+}
+
+/*.row {
+    margin: 10px 0px 10px 10px;
+}*/
+
+.etiqueta {
+    width: 97px;
+    background-color: rgb(216 229 245);
+}
+
+.entrada {
+    width: 200px;
+    height: 30px;
+}
+
+.boton {
+    width: 157px;
+    height: 39px;
+    /*background-color: #000000;*/
+    background-color: rgb(24 90 169);
+    font-family: Raleway;
+    font-weight: 500;
+    /*font-weight: 600;
+    letter-spacing: 1px;*/
+    font-size: 15px;
+    color: white;
+    border: none;
+}
+
+.btnBuscar {
+    width: 100px;
+    height: 35px;    
+}

@@ -1,0 +1,62 @@
+/** {
+    overflow-x: hidden;
+    padding: 0px !important;
+    margin: 0px !important;
+}*/
+
+html {
+    height: 100%;
+}
+
+html, body {
+    /*overflow: auto;*/
+    color: rgba(0, 0, 0, 0.7);
+}
+
+body {
+    /*margin: 0px;*/
+    height: 100%;
+    /*background: rgb(24,67,141);*/
+    /*background-color: rgba(71,122,209, 0.65);*/
+    
+    background-color: #185aa91a; /*ORIGINAL*/
+    /*background: #0f437e; /*Opcion oscuro*/
+    /*font-family: Raleway;*/
+    font-family: Assistant;
+    font-weight: 500;
+    /*ver para estirar sidebar y el resto del contenido*/
+    display: flex;
+    flex-flow: column;
+}
+
+.contPpal {
+    flex-grow: 1;
+    display: flex;
+}
+
+.contDerecha {
+    /*width: 100%;*/
+}
+
+.contTitulo {    
+    display: flex;
+    align-items: center;
+    width: 300px;
+    height: 50px;
+    /*background: #E1E1E1;*/
+    background-color: rgba(155, 190, 231, 0.7);
+    /*background-color: rgba(35,170,104, 0.3);*/    
+}
+
+.titulo {
+    /*width: auto;
+    /*top: 50%;    
+    transform: translate(15%, -50%);*/
+    /*font-family: Titillium Web;*/
+    /*font-family: Assistant;*/    
+    font-family: Fira Sans;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    text-transform: uppercase;
+}
