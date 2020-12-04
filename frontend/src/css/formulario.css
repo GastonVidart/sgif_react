@@ -44,8 +44,7 @@ label {
     /*background-color: rgba(255, 255, 255, 0.87);*/
     /*background-color: rgb(242,239,0);*/
     /*background-color: rgb(251,152,54);*/
-    background-color: rgb(222, 222, 222);
-    padding: px-3;
+    background-color: rgb(222, 222, 222);    
     font-size: 16px;
     border-radius: 5px;
 }
@@ -74,21 +73,18 @@ label {
     padding-right: 5px;
 }
 
-.sacramento {
-    position: relative;
-    margin: 10px 15px;
-    padding: 0.5px 0px;
+.sacramento {    
+    /*margin: 10px 15px;*/
+    /*padding: 0.5px 0px;*/
     /*background: #D6D6D6;*/
     background-color: rgba(177, 204, 235, 0.50);
-    border-radius: 5px;
-    align-content: center;
+    border-radius: 5px;    
 }
 
-.nombreSacr {
-    position: relative;
-    display: inline-block;
+.nombreSacr {    
     margin-left: 10px;
     margin-right: 10px;
+    margin-bottom: 0px;
 }
 
 .checkbox {
@@ -125,13 +121,8 @@ label {
 }*/
 
 .etiqueta {
-    width: 97px;
+    /*width: 97px;*/
     background-color: rgb(216 229 245);
-}
-
-.entrada {
-    width: 200px;
-    height: 30px;
 }
 
 .boton {
@@ -152,3 +143,11 @@ label {
     width: 100px;
     height: 35px;    
 }
+
+/*:invalid{
+    border-color: red;
+}
+
+:valid{
+    border-color: red;
+}*/

@@ -22,7 +22,7 @@ class App extends Component {
                     {/* TODO: contenedor derecha con formulario y el resto de principales */}
                     <Principal />
                 </div>
-                <Footer />
+                {/*<Footer />*/}
             </React.Fragment>
         )
     }
