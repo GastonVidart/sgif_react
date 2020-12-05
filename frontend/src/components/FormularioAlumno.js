@@ -1,17 +1,57 @@
 import Sacramento from "./Sacramento";
+import React, { Component } from 'react';
 
-const { Component } = require("react");
-
-class FormularioAlumno extends Component {
+class FormularioAlumno extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            alumno: {
+                dni: '',
+                nombre: '',
+                apellido: '',
+                genero: '',
+                email: '',
+                fechaNacimiento: '',
+                lugarNacimiento: '',
+                legajo: '', //TODO: mostrar cuando se hace el get por dni  
+                fechaIngreso: this.fechaDefault(),
+                fechaEgreso: '',
+                nombreEscuelaAnt: '',
+                sacramento: [], //TODO: ver lo del sacramento
+                foto: '',
+                anioCorrespondiente: '',
+                estadoInscripcion: '' //TODO: mostrar cuando se hace el get por dni                
+            }
+        }
+
+        this.handleInputChange = this.handleInputChange.bind(this);
+    }
+    /*componentDidMount(){ sino hacerlo antes de este punto, que valide el navbar
+        hacer validar fecha inscripción
+        si no puede dar error, sino seguir
+    }*/
+
+    handleInputChange(event) {
+        console.log(event);
+        const target = event.target;        
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+        console.log("valor ", target.value);
+        console.log("nombre target", target.name)
+
+        this.setState(estadoPrevio => ({
+            alumno: {
+                ...estadoPrevio.alumno,
+                [name]: value
+            }
+        }));
     }
 
     render() {
         return (
             /*<!--Contenedor Derecha-->*/
             <div className="col">
-                
+
                 {/*< !--Sub - Header Página-- >*/}
                 < div className="row m-3 no-gutters justify-content-md-between align-items-center" >
                     <div className="pl-3 rounded-lg contTitulo">
@@ -31,21 +71,22 @@ class FormularioAlumno extends Component {
                         {/*className="was-validated" */}
                         <form>
                             {/* <!--shadow-sm--> */}
-                            <div className="row no-gutters px-3 mb-3 card">
-                                <div className="col-8 card-body pt-2 pb-0"> {/*<!--test-->*/}
-                                    <h3 className="card-title mb-1 titSeccion">Datos Básicos</h3>
+                            <div className="row no-gutters px-3 mb-3 card shadow">
+                                <div className="col-8 card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos"> {/*<!--test-->*/}
+                                    <h3 className="card-title mb-1 titSeccion" id="datos_basicos">Datos Básicos</h3>
 
                                     <div className="form-row">
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="dni">DNI</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="dni">DNI</label>
                                                 <div className="col-4">
                                                     <input className="form-control" type="text" id="dni" name="dni"
-                                                        placeholder="Ingrese un Dni ..." alt="IngresoDni" required />
+                                                        placeholder="Ingrese un Dni" alt="IngresoDni" required
+                                                        value={this.state.alumno.dni} onChange={this.handleInputChange} />
                                                 </div>
                                                 <div className="col-auto mx-3">
                                                     <button type="button" className="btn btn-primary btnBuscar boton"
-                                                        id="searchAlumno" onClick="searchAlumno()">Buscar</button>
+                                                        id="dni" aria-labelledby="dni" onClick={this.searchAlumno}>Buscar</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -54,17 +95,19 @@ class FormularioAlumno extends Component {
                                     <div className="form-row">
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="nombre">Nombre</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="nombre">Nombre</label>
                                                 <div className="col">
-                                                    <input type="text" className="form-control" id="nombre" name="nombre" />
+                                                    <input type="text" className="form-control" id="nombre" name="nombre"
+                                                        value={this.state.alumno.nombre} onChange={this.handleInputChange} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="apellido">Apellido</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="apellido">Apellido</label>
                                                 <div className="col">
-                                                    <input type="text" className="form-control" id="apellido" name="apellido" />
+                                                    <input type="text" className="form-control" id="apellido" name="apellido"
+                                                        value={this.state.alumno.apellido} onChange={this.handleInputChange} />
                                                 </div>
                                             </div>
                                         </div>
@@ -73,10 +116,11 @@ class FormularioAlumno extends Component {
                                     <div className="form-row">
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="genero">Género</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="genero">Género</label>
                                                 <div className="col">
-                                                    <select name="genero" id="genero" className="form-control">
-                                                        <option value="">Seleccione</option>
+                                                    <select id="genero" name="genero" className="form-control"
+                                                        value={this.state.alumno.genero} onChange={this.handleInputChange}>
+                                                        <option value="Seleccione">Seleccione</option>
                                                         <option value="Masculino">Masculino</option>
                                                         <option value="Femenino">Femenino</option>
                                                     </select>
@@ -85,10 +129,10 @@ class FormularioAlumno extends Component {
                                         </div>
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="email">Email</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="email">Email</label>
                                                 <div className="col">
-                                                    <input type="email" id="email" className="form-control"
-                                                        aria-describedby="emailHelp" />
+                                                    <input type="email" id="email" className="form-control" aria-describedby="emailHelp"
+                                                        value={this.state.alumno.email} onChange={this.handleInputChange} />
                                                     <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
                                                 </div>
                                             </div>
@@ -98,17 +142,19 @@ class FormularioAlumno extends Component {
                                     <div className="form-row text-center">
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col px-3 py-1 my-0 mr-3" for="fNacimiento">Fecha de Nacimiento</label>
+                                                <label className="col px-3 py-1 my-0 mr-3" htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
                                                 <div className="col">
-                                                    <input type="date" id="fNacimiento" name="fNacimiento" className="form-control" />
+                                                    <input type="date" id="fechaNacimiento" name="fechaNacimiento" className="form-control"
+                                                        value={this.state.alumno.fechaNacimiento} onChange={this.handleInputChange} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col px-3 py-1 my-0 mr-3" for="lugarNac">Lugar de Nacimiento</label>
+                                                <label className="col px-3 py-1 my-0 mr-3" htmlFor="lugarNac">Lugar de Nacimiento</label>
                                                 <div className="col">
-                                                    <input type="text" id="lugarNac" name="lugarNac" className="form-control" />
+                                                    <input type="text" id="lugarNac" name="lugarNac" className="form-control"
+                                                        value={this.state.alumno.lugarNacimiento} onChange={this.handleInputChange} />
                                                 </div>
                                             </div>
                                         </div>
@@ -119,28 +165,31 @@ class FormularioAlumno extends Component {
                                     FOTO
                                 <div className="form-group form-check">
                                         <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                                        <label className="form-check-label" for="exampleCheck1">Check me out</label>
+                                        <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
                                     </div>
                                     <button type="submit" className="btn btn-primary">Submit</button>
+                                    {/*<input type="submit" name="submit" value="Submit" className="btn btn-primary"/>*/}
                                 </div>
                             </div>
-                            <div className="row no-gutters px-3 mb-3 card">
-                                <div className="col-8 card-body pt-2 pb-0">
-                                    <h3 className="card-title titSeccion">Datos Escolares</h3>
+                            <div className="row no-gutters px-3 mb-3 card shadow">
+                                <div className="col-8 card-body pt-2 pb-0" role="group" aria-labelledby="datos_escolares">
+                                    <h3 className="card-title titSeccion" id="datos_escolares" >Datos Escolares</h3>
                                     <div className="form-row">
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="fIngreso">Fecha de Ingreso</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="fechaIngreso">Fecha de Ingreso</label>
                                                 <div className="col">
-                                                    <input type="date" id="fIngreso" name="fIngreso" className="form-control" defaultValue={fechaDefault()} />
+                                                    <input type="date" id="fechaIngreso" name="fechaIngreso" className="form-control"
+                                                        value={this.state.alumno.fechaIngreso} onChange={this.handleInputChange} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="fEgreso">Fecha de Egreso</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="fEgreso">Fecha de Egreso</label>
                                                 <div className="col">
-                                                    <input type="date" id="fEgreso" name="fEgreso" className="form-control" />
+                                                    <input type="date" id="fEgreso" name="fEgreso" className="form-control"
+                                                        value={this.state.alumno.fechaEgreso} onChange={this.handleInputChange} />
                                                 </div>
                                             </div>
                                         </div>
@@ -148,9 +197,10 @@ class FormularioAlumno extends Component {
                                     <div className="form-row">
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="nombreEscuela">Nombre Escuela Anterior</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="nombreEscuela">Nombre Escuela Anterior</label>
                                                 <div className="col">
-                                                    <input type="text" id="nombreEscuela" name="nombreEscuela" className="form-control" />
+                                                    <input type="text" id="nombreEscuela" name="nombreEscuela" className="form-control"
+                                                        value={this.state.alumno.nombreEscuelaAnt} onChange={this.handleInputChange} />
                                                 </div>
                                             </div>
 
@@ -158,9 +208,11 @@ class FormularioAlumno extends Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className="row no-gutters px-3 mb-3 card">
-                                <div className="col card-body pt-2 pb-0">
-                                    <h3 className="card-title titSeccion">Sacramentos</h3>
+                            <div className="row no-gutters px-3 mb-3 card shadow">
+                                <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="sacramentos">
+                                    <h3 className="card-title titSeccion" id="sacramentos">Sacramentos</h3>
+                                    {/* TODO: ver para que actualice dentro del arreglo sacramento
+                                    * value={this.state.alumno.fechaIngreso} onChange={this.handleInputChange} */}
                                     <Sacramento nombre={"Bautismo"} />
                                     <Sacramento nombre={"Comunión"} />
                                     <Sacramento nombre={"Confirmación"} />
@@ -173,17 +225,53 @@ class FormularioAlumno extends Component {
         )
     }
 
-}
+    searchAlumno = async () => {
+        //usar el state o refs
+        const dniAlumno = document.getElementById('dni').value;
+        console.log("dni", dniAlumno);
+        fetch('http://localhost:5000/insc-alumno/alumno/' + dniAlumno)
+            .then(response => response.json())
+            .then(data => {
+                console.log("data:", data)
+                const datos = data.response.alumnoDB
 
-const estiloDiocesis = {
-    marginLeft: "30px",
-    width: "100px"
-}
+                //TODO: controlar inscripción / reinscripción
 
-function fechaDefault() {
-    const actual = new Date();
-    const fecha = actual.toISOString().substr(0, 10);
-    return fecha;
+                this.setState({
+                    alumno: {
+                        ...this.state.alumno,
+                        nombre: datos.nombre,
+                        apellido: datos.apellido,
+                        genero: datos.genero,
+                        fechaIngreso: datos.fechaIngreso.substr(0, 10),
+                        fechaNacimiento: datos.fechaNacimiento.substr(0, 10),
+                        lugarNacimiento: datos.lugarNacimiento,
+                        anioCorrespondiente: datos.anioCorrespondiente,
+                        legajo: datos.legajo,
+                        fechaEgreso: datos.fechaEgreso,
+                        nombreEscuelaAnt: datos.nombreEscuelaAnt,
+                        foto: datos.foto,
+                        estadoInscripcion: datos.estadoInscripcion
+                        //TODO: ver como recuperar sacramentos
+                    }
+                })
+            })
+            .catch((err) => console.log("Error: ", err));
+    }
+
+    fechaDefault() {
+        const actual = new Date();
+        const fecha = actual.toISOString().substr(0, 10); //TODO: revisar fecha puede dar error dia adelantado        
+        return fecha;
+    }
+
+    /*getFormattedDate(fecha) {
+        var month = fecha.getMonth() + 1;
+        const dayAux = fecha.getDate();
+        var day = dayAux < 10 ? ("0" + dayAux) : dayAux;
+        var year = fecha.getFullYear();
+        return year + "-" + month + "-" + day;
+    }*/
 }
 
 export default FormularioAlumno;

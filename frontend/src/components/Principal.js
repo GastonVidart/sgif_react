@@ -9,7 +9,7 @@ class Principal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            formAlumno: false
+            formAlumno: true
         };
         this.cambiaPantalla = this.cambiaPantalla.bind(this);
     }
@@ -23,7 +23,9 @@ class Principal extends React.Component {
     }
 
     cambiaPantalla() {
-        this.setState({ formAlumno: !this.state.formAlumno });
+        this.setState(state => {
+            return { formAlumno: !state.formAlumno }
+        });
     }
 }
 
