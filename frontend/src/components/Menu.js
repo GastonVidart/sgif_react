@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import * as Icon from 'react-feather';
 
 import '../css/navbar.css';
 
@@ -9,30 +10,31 @@ class Menu extends Component {
 
     render() {
         return (
-            < nav class="col-md-3 nav2 shadow" >
-                <ul>
+            /* TODO: poner md o lg */
+            < nav class="col-md-auto shadow" >
+                <ul className="mr-4">
                     {/* <!--generar con react asi solo ponemos los links, el resto se puede factorear--> */}
                     <li class="row no-gutters align-items-center ml-2">
                         <div class="cont_item_nav">
-                            <img src="../images/item1.png" alt="" class="item_nav" />
+                            <Icon.Circle className="item_nav" />
                         </div>
                         <span class="texto_nav">Inscribir Alumno</span>
                     </li>
                     <li class="row no-gutters align-items-center ml-2">
                         <div class="cont_item_nav">
-                            <img src="../images/item1.png" alt="" class="item_nav" />
+                            <Icon.Circle className="item_nav" />
                         </div>
                         <span class="texto_nav">Completar Familia</span>
                     </li>
                     <li class="row no-gutters align-items-center ml-2">
                         <div class="cont_item_nav">
-                            <img src="../images/item1.png" alt="" class="item_nav" />
+                            <Icon.Circle className="item_nav" />
                         </div>
                         <span class="texto_nav">Registrar Notas Trimestrales</span>
                     </li>
                     <li class="row no-gutters align-items-center ml-2">
                         <div class="cont_item_nav">
-                            <img src="../images/item1.png" alt="" class="item_nav" />
+                            <Icon.Circle className="item_nav" />
                         </div>
                         <span class="texto_nav">Alta Curso</span>
                     </li>

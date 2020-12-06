@@ -5,7 +5,7 @@
 header {
     /*width: 100%;*/
     /*TODO:poner altura variable a contenido min-height ver ejemplo en pag de bootstrap;*/
-    height: 64px;
+    /*height: 64px;*/    
     /*position: relative;
     display: block;*/
     /*background: rgb(31, 155, 95);*/ /*original*/
@@ -15,17 +15,6 @@ header {
     
     /*background: rgb(24,90,169);
     background: linear-gradient(180deg, rgba(24,90,169,0.3) 0%, rgba(24,90,169,0) 100%);*/
-}
-
-.contUsr {
-    /*width: 150px;
-    height: 49px;*/
-    /*overflow: hidden;*/
-    /*background: rgb(255, 255, 255);*/
-    /*ubicacion*/
-    /*top: 10.94%;
-    right: 5%;
-    bottom: 12.09%;*/
 }
 
 .usr {
@@ -53,11 +42,6 @@ header {
 }
 
 .fotoUsr {
-    /*FOTOUSUARIO
-    background: url("../images/v45_193.png");*/
-    /*top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);*/
     width: 70%;
     height: 70%;
 }
@@ -90,7 +74,7 @@ header {
 .contOpcs {
     width: 31px;
     height: 31px;
-    background: rgba(252, 249, 249, 1);
+    background: white;
     /*border-radius: 5px;    */
     display: flex;
     justify-content: center;

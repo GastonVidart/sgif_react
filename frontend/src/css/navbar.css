@@ -4,7 +4,7 @@
     /*background-color: rgb(24,67,141);*/
     /*background-color: rgb(30 83 174);*/
     /*background-color: rgb(28 74 166);*/
-    max-width: 290px;
+    max-width: 290px;    
     /*background-color: rgba(24,90,169,1);*/
     /*background-color: #185aa9;*/ /*ORIGINAL*/
     /*background-color: #185aa91a;*/ /*OPCION 2*/    
@@ -32,8 +32,7 @@ li {
     height: 31px;
     display: flex;
     justify-content: center;
-    align-items: center;
-    margin-right: 6px;
+    align-items: center;    
     /*left: 14px;    */
     /*top: 50%;*/
     /*background-color: white;*/
@@ -41,12 +40,8 @@ li {
 }
 
 .item_nav {
-    /*position: absolute;*/
-    /*top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);*/
-    width: 65%;
-    height: 65%;
+    width: 60%;
+    height: 60%;
 }
 
 .texto_nav {

@@ -1,5 +1,7 @@
 import Sacramento from "./Sacramento";
-import React, { Component } from 'react';
+import React from 'react';
+
+import * as Icon from 'react-feather';
 
 class FormularioAlumno extends React.Component {
     constructor(props) {
@@ -33,7 +35,7 @@ class FormularioAlumno extends React.Component {
 
     handleInputChange(event) {
         console.log(event);
-        const target = event.target;        
+        const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
         console.log("valor ", target.value);
@@ -61,7 +63,10 @@ class FormularioAlumno extends React.Component {
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between">
                         <button type="button" className="btn btn-primary mr-1 boton">Completar Familia</button>
-                        <button type="button" className="btn btn-primary boton" onClick={this.props.cambioPantalla}>Continuar</button>
+                        <button type="button" className="btn btn-primary boton" onClick={this.props.cambioPantalla}>
+                            Continuar
+                            <Icon.ArrowRight width={"1.3rem"} height={"1.3rem"} className="ml-1" />
+                        </button>
                     </div>
                 </div >
 
@@ -72,122 +77,121 @@ class FormularioAlumno extends React.Component {
                         <form>
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card shadow">
-                                <div className="col-8 card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos"> {/*<!--test-->*/}
+                                <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos">
                                     <h3 className="card-title mb-1 titSeccion" id="datos_basicos">Datos Básicos</h3>
+                                    <div className="row no-gutters">
+                                        <div className="col">
+                                            <div className="form-row">
+                                                <div className="col">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="dni">DNI</label>
+                                                        <div className="col col-md-4">
+                                                            <input className="form-control" type="text" id="dni" name="dni"
+                                                                placeholder="Ingrese un Dni" alt="IngresoDni" required
+                                                                value={this.state.alumno.dni} onChange={this.handleInputChange} />
+                                                        </div>
+                                                        <div className="col-auto mx-3">
+                                                            <button type="button" className="btn btn-primary boton"
+                                                                id="dni" aria-labelledby="dni" onClick={this.searchAlumno}>
+                                                                <div className="d-sm-block d-none">Buscar</div>
+                                                                <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-md-1"/>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                                    <div className="form-row">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="dni">DNI</label>
-                                                <div className="col-4">
-                                                    <input className="form-control" type="text" id="dni" name="dni"
-                                                        placeholder="Ingrese un Dni" alt="IngresoDni" required
-                                                        value={this.state.alumno.dni} onChange={this.handleInputChange} />
+                                            <div className="form-row">
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="nombre">Nombre</label>
+                                                        <div className="col-sm">
+                                                            <input type="text" className="form-control" id="nombre" name="nombre"
+                                                                value={this.state.alumno.nombre} onChange={this.handleInputChange} />
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="col-auto mx-3">
-                                                    <button type="button" className="btn btn-primary btnBuscar boton"
-                                                        id="dni" aria-labelledby="dni" onClick={this.searchAlumno}>Buscar</button>
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="apellido">Apellido</label>
+                                                        <div className="col-sm">
+                                                            <input type="text" className="form-control" id="apellido" name="apellido"
+                                                                value={this.state.alumno.apellido} onChange={this.handleInputChange} />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
 
-                                    <div className="form-row">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="nombre">Nombre</label>
-                                                <div className="col">
-                                                    <input type="text" className="form-control" id="nombre" name="nombre"
-                                                        value={this.state.alumno.nombre} onChange={this.handleInputChange} />
+                                            <div className="form-row">
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="genero">Género</label>
+                                                        <div className="col-sm">
+                                                            <select id="genero" name="genero" className="form-control"
+                                                                value={this.state.alumno.genero} onChange={this.handleInputChange}>
+                                                                <option value="Seleccione">Seleccione</option>
+                                                                <option value="Masculino">Masculino</option>
+                                                                <option value="Femenino">Femenino</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 ">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 align-self-start" htmlFor="email">Email</label>
+                                                        <div className="col-md">
+                                                            <input type="email" id="email" className="form-control" aria-describedby="emailHelp"
+                                                                value={this.state.alumno.email} onChange={this.handleInputChange} />
+                                                            <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="apellido">Apellido</label>
-                                                <div className="col">
-                                                    <input type="text" className="form-control" id="apellido" name="apellido"
-                                                        value={this.state.alumno.apellido} onChange={this.handleInputChange} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div className="form-row">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="genero">Género</label>
-                                                <div className="col">
-                                                    <select id="genero" name="genero" className="form-control"
-                                                        value={this.state.alumno.genero} onChange={this.handleInputChange}>
-                                                        <option value="Seleccione">Seleccione</option>
-                                                        <option value="Masculino">Masculino</option>
-                                                        <option value="Femenino">Femenino</option>
-                                                    </select>
+                                            <div className="form-row text-center">
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
+                                                        <div className="col-sm-6">
+                                                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" className="form-control"
+                                                                value={this.state.alumno.fechaNacimiento} onChange={this.handleInputChange} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="lugarNac">Lugar de Nacimiento</label>
+                                                        <div className="col-sm-6">
+                                                            <input type="text" id="lugarNac" name="lugarNac" className="form-control"
+                                                                value={this.state.alumno.lugarNacimiento} onChange={this.handleInputChange} />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="email">Email</label>
-                                                <div className="col">
-                                                    <input type="email" id="email" className="form-control" aria-describedby="emailHelp"
-                                                        value={this.state.alumno.email} onChange={this.handleInputChange} />
-                                                    <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <div className="col-lg-3 test">
+                                            FOTO
                                     </div>
-
-                                    <div className="form-row text-center">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col px-3 py-1 my-0 mr-3" htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
-                                                <div className="col">
-                                                    <input type="date" id="fechaNacimiento" name="fechaNacimiento" className="form-control"
-                                                        value={this.state.alumno.fechaNacimiento} onChange={this.handleInputChange} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col px-3 py-1 my-0 mr-3" htmlFor="lugarNac">Lugar de Nacimiento</label>
-                                                <div className="col">
-                                                    <input type="text" id="lugarNac" name="lugarNac" className="form-control"
-                                                        value={this.state.alumno.lugarNacimiento} onChange={this.handleInputChange} />
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
-                                </div>
-                                {/*<!--test-->*/}
-                                <div className="col">
-                                    FOTO
-                                <div className="form-group form-check">
-                                        <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                                        <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
-                                    </div>
-                                    <button type="submit" className="btn btn-primary">Submit</button>
-                                    {/*<input type="submit" name="submit" value="Submit" className="btn btn-primary"/>*/}
                                 </div>
                             </div>
                             <div className="row no-gutters px-3 mb-3 card shadow">
-                                <div className="col-8 card-body pt-2 pb-0" role="group" aria-labelledby="datos_escolares">
+                                <div className="col-9 card-body pt-2 pb-0" role="group" aria-labelledby="datos_escolares">
                                     <h3 className="card-title titSeccion" id="datos_escolares" >Datos Escolares</h3>
                                     <div className="form-row">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="fechaIngreso">Fecha de Ingreso</label>
-                                                <div className="col">
+                                        <div className="col-lg">
+                                            <div className="form-group row no-gutters mb-2 align-items-center">
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="fechaIngreso">Fecha de Ingreso</label>
+                                                <div className="col-sm">
                                                     <input type="date" id="fechaIngreso" name="fechaIngreso" className="form-control"
                                                         value={this.state.alumno.fechaIngreso} onChange={this.handleInputChange} />
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="fEgreso">Fecha de Egreso</label>
-                                                <div className="col">
+                                        <div className="col-lg">
+                                            <div className="form-group row no-gutters mb-2 align-items-center">
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="fEgreso">Fecha de Egreso</label>
+                                                <div className="col-sm">
                                                     <input type="date" id="fEgreso" name="fEgreso" className="form-control"
                                                         value={this.state.alumno.fechaEgreso} onChange={this.handleInputChange} />
                                                 </div>
@@ -195,10 +199,10 @@ class FormularioAlumno extends React.Component {
                                         </div>
                                     </div>
                                     <div className="form-row">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="nombreEscuela">Nombre Escuela Anterior</label>
-                                                <div className="col">
+                                        <div className="col-lg">
+                                            <div className="form-group row no-gutters mb-2 align-items-center">
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="nombreEscuela">Nombre Escuela Anterior</label>
+                                                <div className="col-sm">
                                                     <input type="text" id="nombreEscuela" name="nombreEscuela" className="form-control"
                                                         value={this.state.alumno.nombreEscuelaAnt} onChange={this.handleInputChange} />
                                                 </div>
@@ -261,7 +265,7 @@ class FormularioAlumno extends React.Component {
 
     fechaDefault() {
         const actual = new Date();
-        const fecha = actual.toISOString().substr(0, 10); //TODO: revisar fecha puede dar error dia adelantado        
+        const fecha = actual.toISOString().substr(0, 10); //TODO: revisar fecha puede dar error dia adelantado
         return fecha;
     }
 
