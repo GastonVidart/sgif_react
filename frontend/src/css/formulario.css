@@ -1,7 +1,4 @@
 .contFormulario {
-    /*height: auto;*/
-    /*display: flex;
-    flex-flow: column;*/
     /*background: #F7F7F7;*/
     /*background-color: rgba(35,170,104, 0.3);*/
     background-color: rgba(155, 190, 231, 0.7);
@@ -9,10 +6,6 @@
 }
 
 .contenedor {
-    /*position: relative;*/
-    /*width: 608px;*/
-    /*height: auto;*/
-    /*border: 1px solid black;*/
     background: #FFFFFF;
     margin-bottom: 15px;
 }
@@ -34,12 +27,6 @@
 }
 
 label {
-    /*position: relative;
-    display: inline-block;
-    /*margin: 0px 10px 0px 0px;
-    padding: 5px 10px 5px 10px;
-    width: 166px;
-    height: 30px;*/
     /*background: #E1E1E1;*/
     /*background-color: rgba(255, 255, 255, 0.87);*/
     /*background-color: rgb(242,239,0);*/
@@ -49,20 +36,6 @@ label {
     font-size: 16px;
     border-radius: 5px;
 }
-
-/*input {
-    position: relative;
-    display: inline-block;
-    height: 30px;
-    padding: 0px 15px;
-    box-sizing: border-box;
-    border-radius: 5px;
-    border: 1px solid black;
-}*/
-
-/*.enLinea {
-    margin-left: 13px;
-}*/
 
 .nombreEscuela {
     width: fit-content;
@@ -117,16 +90,16 @@ label {
     width: auto;
 }
 
-/*.row {
-    margin: 10px 0px 10px 10px;
-}*/
-
 .etiqueta {
     /*width: 97px;*/
     /*background-color: rgb(216 229 245);*/
     background-color: white;
     border: 1px solid rgba(0, 0, 0, .3);
     
+}
+
+.custom-file-input ~ .custom-file-label::after {
+    content: "Buscar"
 }
 
 .boton {    

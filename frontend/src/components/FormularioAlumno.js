@@ -20,13 +20,15 @@ class FormularioAlumno extends React.Component {
                 fechaEgreso: '',
                 nombreEscuelaAnt: '',
                 sacramento: [], //TODO: ver lo del sacramento
-                foto: '',
+                foto: null,
                 anioCorrespondiente: '',
                 estadoInscripcion: '' //TODO: mostrar cuando se hace el get por dni                
-            }
+            },
+            nombreFoto: ''
         }
 
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleChangeFoto = this.handleChangeFoto.bind(this);
     }
     /*componentDidMount(){ sino hacerlo antes de este punto, que valide el navbar
         hacer validar fecha inscripción
@@ -47,6 +49,25 @@ class FormularioAlumno extends React.Component {
                 [name]: value
             }
         }));
+    }
+
+    handleChangeFoto(event) {
+        console.log("FOTO ", event);
+        const target = event.target;
+        const archivo = target.files[0];
+        console.log("nombre target", target.name)
+        console.log("valor ", archivo);
+
+        if (archivo !== undefined) {
+
+            this.setState(estadoPrevio => ({
+                alumno: {
+                    ...estadoPrevio.alumno,
+                    "foto": URL.createObjectURL(archivo)
+                },
+                nombreFoto: archivo.name
+            }));
+        }
     }
 
     render() {
@@ -161,7 +182,7 @@ class FormularioAlumno extends React.Component {
                                                         <div className="col-sm">
                                                             <input type="date" id="fechaNacimiento" name="fechaNacimiento" className="form-control"
                                                                 value={this.state.alumno.fechaNacimiento} onChange={this.handleInputChange}
-                                                                required aria-labelledby="etiq_fnac"/>
+                                                                required aria-labelledby="etiq_fnac" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -171,15 +192,23 @@ class FormularioAlumno extends React.Component {
                                                         <div className="col-sm">
                                                             <input type="text" id="lugarNacimiento" name="lugarNacimiento" className="form-control"
                                                                 value={this.state.alumno.lugarNacimiento} onChange={this.handleInputChange}
-                                                                required required aria-labelledby="etiq_lnac"/>
+                                                                required aria-labelledby="etiq_lnac" />
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-lg-3 test">
-                                            FOTO
-                                    </div>
+                                        <div className="col-lg-3 ml-3 d-flex align-items-center">
+                                            <div className="form-group row no-gutters mb-2 justify-content-center">
+                                                <img src={this.state.alumno.foto} className="img-thumbnail m-2"
+                                                    alt="Foto Alumno" />
+                                                <div className="custom-file">
+                                                    <input type="file" className="custom-file-input" id="fotoAlumno"
+                                                        aria-describedby="etiq_falumno" onChange={this.handleChangeFoto} />
+                                                    <label className="custom-file-label" id="etiq_falumno" htmlFor="fotoAlumno">Subir Foto Alumno</label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
