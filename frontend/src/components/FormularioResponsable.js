@@ -22,8 +22,8 @@ class FormularioResponsable extends Component {
                         {/*<input type="submit" name="submit" value="Submit" className="btn btn-primary"/>*/}
                         <button type="submit" className="btn btn-primary boton">
                             Finalizar Inscripción
-                            <Icon.Edit3 width={"1.2rem"} height={"1.2rem"} className="ml-1"/>
-                            </button>                        
+                            <Icon.Edit3 width={"1.2rem"} height={"1.2rem"} className="ml-1" />
+                        </button>
                     </div>
                 </div >
 
@@ -39,7 +39,7 @@ class FormularioResponsable extends Component {
                                     <div className="form-row">
                                         <div className="col">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="dni">DNI</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="dni">DNI*</label>
                                                 <div className="col">
                                                     <input className="form-control" type="text" id="dni" name="dni"
                                                         placeholder="Ingrese un Dni" alt="IngresoDni" required />
@@ -54,8 +54,9 @@ class FormularioResponsable extends Component {
                                             </div>
                                         </div>
                                         <div className="col-lg">
+                                            {/*Implementar con nro+-+dni+-+nro */}
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="cuil_cuit">CUIL/CUIT</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="cuil_cuit">CUIL/CUIT*</label>
                                                 <div className="col-sm">
                                                     <input className="form-control" type="text" id="cuil_cuit" name="cuil_cuit"
                                                         alt="IngresoCuilCuit" required />
@@ -67,17 +68,19 @@ class FormularioResponsable extends Component {
                                     <div className="form-row">
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="nombre">Nombre</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="nombre">Nombre*</label>
                                                 <div className="col-sm">
-                                                    <input type="text" className="form-control" id="nombre" name="nombre" />
+                                                    <input type="text" className="form-control" id="nombre" name="nombre"
+                                                        required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="apellido">Apellido</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="apellido">Apellido*</label>
                                                 <div className="col-sm">
-                                                    <input type="text" className="form-control" id="apellido" name="apellido" />
+                                                    <input type="text" className="form-control" id="apellido" name="apellido"
+                                                        required />
                                                 </div>
                                             </div>
                                         </div>
@@ -86,9 +89,9 @@ class FormularioResponsable extends Component {
                                     <div className="form-row">
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="genero">Género</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="genero">Género*</label>
                                                 <div className="col-sm">
-                                                    <select name="genero" id="genero" className="form-control">
+                                                    <select name="genero" id="genero" className="form-control" required>
                                                         <option value="0">Seleccione</option>
                                                         <option value="1">Masculino</option>
                                                         <option value="2">Femenino</option>
@@ -101,17 +104,19 @@ class FormularioResponsable extends Component {
                                     <div className="form-row text-center">
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="fecha_nacimiento">Fecha de Nacimiento</label>
-                                                <div className="col-sm-6">
-                                                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" className="form-control" />
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="fecha_nacimiento">Fecha de Nacimiento*</label>
+                                                <div className="col-sm">
+                                                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" className="form-control"
+                                                        required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="lugarNac">Lugar de Nacimiento</label>
-                                                <div className="col-sm-6">
-                                                    <input type="text" id="lugarNac" name="lugarNac" className="form-control" />
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="lugarNac">Lugar de Nacimiento*</label>
+                                                <div className="col-sm">
+                                                    <input type="text" id="lugarNac" name="lugarNac" className="form-control"
+                                                        required />
                                                 </div>
                                             </div>
                                         </div>
@@ -119,19 +124,20 @@ class FormularioResponsable extends Component {
                                     <div className="form-row text-center">
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="telefono">Teléfono</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3" htmlFor="telefono">Teléfono*</label>
                                                 <div className="col-sm">
-                                                    <input type="text" id="telefono" name="telefono" className="form-control" />
+                                                    <input type="text" id="telefono" name="telefono" className="form-control"
+                                                        required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3 align-self-start" htmlFor="email">Email</label>
+                                                <label className="col-auto px-3 py-1 my-0 mr-3 align-self-start" htmlFor="email">Email*</label>
                                                 <div className="col-sm">
-                                                    <input type="email" id="email" className="form-control"
-                                                        aria-describedby="emailHelp" />
-                                                    <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
+                                                    {/* aria-describedby="emailHelp" */}
+                                                    <input type="email" id="email" className="form-control" required />
+                                                    {/*<small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>*/}
                                                 </div>
                                             </div>
                                         </div>
@@ -146,25 +152,25 @@ class FormularioResponsable extends Component {
                                     <div className="form-row">
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="calle">Calle</label>
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="calle">Calle*</label>
                                                 <div className="col-sm">
-                                                    <input type="text" id="calle" name="calle" className="form-control" />
+                                                    <input type="text" id="calle" name="calle" className="form-control" required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="altura">Altura</label>
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="altura">Altura*</label>
                                                 <div className="col-sm">
-                                                    <input type="text" id="altura" name="altura" className="form-control" />
+                                                    <input type="text" id="altura" name="altura" className="form-control" required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="barrio">Barrio</label>
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="barrio">Barrio*</label>
                                                 <div className="col-sm">
-                                                    <input type="text" id="barrio" name="barrio" className="form-control" />
+                                                    <input type="text" id="barrio" name="barrio" className="form-control" required />
                                                 </div>
                                             </div>
                                         </div>
@@ -205,17 +211,17 @@ class FormularioResponsable extends Component {
                                         </div>
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="localidad">Localidad</label>
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="localidad">Localidad*</label>
                                                 <div className="col-sm">
-                                                    <input type="text" id="localidad" name="localidad" className="form-control" />
+                                                    <input type="text" id="localidad" name="localidad" className="form-control" required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="provincia">Provincia</label>
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="provincia">Provincia*</label>
                                                 <div className="col-sm">
-                                                    <input type="text" id="provincia" name="provincia" className="form-control" />
+                                                    <input type="text" id="provincia" name="provincia" className="form-control" required />
                                                 </div>
                                             </div>
                                         </div>
@@ -223,9 +229,10 @@ class FormularioResponsable extends Component {
                                     <div className="form-row">
                                         <div className="col-lg-4">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="codPostal">Codigo Postal</label>
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="codPostal">Codigo Postal*</label>
                                                 <div className="col-sm">
-                                                    <input type="number" id="codPostal" name="codPostal" className="form-control" min={0} />
+                                                    <input type="number" id="codPostal" name="codPostal" className="form-control"
+                                                        min={0} required />
                                                 </div>
                                             </div>
                                         </div>

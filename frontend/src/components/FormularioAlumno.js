@@ -84,17 +84,18 @@ class FormularioAlumno extends React.Component {
                                             <div className="form-row">
                                                 <div className="col">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="dni">DNI</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_dni" htmlFor="dni">DNI*</label>
                                                         <div className="col col-md-4">
                                                             <input className="form-control" type="text" id="dni" name="dni"
                                                                 placeholder="Ingrese un Dni" alt="IngresoDni" required
-                                                                value={this.state.alumno.dni} onChange={this.handleInputChange} />
+                                                                value={this.state.alumno.dni} onChange={this.handleInputChange}
+                                                                aria-labelledby="etiq_dni" />
                                                         </div>
                                                         <div className="col-auto mx-3">
                                                             <button type="button" className="btn btn-primary boton"
-                                                                id="dni" aria-labelledby="dni" onClick={this.searchAlumno}>
+                                                                id="dni" aria-labelledby="etiq_dni" onClick={this.searchAlumno}>
                                                                 <div className="d-sm-block d-none">Buscar</div>
-                                                                <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-md-1"/>
+                                                                <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-md-1" />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -104,19 +105,21 @@ class FormularioAlumno extends React.Component {
                                             <div className="form-row">
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="nombre">Nombre</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_nombre" htmlFor="nombre">Nombre*</label>
                                                         <div className="col-sm">
                                                             <input type="text" className="form-control" id="nombre" name="nombre"
-                                                                value={this.state.alumno.nombre} onChange={this.handleInputChange} />
+                                                                value={this.state.alumno.nombre} onChange={this.handleInputChange}
+                                                                required aria-labelledby="etiq_nombre" />
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="apellido">Apellido</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_apellido" htmlFor="apellido">Apellido*</label>
                                                         <div className="col-sm">
                                                             <input type="text" className="form-control" id="apellido" name="apellido"
-                                                                value={this.state.alumno.apellido} onChange={this.handleInputChange} />
+                                                                value={this.state.alumno.apellido} onChange={this.handleInputChange}
+                                                                required aria-labelledby="etiq_apellido" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -125,10 +128,11 @@ class FormularioAlumno extends React.Component {
                                             <div className="form-row">
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="genero">Género</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_genero" htmlFor="genero">Género*</label>
                                                         <div className="col-sm">
-                                                            <select id="genero" name="genero" className="form-control"
-                                                                value={this.state.alumno.genero} onChange={this.handleInputChange}>
+                                                            <select id="genero" name="genero" className="form-control" required
+                                                                value={this.state.alumno.genero} onChange={this.handleInputChange}
+                                                                aria-labelledby="etiq_genero">
                                                                 <option value="Seleccione">Seleccione</option>
                                                                 <option value="Masculino">Masculino</option>
                                                                 <option value="Femenino">Femenino</option>
@@ -138,11 +142,13 @@ class FormularioAlumno extends React.Component {
                                                 </div>
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 ">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3 align-self-start" htmlFor="email">Email</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 align-self-start" id="etiq_email" htmlFor="email">Email</label>
                                                         <div className="col-md">
-                                                            <input type="email" id="email" className="form-control" aria-describedby="emailHelp"
-                                                                value={this.state.alumno.email} onChange={this.handleInputChange} />
-                                                            <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
+                                                            {/*aria-describedby="emailHelp"*/}
+                                                            <input type="email" id="email" name="email" className="form-control"
+                                                                value={this.state.alumno.email} onChange={this.handleInputChange}
+                                                                aria-labelledby="etiq_email" />
+                                                            {/*<small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>*/}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -151,19 +157,21 @@ class FormularioAlumno extends React.Component {
                                             <div className="form-row text-center">
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
-                                                        <div className="col-sm-6">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_fnac" htmlFor="fechaNacimiento">Fecha de Nacimiento*</label>
+                                                        <div className="col-sm">
                                                             <input type="date" id="fechaNacimiento" name="fechaNacimiento" className="form-control"
-                                                                value={this.state.alumno.fechaNacimiento} onChange={this.handleInputChange} />
+                                                                value={this.state.alumno.fechaNacimiento} onChange={this.handleInputChange}
+                                                                required aria-labelledby="etiq_fnac"/>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="lugarNac">Lugar de Nacimiento</label>
-                                                        <div className="col-sm-6">
-                                                            <input type="text" id="lugarNac" name="lugarNac" className="form-control"
-                                                                value={this.state.alumno.lugarNacimiento} onChange={this.handleInputChange} />
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_lnac" htmlFor="lugarNacimiento">Lugar de Nacimiento*</label>
+                                                        <div className="col-sm">
+                                                            <input type="text" id="lugarNacimiento" name="lugarNacimiento" className="form-control"
+                                                                value={this.state.alumno.lugarNacimiento} onChange={this.handleInputChange}
+                                                                required required aria-labelledby="etiq_lnac"/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -181,19 +189,21 @@ class FormularioAlumno extends React.Component {
                                     <div className="form-row">
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="fechaIngreso">Fecha de Ingreso</label>
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="fechaIngreso">Fecha de Ingreso*</label>
                                                 <div className="col-sm">
                                                     <input type="date" id="fechaIngreso" name="fechaIngreso" className="form-control"
-                                                        value={this.state.alumno.fechaIngreso} onChange={this.handleInputChange} />
+                                                        value={this.state.alumno.fechaIngreso} onChange={this.handleInputChange}
+                                                        required />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="fEgreso">Fecha de Egreso</label>
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_fegreso" htmlFor="fechaEgreso">Fecha de Egreso</label>
                                                 <div className="col-sm">
-                                                    <input type="date" id="fEgreso" name="fEgreso" className="form-control"
-                                                        value={this.state.alumno.fechaEgreso} onChange={this.handleInputChange} />
+                                                    <input type="date" id="fechaEgreso" name="fechaEgreso" className="form-control"
+                                                        value={this.state.alumno.fechaEgreso} onChange={this.handleInputChange}
+                                                        aria-labelledby="etiq_fegreso" />
                                                 </div>
                                             </div>
                                         </div>
@@ -201,13 +211,23 @@ class FormularioAlumno extends React.Component {
                                     <div className="form-row">
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="nombreEscuela">Nombre Escuela Anterior</label>
+                                                <label className="col px-3 py-1 my-1 mr-3" id="etiq_nescuela" htmlFor="nombreEscuelaAnt">Nombre Escuela Anterior*</label>
                                                 <div className="col-sm">
-                                                    <input type="text" id="nombreEscuela" name="nombreEscuela" className="form-control"
-                                                        value={this.state.alumno.nombreEscuelaAnt} onChange={this.handleInputChange} />
+                                                    <input type="text" id="nombreEscuelaAnt" name="nombreEscuelaAnt" className="form-control"
+                                                        value={this.state.alumno.nombreEscuelaAnt} onChange={this.handleInputChange}
+                                                        required aria-labelledby="etiq_nescuela" />
                                                 </div>
                                             </div>
-
+                                        </div>
+                                        <div className="col-lg">
+                                            <div className="form-group row no-gutters mb-2 align-items-center">
+                                                <label className="col px-3 py-1 my-1 mr-3" id="etiq_acorresp" htmlFor="anioCorrespondiente">Año Correspondiente*</label>
+                                                <div className="col-sm">
+                                                    <input type="number" id="anioCorrespondiente" name="anioCorrespondiente" className="form-control"
+                                                        value={this.state.alumno.anioCorrespondiente} onChange={this.handleInputChange}
+                                                        required min={"1"} max={"5"} aria-labelledby="etiq_acorresp" />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

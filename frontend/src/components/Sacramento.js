@@ -11,24 +11,26 @@ class Sacramento extends Component {
                         <div className="col-lg">
                             <div className="form-group row no-gutters mb-2 align-items-center">
                                 <h4 id={nombreS} class="nombreSacr titSeccion" style={{ fontSize: "1rem" }}>{nombreS}</h4>
-                                <input type="checkbox" id={"fue_tomado_" + subNom} name={"fue_tomado_" + subNom} class="checkbox" />
+                                <input type="checkbox" id={"fue_tomado_" + subNom} name={"fue_tomado_" + subNom} class="checkbox" aria-labelledby={nombreS} />
                             </div>
                         </div>
                     </div>
                     <div className="form-row">
                         <div className="col-lg">
                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                <label className="col-auto px-3 py-1 my-1 mr-3 etiqueta" htmlFor={"fecha_" + nombreS}>Fecha de {nombreS}</label>
+                                <label className="col-auto px-3 py-1 my-1 mr-3 etiqueta" id={"etiq_f" + nombreS} htmlFor={"fecha_" + nombreS}>Fecha de {nombreS}</label>
                                 <div className="col-sm">
-                                    <input type="date" id={"fecha_" + nombreS} name={"fecha_" + nombreS} className="form-control" />
+                                    <input type="date" id={"fecha_" + nombreS} name={"fecha_" + nombreS} className="form-control"
+                                        aria-labelledby={"etiq_f" + nombreS} />
                                 </div>
                             </div>
                         </div>
                         <div className="col-lg">
                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                <label className="col-auto px-3 py-1 my-1 mr-3 etiqueta" htmlFor={"diocesis_" + subNom}>Diócesis</label>
+                                <label className="col-auto px-3 py-1 my-1 mr-3 etiqueta" id={"etiq_d" + subNom} htmlFor={"diocesis_" + subNom}>Diócesis</label>
                                 <div className="col-sm">
-                                    <input type="text" id={"diocesis_" + subNom} name={"diocesis_" + subNom} className="form-control" />
+                                    <input type="text" id={"diocesis_" + subNom} name={"diocesis_" + subNom} className="form-control"
+                                        aria-labelledby={"etiq_d" + subNom} />
                                 </div>
                             </div>
                         </div>

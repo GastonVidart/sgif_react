@@ -7,7 +7,7 @@ class Header extends Component {
     render() {
         //<!-- ver tema altura del header -->
         return (
-            <header class="row no-gutters align-items-center p-1 py-1">
+            <header class="row no-gutters align-items-center p-1 py-1" role="encabezado">
                 {/* <!--ver col-md-3--> */}
                 <div class="col-sm col-lg-auto px-md-3 d-flex align-items-center contNombInst">
                     {/* ver tamaño de letra h1 */}
@@ -18,18 +18,19 @@ class Header extends Component {
                     <div class="row no-gutters align-items-center">
                         <div class="col-auto">
                             <div class="row no-gutters">
-                                <span class="usr">Usuario</span>
+                                <span id="nombUsr" class="usr">Usuario</span>
                             </div>
                             <div class="row no-gutters">
                                 <span class="rol ml-auto">Rol</span>
                             </div>
                         </div>
-                        <div class="col-auto ml-1 rounded-circle contFoto d-flex align-items-center justify-content-center">   
-                            <Icon.User className="fotoUsr"/>                            
+                        <div class="col-auto ml-1 rounded-circle contFoto d-flex align-items-center justify-content-center"
+                            aria-labelledby="nombUsr">
+                            <Icon.User className="fotoUsr" />
                         </div>
                         {/* <!--ver centrado foto d-flex align-items-center--> */}
                         <div class="col-auto ml-4 rounded-lg contOpcs">
-                            <Icon.Settings width={"70%"} height={"70%"} />                            
+                            <Icon.Settings width={"70%"} height={"70%"} />
                         </div>
                     </div>
                 </div>
@@ -41,7 +42,7 @@ class Header extends Component {
                 </div>
 
                 {/* calendar */}
-               
+
             </header>
         )
     }

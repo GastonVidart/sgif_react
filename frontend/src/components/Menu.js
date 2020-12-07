@@ -10,33 +10,33 @@ class Menu extends Component {
 
     render() {
         return (
-            /* TODO: poner md o lg */
-            < nav class="col-md-auto shadow" >
-                <ul className="mr-4">
+            /* TODO: ver si ponemos otros componentes o una url o react router*/
+            < nav className="col-md-auto shadow" role="navigation" >
+                <ul>
                     {/* <!--generar con react asi solo ponemos los links, el resto se puede factorear--> */}
-                    <li class="row no-gutters align-items-center ml-2">
-                        <div class="cont_item_nav">
+                    <li className="row no-gutters align-items-center justify-content-start pr-4">
+                        <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
-                        <span class="texto_nav">Inscribir Alumno</span>
+                        <a className="col-auto texto_nav" href="#">Inscribir Alumno</a>
                     </li>
-                    <li class="row no-gutters align-items-center ml-2">
-                        <div class="cont_item_nav">
+                    <li className="row no-gutters align-items-center justify-content-start pr-4">
+                        <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
-                        <span class="texto_nav">Completar Familia</span>
+                        <a className="col-auto texto_nav" href="#">Completar Familia</a>
                     </li>
-                    <li class="row no-gutters align-items-center ml-2">
-                        <div class="cont_item_nav">
+                    <li className="row no-gutters align-items-center justify-content-start pr-4">
+                        <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
-                        <span class="texto_nav">Registrar Notas Trimestrales</span>
+                        <a className="texto_nav" href="#">Registrar Notas Trimestrales</a>
                     </li>
-                    <li class="row no-gutters align-items-center ml-2">
-                        <div class="cont_item_nav">
+                    <li className="row no-gutters align-items-center justify-content-start pr-4">
+                        <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
-                        <span class="texto_nav">Alta Curso</span>
+                        <a className="texto_nav" href="#">Alta Curso</a>
                     </li>
                 </ul>
             </nav >
