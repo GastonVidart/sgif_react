@@ -1,12 +1,17 @@
 import React, { Component } from "react";
 
 import Menu from './components/Menu';
-import Principal from './components/Principal';
-import Footer from './components/Footer';
 import Header from './components/Header';
 
-import './css/main.css'
+import Home from './components/Home';
+import InscribirAlumno from './components/InscribirAlumno';
+import CompletarFamilia from './components/CompletarFamilia';
+import NotasTrimestrales from './components/NotasTrimestrales';
+import AltaCurso from './components/AltaCurso';
 
+import Footer from './components/Footer';
+
+import './css/main.css'
 
 class App extends Component {
     constructor(props) {
@@ -19,8 +24,16 @@ class App extends Component {
                 <Header />
                 <div class="row no-gutters contPpal">
                     <Menu />
-                    {/* TODO: contenedor derecha con formulario y el resto de principales */}
-                    <Principal />
+                    {/* TODO: react router entre componentes */}
+
+                    {/*<Home />*/}
+
+                    <InscribirAlumno />
+
+                    {/*En construcción*/}
+                    {/*<CompletarFamilia />*/}
+                    {/*<NotasTrimestrales />*/}
+                    {/*<AltaCurso />*/}
                 </div>
                 {/*<Footer />*/}
             </React.Fragment>

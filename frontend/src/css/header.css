@@ -2,12 +2,7 @@
     border: solid black 1px
 }
 
-header {
-    /*width: 100%;*/
-    /*TODO:poner altura variable a contenido min-height ver ejemplo en pag de bootstrap;*/
-    /*height: 64px;*/    
-    /*position: relative;
-    display: block;*/
+header {    
     /*background: rgb(31, 155, 95);*/ /*original*/
 
     background-color: rgb(24 90 169 / 0.3); /*Opcion 1*/
@@ -44,10 +39,6 @@ header {
 .fotoUsr {
     width: 70%;
     height: 70%;
-}
-
-.contNombInst {
-    /*background-color: rgb(34 170 104);*/
 }
 
 .nombreInst {

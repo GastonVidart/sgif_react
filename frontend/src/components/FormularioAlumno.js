@@ -105,12 +105,12 @@ class FormularioAlumno extends React.Component {
                                             <div className="form-row">
                                                 <div className="col">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_dni" htmlFor="dni">DNI*</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_dni" htmlFor="dni">DNI</label>
                                                         <div className="col col-md-4">
                                                             <input className="form-control" type="text" id="dni" name="dni"
                                                                 placeholder="Ingrese un Dni" alt="IngresoDni" required
                                                                 value={this.state.alumno.dni} onChange={this.handleInputChange}
-                                                                aria-labelledby="etiq_dni" />
+                                                                aria-labelledby="etiq_dni" aria-required="true" />
                                                         </div>
                                                         <div className="col-auto mx-3">
                                                             <button type="button" className="btn btn-primary boton"
@@ -126,21 +126,21 @@ class FormularioAlumno extends React.Component {
                                             <div className="form-row">
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_nombre" htmlFor="nombre">Nombre*</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_nombre" htmlFor="nombre">Nombre</label>
                                                         <div className="col-sm">
                                                             <input type="text" className="form-control" id="nombre" name="nombre"
                                                                 value={this.state.alumno.nombre} onChange={this.handleInputChange}
-                                                                required aria-labelledby="etiq_nombre" />
+                                                                required aria-labelledby="etiq_nombre" aria-required="true" />
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_apellido" htmlFor="apellido">Apellido*</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_apellido" htmlFor="apellido">Apellido</label>
                                                         <div className="col-sm">
                                                             <input type="text" className="form-control" id="apellido" name="apellido"
                                                                 value={this.state.alumno.apellido} onChange={this.handleInputChange}
-                                                                required aria-labelledby="etiq_apellido" />
+                                                                required aria-labelledby="etiq_apellido" aria-required="true" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -149,11 +149,11 @@ class FormularioAlumno extends React.Component {
                                             <div className="form-row">
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_genero" htmlFor="genero">Género*</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_genero" htmlFor="genero">Género</label>
                                                         <div className="col-sm">
                                                             <select id="genero" name="genero" className="form-control" required
                                                                 value={this.state.alumno.genero} onChange={this.handleInputChange}
-                                                                aria-labelledby="etiq_genero">
+                                                                aria-labelledby="etiq_genero" aria-required="true">
                                                                 <option value="Seleccione">Seleccione</option>
                                                                 <option value="Masculino">Masculino</option>
                                                                 <option value="Femenino">Femenino</option>
@@ -163,12 +163,12 @@ class FormularioAlumno extends React.Component {
                                                 </div>
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 ">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3 align-self-start" id="etiq_email" htmlFor="email">Email</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 align-self-start requerido" id="etiq_email" htmlFor="email">Email</label>
                                                         <div className="col-md">
                                                             {/*aria-describedby="emailHelp"*/}
                                                             <input type="email" id="email" name="email" className="form-control"
                                                                 value={this.state.alumno.email} onChange={this.handleInputChange}
-                                                                aria-labelledby="etiq_email" />
+                                                                aria-labelledby="etiq_email" required aria-required="true" />
                                                             {/*<small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>*/}
                                                         </div>
                                                     </div>
@@ -178,21 +178,21 @@ class FormularioAlumno extends React.Component {
                                             <div className="form-row text-center">
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_fnac" htmlFor="fechaNacimiento">Fecha de Nacimiento*</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_fnac" htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
                                                         <div className="col-sm">
                                                             <input type="date" id="fechaNacimiento" name="fechaNacimiento" className="form-control"
                                                                 value={this.state.alumno.fechaNacimiento} onChange={this.handleInputChange}
-                                                                required aria-labelledby="etiq_fnac" />
+                                                                required aria-labelledby="etiq_fnac" aria-required="true" />
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
-                                                        <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_lnac" htmlFor="lugarNacimiento">Lugar de Nacimiento*</label>
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_lnac" htmlFor="lugarNacimiento">Lugar de Nacimiento</label>
                                                         <div className="col-sm">
                                                             <input type="text" id="lugarNacimiento" name="lugarNacimiento" className="form-control"
                                                                 value={this.state.alumno.lugarNacimiento} onChange={this.handleInputChange}
-                                                                required aria-labelledby="etiq_lnac" />
+                                                                required aria-labelledby="etiq_lnac" aria-required="true" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -218,11 +218,11 @@ class FormularioAlumno extends React.Component {
                                     <div className="form-row">
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="fechaIngreso">Fecha de Ingreso*</label>
+                                                <label className="col-auto px-3 py-1 my-1 mr-3 requerido" htmlFor="fechaIngreso">Fecha de Ingreso</label>
                                                 <div className="col-sm">
                                                     <input type="date" id="fechaIngreso" name="fechaIngreso" className="form-control"
                                                         value={this.state.alumno.fechaIngreso} onChange={this.handleInputChange}
-                                                        required />
+                                                        required aria-required="true" />
                                                 </div>
                                             </div>
                                         </div>
@@ -240,21 +240,21 @@ class FormularioAlumno extends React.Component {
                                     <div className="form-row">
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col px-3 py-1 my-1 mr-3" id="etiq_nescuela" htmlFor="nombreEscuelaAnt">Nombre Escuela Anterior*</label>
+                                                <label className="col px-3 py-1 my-1 mr-3 requerido" id="etiq_nescuela" htmlFor="nombreEscuelaAnt">Nombre Escuela Anterior</label>
                                                 <div className="col-sm">
                                                     <input type="text" id="nombreEscuelaAnt" name="nombreEscuelaAnt" className="form-control"
                                                         value={this.state.alumno.nombreEscuelaAnt} onChange={this.handleInputChange}
-                                                        required aria-labelledby="etiq_nescuela" />
+                                                        required aria-labelledby="etiq_nescuela" aria-required="true" />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-lg">
                                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                                <label className="col px-3 py-1 my-1 mr-3" id="etiq_acorresp" htmlFor="anioCorrespondiente">Año Correspondiente*</label>
+                                                <label className="col px-3 py-1 my-1 mr-3 requerido" id="etiq_acorresp" htmlFor="anioCorrespondiente">Año Correspondiente</label>
                                                 <div className="col-sm">
                                                     <input type="number" id="anioCorrespondiente" name="anioCorrespondiente" className="form-control"
                                                         value={this.state.alumno.anioCorrespondiente} onChange={this.handleInputChange}
-                                                        required min={"1"} max={"5"} aria-labelledby="etiq_acorresp" />
+                                                        required min={"1"} max={"5"} aria-labelledby="etiq_acorresp" aria-required="true" />
                                                 </div>
                                             </div>
                                         </div>
@@ -314,17 +314,9 @@ class FormularioAlumno extends React.Component {
 
     fechaDefault() {
         const actual = new Date();
-        const fecha = actual.toISOString().substr(0, 10); //TODO: revisar fecha puede dar error dia adelantado
+        const fecha = actual.toISOString().substr(0, 10);
         return fecha;
     }
-
-    /*getFormattedDate(fecha) {
-        var month = fecha.getMonth() + 1;
-        const dayAux = fecha.getDate();
-        var day = dayAux < 10 ? ("0" + dayAux) : dayAux;
-        var year = fecha.getFullYear();
-        return year + "-" + month + "-" + day;
-    }*/
 }
 
 export default FormularioAlumno;

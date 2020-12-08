@@ -4,13 +4,10 @@ import * as Icon from 'react-feather';
 import '../css/navbar.css';
 
 class Menu extends Component {
-    constructor(props) {
-        super(props);
-    }
+    /* TODO: react router*/
 
-    render() {
-        return (
-            /* TODO: ver si ponemos otros componentes o una url o react router*/
+    render() {        
+        return (            
             < nav className="col-md-auto shadow" role="navigation" >
                 <ul>
                     {/* <!--generar con react asi solo ponemos los links, el resto se puede factorear--> */}

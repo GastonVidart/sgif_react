@@ -4,15 +4,18 @@ import '../css/formulario.css';
 import FormularioAlumno from "./FormularioAlumno";
 import FormularioResponsable from "./FormularioResponsable";
 
-class Principal extends React.Component {
+class InscribirAlumno extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             formAlumno: true
         };
+        //TODO: estado formulario completo
         this.cambiaPantalla = this.cambiaPantalla.bind(this);
     }
+
+    //TODO: metodos para hacer los pasos intermedos de la transacción
 
     render() {
         if (this.state.formAlumno) {
@@ -29,4 +32,4 @@ class Principal extends React.Component {
     }
 }
 
-export default Principal;
+export default InscribirAlumno;
