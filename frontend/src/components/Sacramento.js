@@ -10,8 +10,8 @@ class Sacramento extends Component {
                     <div className="form-row">
                         <div className="col-lg">
                             <div className="form-group row no-gutters mb-2 align-items-center">
-                                <h4 id={nombreS} class="nombreSacr titSeccion" style={{ fontSize: "1rem" }}>{nombreS}</h4>
-                                <input type="checkbox" id={"fue_tomado_" + subNom} name={"fue_tomado_" + subNom} class="checkbox" aria-labelledby={nombreS} />
+                                <h4 id={nombreS} className="nombreSacr titSeccion" style={{ fontSize: "1rem" }}>{nombreS}</h4>
+                                <input type="checkbox" id={"fue_tomado_" + subNom} name={"fue_tomado_" + subNom} className="checkbox" aria-labelledby={nombreS} />
                             </div>
                         </div>
                     </div>

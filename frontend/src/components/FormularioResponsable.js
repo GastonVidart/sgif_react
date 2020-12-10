@@ -5,7 +5,7 @@ class FormularioResponsable extends Component {
     render() {
         return (
             /*<!--Contenedor Derecha-->*/
-            < div className="col" >
+            < div className="col" role="main">
 
                 {/*< !--Sub - Header Página-- >*/}
                 < div className="row m-3 no-gutters justify-content-md-between align-items-center" >

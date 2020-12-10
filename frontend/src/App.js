@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { BrowserRouter } from 'react-router-dom';
 
 import Menu from './components/Menu';
 import Header from './components/Header';
@@ -12,28 +13,25 @@ import AltaCurso from './components/AltaCurso';
 import Footer from './components/Footer';
 
 import './css/main.css'
+import Navbar from "./components/navbar";
+
+const Route = require('react-router-dom').Route;
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         return (
             <React.Fragment>
                 <Header />
-                <div class="row no-gutters contPpal">
-                    <Menu />
-                    {/* TODO: react router entre componentes */}
-
-                    {/*<Home />*/}
-
-                    <InscribirAlumno />
-
-                    {/*En construcción*/}
-                    {/*<CompletarFamilia />*/}
-                    {/*<NotasTrimestrales />*/}
-                    {/*<AltaCurso />*/}
+                <div className="row no-gutters contPpal">
+                    <BrowserRouter>
+                        <Menu />
+                        <Route exact path="/" component={Home} />
+                        <Route exact path="/inscribir-alumno" component={InscribirAlumno} />
+                        <Route exact path="/completar-familia" component={CompletarFamilia} />
+                        <Route exact path="/notas-trimestrales" component={NotasTrimestrales} />
+                        <Route exact path="/alta-curso" component={AltaCurso} />
+                    </BrowserRouter>                    
                 </div>
                 {/*<Footer />*/}
             </React.Fragment>

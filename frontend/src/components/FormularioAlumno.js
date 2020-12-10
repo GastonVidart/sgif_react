@@ -73,7 +73,8 @@ class FormularioAlumno extends React.Component {
     render() {
         return (
             /*<!--Contenedor Derecha-->*/
-            <div className="col">
+            //TODO: subir al formulario principal?
+            <div className="col" role="main">
 
                 {/*< !--Sub - Header Página-- >*/}
                 < div className="row m-3 no-gutters justify-content-md-between align-items-center" >
@@ -95,6 +96,7 @@ class FormularioAlumno extends React.Component {
                 <div className="row m-3 p-3 rounded-lg no-gutters contFormulario">
                     <div className="col">
                         {/*className="was-validated" */}
+                        {/* TODO: ver si subir al formulario principal? */}
                         <form>
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card shadow">

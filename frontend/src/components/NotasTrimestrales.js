@@ -4,7 +4,7 @@ import { AlertTriangle } from 'react-feather'
 class NotasTrimestrales extends React.Component {
     render() {
         return (
-            <div className="col">
+            <div className="col" role="main">
                 <div className="row no-gutters m-4 justify-content-center">
                     <AlertTriangle width={"8rem"} height={"8rem"} />
                 </div>
