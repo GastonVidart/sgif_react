@@ -1,7 +1,22 @@
 import * as Icon from 'react-feather';
+
+import AlertDialog from './Alerts'
+
 const { Component } = require("react");
 
 class FormularioResponsable extends Component {
+
+    constructor(props){
+        super(props)
+
+        this.state = {
+            datos: {
+                title: 'Está seguro de que desea finalizar?',
+                texto: 'Si finaliza, se guardarán los cambios realizados.'
+            }
+        }
+    }
+
     render() {
         //Control sobre si se tiene que mostrar o no esta parte del formulario
 
@@ -25,11 +40,7 @@ class FormularioResponsable extends Component {
                             <Icon.ArrowLeft width={"1.3rem"} height={"1.3rem"} />
                         </button>
                         {/*submit del formulario completo */}
-                        {/*<input type="submit" name="submit" value="Submit" className="btn btn-primary"/>*/}
-                        <button type="submit" className="btn btn-primary boton">
-                            Finalizar Inscripción
-                            <Icon.Edit3 width={"1.2rem"} height={"1.2rem"} className="ml-1" />
-                        </button>
+                        <AlertDialog datos={this.state.datos}/>
                     </div>
                 </div >
 

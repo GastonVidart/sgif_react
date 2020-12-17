@@ -50,7 +50,7 @@ class Menu extends React.Component {
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
-                        <a className="texto_nav" href="/notas-trimestrales">Registrar Notas Trimestrales</a>
+                        <a className="texto_nav" href="/alta-curso">Registrar Curso</a>
                     </li>
                     <li className="row no-gutters align-items-center justify-content-start pr-4"
                         onClick={() => {
@@ -59,7 +59,7 @@ class Menu extends React.Component {
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
-                        <a className="texto_nav" href="/alta-curso">Alta Curso</a>
+                        <a className="texto_nav" href="/notas-trimestrales">Registrar Notas Trimestrales</a>
                     </li>
                 </ul>
 
