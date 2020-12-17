@@ -1,17 +1,29 @@
 import Sacramento from "./Sacramento";
+import React from 'react';
 
-const { Component } = require("react");
+import * as Icon from 'react-feather';
 
-class FormularioAlumno extends Component {
+class FormularioAlumno extends React.Component {
     constructor(props) {
-        super(props);
+        super(props);        
     }
+    /*componentDidMount(){ sino hacerlo antes de este punto, que valide el navbar
+        hacer validar fecha inscripción
+        si no puede dar error, sino seguir
+    }*/
 
     render() {
+        //Control sobre si se tiene que mostrar o no esta parte del formulario
+
+        if (!this.props.formAlumno) {
+            return null;
+        }
+
         return (
             /*<!--Contenedor Derecha-->*/
-            <div className="col">
-                
+            //TODO: subir al formulario principal?
+            <div className="col" role="main">
+
                 {/*< !--Sub - Header Página-- >*/}
                 < div className="row m-3 no-gutters justify-content-md-between align-items-center" >
                     <div className="pl-3 rounded-lg contTitulo">
@@ -21,7 +33,10 @@ class FormularioAlumno extends Component {
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between">
                         <button type="button" className="btn btn-primary mr-1 boton">Completar Familia</button>
-                        <button type="button" className="btn btn-primary boton" onClick={this.props.cambioPantalla}>Continuar</button>
+                        <button type="button" className="btn btn-primary boton" onClick={this.props.cambioPantalla}>
+                            Continuar
+                            <Icon.ArrowRight width={"1.3rem"} height={"1.3rem"} className="ml-1" />
+                        </button>
                     </div>
                 </div >
 
@@ -29,138 +44,179 @@ class FormularioAlumno extends Component {
                 <div className="row m-3 p-3 rounded-lg no-gutters contFormulario">
                     <div className="col">
                         {/*className="was-validated" */}
+                        {/* TODO: ver si subir al formulario principal? */}
                         <form>
                             {/* <!--shadow-sm--> */}
-                            <div className="row no-gutters px-3 mb-3 card">
-                                <div className="col-8 card-body pt-2 pb-0"> {/*<!--test-->*/}
-                                    <h3 className="card-title mb-1 titSeccion">Datos Básicos</h3>
-
-                                    <div className="form-row">
+                            <div className="row no-gutters px-3 mb-3 card shadow">
+                                <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos">
+                                    <h3 className="card-title mb-1 titSeccion" id="datos_basicos">Datos Básicos</h3>
+                                    <div className="row no-gutters">
                                         <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="dni">DNI</label>
-                                                <div className="col-4">
-                                                    <input className="form-control" type="text" id="dni" name="dni"
-                                                        placeholder="Ingrese un Dni ..." alt="IngresoDni" required />
-                                                </div>
-                                                <div className="col-auto mx-3">
-                                                    <button type="button" className="btn btn-primary btnBuscar boton"
-                                                        id="searchAlumno" onClick="searchAlumno()">Buscar</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="form-row">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="nombre">Nombre</label>
+                                            <div className="form-row">
                                                 <div className="col">
-                                                    <input type="text" className="form-control" id="nombre" name="nombre" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="apellido">Apellido</label>
-                                                <div className="col">
-                                                    <input type="text" className="form-control" id="apellido" name="apellido" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="form-row">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="genero">Género</label>
-                                                <div className="col">
-                                                    <select name="genero" id="genero" className="form-control">
-                                                        <option value="">Seleccione</option>
-                                                        <option value="Masculino">Masculino</option>
-                                                        <option value="Femenino">Femenino</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="email">Email</label>
-                                                <div className="col">
-                                                    <input type="email" id="email" className="form-control"
-                                                        aria-describedby="emailHelp" />
-                                                    <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="form-row text-center">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col px-3 py-1 my-0 mr-3" for="fNacimiento">Fecha de Nacimiento</label>
-                                                <div className="col">
-                                                    <input type="date" id="fNacimiento" name="fNacimiento" className="form-control" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col px-3 py-1 my-0 mr-3" for="lugarNac">Lugar de Nacimiento</label>
-                                                <div className="col">
-                                                    <input type="text" id="lugarNac" name="lugarNac" className="form-control" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/*<!--test-->*/}
-                                <div className="col">
-                                    FOTO
-                                <div className="form-group form-check">
-                                        <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                                        <label className="form-check-label" for="exampleCheck1">Check me out</label>
-                                    </div>
-                                    <button type="submit" className="btn btn-primary">Submit</button>
-                                </div>
-                            </div>
-                            <div className="row no-gutters px-3 mb-3 card">
-                                <div className="col-8 card-body pt-2 pb-0">
-                                    <h3 className="card-title titSeccion">Datos Escolares</h3>
-                                    <div className="form-row">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="fIngreso">Fecha de Ingreso</label>
-                                                <div className="col">
-                                                    <input type="date" id="fIngreso" name="fIngreso" className="form-control" defaultValue={fechaDefault()} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="fEgreso">Fecha de Egreso</label>
-                                                <div className="col">
-                                                    <input type="date" id="fEgreso" name="fEgreso" className="form-control" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="form-row">
-                                        <div className="col">
-                                            <div className="form-group row no-gutters align-items-center">
-                                                <label className="col-auto px-3 py-1 my-0 mr-3" for="nombreEscuela">Nombre Escuela Anterior</label>
-                                                <div className="col">
-                                                    <input type="text" id="nombreEscuela" name="nombreEscuela" className="form-control" />
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_dni" htmlFor="dni">DNI</label>
+                                                        <div className="col col-md-4">
+                                                            <input className="form-control" type="text" id="dni" name="dni"
+                                                                placeholder="Ingrese un Dni" alt="IngresoDni" required
+                                                                value={this.props.alumno.dni} onChange={this.props.handleInputChange}
+                                                                aria-labelledby="etiq_dni" aria-required="true" />
+                                                        </div>
+                                                        <div className="col-auto mx-3">
+                                                            <button type="button" className="btn btn-primary boton"
+                                                                id="dni" aria-labelledby="etiq_dni" onClick={this.props.searchAlumno}>
+                                                                <div className="d-sm-block d-none">Buscar</div>
+                                                                <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-md-1" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
+                                            <div className="form-row">
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_nombre" htmlFor="nombre">Nombre</label>
+                                                        <div className="col-sm">
+                                                            <input type="text" className="form-control" id="nombre" name="nombre"
+                                                                value={this.props.alumno.nombre} onChange={this.props.handleInputChange}
+                                                                required aria-labelledby="etiq_nombre" aria-required="true" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_apellido" htmlFor="apellido">Apellido</label>
+                                                        <div className="col-sm">
+                                                            <input type="text" className="form-control" id="apellido" name="apellido"
+                                                                value={this.props.alumno.apellido} onChange={this.props.handleInputChange}
+                                                                required aria-labelledby="etiq_apellido" aria-required="true" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="form-row">
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_genero" htmlFor="genero">Género</label>
+                                                        <div className="col-sm">
+                                                            <select id="genero" name="genero" className="form-control" required
+                                                                value={this.props.alumno.genero} onChange={this.props.handleInputChange}
+                                                                aria-labelledby="etiq_genero" aria-required="true">
+                                                                <option value="Seleccione">Seleccione</option>
+                                                                <option value="Masculino">Masculino</option>
+                                                                <option value="Femenino">Femenino</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 ">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 align-self-start requerido" id="etiq_email" htmlFor="email">Email</label>
+                                                        <div className="col-md">
+                                                            {/*aria-describedby="emailHelp"*/}
+                                                            <input type="email" id="email" name="email" className="form-control"
+                                                                value={this.props.alumno.email} onChange={this.props.handleInputChange}
+                                                                aria-labelledby="etiq_email" required aria-required="true" />
+                                                            {/*<small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>*/}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="form-row text-center">
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_fnac" htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
+                                                        <div className="col-sm">
+                                                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" className="form-control"
+                                                                value={this.props.alumno.fechaNacimiento} onChange={this.props.handleInputChange}
+                                                                required aria-labelledby="etiq_fnac" aria-required="true" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-lg">
+                                                    <div className="form-group row no-gutters mb-2 align-items-center">
+                                                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_lnac" htmlFor="lugarNacimiento">Lugar de Nacimiento</label>
+                                                        <div className="col-sm">
+                                                            <input type="text" id="lugarNacimiento" name="lugarNacimiento" className="form-control"
+                                                                value={this.props.alumno.lugarNacimiento} onChange={this.props.handleInputChange}
+                                                                required aria-labelledby="etiq_lnac" aria-required="true" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-3 ml-3 d-flex align-items-center">
+                                            <div className="form-group row no-gutters mb-2 justify-content-center">
+                                                <img src={this.props.alumno.foto} className="img-thumbnail m-2"
+                                                    alt="Foto Alumno" />
+                                                <div className="custom-file">
+                                                    <input type="file" className="custom-file-input" id="fotoAlumno"
+                                                        aria-describedby="etiq_falumno" onChange={this.props.handleChangeFoto} />
+                                                    <label className="custom-file-label" id="etiq_falumno" htmlFor="fotoAlumno">Subir Foto Alumno</label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="row no-gutters px-3 mb-3 card">
-                                <div className="col card-body pt-2 pb-0">
-                                    <h3 className="card-title titSeccion">Sacramentos</h3>
+                            <div className="row no-gutters px-3 mb-3 card shadow">
+                                <div className="col-9 card-body pt-2 pb-0" role="group" aria-labelledby="datos_escolares">
+                                    <h3 className="card-title titSeccion" id="datos_escolares" >Datos Escolares</h3>
+                                    <div className="form-row">
+                                        <div className="col-lg">
+                                            <div className="form-group row no-gutters mb-2 align-items-center">
+                                                <label className="col-auto px-3 py-1 my-1 mr-3 requerido" htmlFor="fechaIngreso">Fecha de Ingreso</label>
+                                                <div className="col-sm">
+                                                    <input type="date" id="fechaIngreso" name="fechaIngreso" className="form-control"
+                                                        value={this.props.alumno.fechaIngreso} onChange={this.props.handleInputChange}
+                                                        required aria-required="true" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg">
+                                            <div className="form-group row no-gutters mb-2 align-items-center">
+                                                <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_fegreso" htmlFor="fechaEgreso">Fecha de Egreso</label>
+                                                <div className="col-sm">
+                                                    <input type="date" id="fechaEgreso" name="fechaEgreso" className="form-control"
+                                                        value={this.props.alumno.fechaEgreso} onChange={this.props.handleInputChange}
+                                                        aria-labelledby="etiq_fegreso" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="form-row">
+                                        <div className="col-lg">
+                                            <div className="form-group row no-gutters mb-2 align-items-center">
+                                                <label className="col px-3 py-1 my-1 mr-3 requerido" id="etiq_nescuela" htmlFor="nombreEscuelaAnt">Nombre Escuela Anterior</label>
+                                                <div className="col-sm">
+                                                    <input type="text" id="nombreEscuelaAnt" name="nombreEscuelaAnt" className="form-control"
+                                                        value={this.props.alumno.nombreEscuelaAnt} onChange={this.props.handleInputChange}
+                                                        required aria-labelledby="etiq_nescuela" aria-required="true" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg">
+                                            <div className="form-group row no-gutters mb-2 align-items-center">
+                                                <label className="col px-3 py-1 my-1 mr-3 requerido" id="etiq_acorresp" htmlFor="anioCorrespondiente">Año Correspondiente</label>
+                                                <div className="col-sm">
+                                                    <input type="number" id="anioCorrespondiente" name="anioCorrespondiente" className="form-control"
+                                                        value={this.props.alumno.anioCorrespondiente} onChange={this.props.handleInputChange}
+                                                        required min={"1"} max={"5"} aria-labelledby="etiq_acorresp" aria-required="true" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row no-gutters px-3 mb-3 card shadow">
+                                <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="sacramentos">
+                                    <h3 className="card-title titSeccion" id="sacramentos">Sacramentos</h3>
+                                    {/* TODO: ver para que actualice dentro del arreglo sacramento
+                                    * TODO: pasar estados sacramentos y funciones
+                                    * value={this.state.alumno.fechaIngreso} onChange={this.handleInputChange} */}
                                     <Sacramento nombre={"Bautismo"} />
                                     <Sacramento nombre={"Comunión"} />
                                     <Sacramento nombre={"Confirmación"} />
@@ -172,18 +228,6 @@ class FormularioAlumno extends Component {
             </div >
         )
     }
-
-}
-
-const estiloDiocesis = {
-    marginLeft: "30px",
-    width: "100px"
-}
-
-function fechaDefault() {
-    const actual = new Date();
-    const fecha = actual.toISOString().substr(0, 10);
-    return fecha;
 }
 
 export default FormularioAlumno;

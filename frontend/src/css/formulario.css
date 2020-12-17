@@ -1,7 +1,4 @@
 .contFormulario {
-    /*height: auto;*/
-    /*display: flex;
-    flex-flow: column;*/
     /*background: #F7F7F7;*/
     /*background-color: rgba(35,170,104, 0.3);*/
     background-color: rgba(155, 190, 231, 0.7);
@@ -9,10 +6,6 @@
 }
 
 .contenedor {
-    /*position: relative;*/
-    /*width: 608px;*/
-    /*height: auto;*/
-    /*border: 1px solid black;*/
     background: #FFFFFF;
     margin-bottom: 15px;
 }
@@ -34,34 +27,15 @@
 }
 
 label {
-    /*position: relative;
-    display: inline-block;
-    /*margin: 0px 10px 0px 0px;
-    padding: 5px 10px 5px 10px;
-    width: 166px;
-    height: 30px;*/
     /*background: #E1E1E1;*/
     /*background-color: rgba(255, 255, 255, 0.87);*/
     /*background-color: rgb(242,239,0);*/
     /*background-color: rgb(251,152,54);*/
-    background-color: rgb(222, 222, 222);    
+    /*background-color: rgb(222, 222, 222);    */
+    background-color: rgb(216 229 245);
     font-size: 16px;
     border-radius: 5px;
 }
-
-/*input {
-    position: relative;
-    display: inline-block;
-    height: 30px;
-    padding: 0px 15px;
-    box-sizing: border-box;
-    border-radius: 5px;
-    border: 1px solid black;
-}*/
-
-/*.enLinea {
-    margin-left: 13px;
-}*/
 
 .nombreEscuela {
     width: fit-content;
@@ -73,15 +47,15 @@ label {
     padding-right: 5px;
 }
 
-.sacramento {    
+.sacramento {
     /*margin: 10px 15px;*/
     /*padding: 0.5px 0px;*/
     /*background: #D6D6D6;*/
     background-color: rgba(177, 204, 235, 0.50);
-    border-radius: 5px;    
+    border-radius: 5px;
 }
 
-.nombreSacr {    
+.nombreSacr {
     margin-left: 10px;
     margin-right: 10px;
     margin-bottom: 0px;
@@ -116,18 +90,19 @@ label {
     width: auto;
 }
 
-/*.row {
-    margin: 10px 0px 10px 10px;
-}*/
-
 .etiqueta {
     /*width: 97px;*/
-    background-color: rgb(216 229 245);
+    /*background-color: rgb(216 229 245);*/
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, .3);
+    
 }
 
-.boton {
-    width: 157px;
-    height: 39px;
+.custom-file-input ~ .custom-file-label::after {
+    content: "Buscar"
+}
+
+.boton {    
     /*background-color: #000000;*/
     background-color: rgb(24 90 169);
     font-family: Raleway;
@@ -137,11 +112,15 @@ label {
     font-size: 15px;
     color: white;
     border: none;
+    display: flex;
+    align-items: center;    
 }
 
-.btnBuscar {
-    width: 100px;
-    height: 35px;    
+.requerido::after{
+    content: '*';
+    /*color: #e02b27;    */
+    color: black;
+    margin: 0 0 0 2px;
 }
 
 /*:invalid{
