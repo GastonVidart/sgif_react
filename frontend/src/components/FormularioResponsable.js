@@ -49,7 +49,7 @@ class FormularioResponsable extends Component {
                     <div className="col">
                         {/* //TODO: agregar form onSubmit={this.handleSubmit} 
                             TODO: submit por js*/}
-                        <form>
+                        <form className="was-validated">
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card">
                                 <div className="col-10 card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos"> {/*<!--test-->*/}

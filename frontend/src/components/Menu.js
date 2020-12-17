@@ -16,7 +16,7 @@ class Menu extends React.Component {
 
                     <li className="row no-gutters align-items-center justify-content-start pr-4"
                         onClick={() => {
-                            window.location.replace("/");
+                            window.location.href="/";
                         }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
@@ -27,7 +27,7 @@ class Menu extends React.Component {
                     {/* que a englobe todo, ver estilos */}
                     <li className="row no-gutters align-items-center justify-content-start pr-4"
                         onClick={() => {
-                            window.location.replace("/inscribir-alumno");
+                            window.location.href="/inscribir-alumno";
                         }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
@@ -36,7 +36,7 @@ class Menu extends React.Component {
                     </li>
                     <li className="row no-gutters align-items-center justify-content-start pr-4"
                         onClick={() => {
-                            window.location.replace("/completar-familia");
+                            window.location.href="/completar-familia";
                         }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
@@ -45,7 +45,7 @@ class Menu extends React.Component {
                     </li>
                     <li className="row no-gutters align-items-center justify-content-start pr-4"
                         onClick={() => {
-                            window.location.replace("/notas-trimestrales");
+                            window.location.href="/notas-trimestrales";
                         }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
@@ -54,7 +54,7 @@ class Menu extends React.Component {
                     </li>
                     <li className="row no-gutters align-items-center justify-content-start pr-4"
                         onClick={() => {
-                            window.location.replace("/alta-curso");
+                            window.location.href="/alta-curso";
                         }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />

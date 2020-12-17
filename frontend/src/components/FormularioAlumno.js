@@ -45,7 +45,7 @@ class FormularioAlumno extends React.Component {
                     <div className="col">
                         {/*className="was-validated" */}
                         {/* TODO: ver si subir al formulario principal? */}
-                        <form>
+                        <form className="was-validated">
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card shadow">
                                 <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos">
@@ -155,7 +155,7 @@ class FormularioAlumno extends React.Component {
                                                 <div className="custom-file">
                                                     <input type="file" className="custom-file-input" id="fotoAlumno"
                                                         aria-describedby="etiq_falumno" onChange={this.props.handleChangeFoto} />
-                                                    <label className="custom-file-label" id="etiq_falumno" htmlFor="fotoAlumno">Subir Foto Alumno</label>
+                                                    <label className="custom-file-label" id="etiq_falumno" htmlFor="fotoAlumno">{this.props.nombreFoto}</label>
                                                 </div>
                                             </div>
                                         </div>
