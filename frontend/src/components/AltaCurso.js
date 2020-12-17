@@ -9,9 +9,38 @@ class AltaCurso extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            dictado: {
+                profesor:'',
+                materia: '',
+                dia: '',
+                horario: '',
+                programa: ''
+            }
+        }
+
+        this.addRow = this.addRow.bind(this);
+    }   
+
+    addRow(profesor, materia, dia, horario, programa) {
+
+        let dic = {
+            profesor,
+            materia,
+            dia,
+            horario,
+            programa
+        }
+        this.setState({
+            dictado: dic
+        })
     }
 
     render() {
+
+        const { dictado } = this.state
+
         return (
             <div className="col" role="main">
 
@@ -83,14 +112,14 @@ class AltaCurso extends React.Component {
                                                     <div className="form-group row m-3 no-gutters justify-content-md-between align-items-center">
                                                         <label className="col-auto px-3 py-1 my-1 mr-3">Dictados Ingresados</label>
                                                         <div className="d-flex justify-content-between">
-                                                            <FormDialog />
+                                                            <FormDialog addRow={this.addRow}/>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div>
-                                                <DenseTable />
+                                                <DenseTable dictado={ dictado }/>
                                             </div>
                                         </div>
                                     </div>

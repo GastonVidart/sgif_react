@@ -1,9 +1,6 @@
 import React from 'react';
 
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
-
 
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -15,7 +12,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-export default function FormDialog() {
+import addRow from './TableDictados'
+
+export default function FormDialog({ addRow }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -23,6 +22,7 @@ export default function FormDialog() {
   };
 
   const handleClose = () => {
+    addRow('Maxi','filosofia', 'Viernes', '8:00', 'prog_Fil2020')
     setOpen(false);
   };
 
@@ -64,7 +64,7 @@ export default function FormDialog() {
                     </div>
                 </div>
             </div>
-            <div className="form-row" style={{"margin-top" : "10px"}}>
+            <div className="form-row" style={{"marginTop" : "10px"}}>
                 <div className="col">
                     <div className="form-group row no-gutters mb-2 align-items-center">
                         <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_anio" htmlFor="dni">Seleccione el día</label>
