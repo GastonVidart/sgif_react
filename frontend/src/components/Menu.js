@@ -13,39 +13,56 @@ class Menu extends React.Component {
         return (
             < nav className="col-md-auto shadow" role="navigation" >
                 <ul>
-                    {/* <!--generar con react asi solo ponemos los links, el resto se puede factorear--> */}
-                    <li className="row no-gutters align-items-center justify-content-start pr-4">
+
+                    <li className="row no-gutters align-items-center justify-content-start pr-4"
+                        onClick={() => {
+                            window.location.replace("/");
+                        }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
                         <a className="col-auto texto_nav" href="/">Inicio</a>
                     </li>
-                    <li className="row no-gutters align-items-center justify-content-start pr-4">
+
+                    {/* que a englobe todo, ver estilos */}
+                    <li className="row no-gutters align-items-center justify-content-start pr-4"
+                        onClick={() => {
+                            window.location.replace("/inscribir-alumno");
+                        }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
                         <a className="col-auto texto_nav" href="/inscribir-alumno">Inscribir Alumno</a>
                     </li>
-                    <li className="row no-gutters align-items-center justify-content-start pr-4">
+                    <li className="row no-gutters align-items-center justify-content-start pr-4"
+                        onClick={() => {
+                            window.location.replace("/completar-familia");
+                        }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
                         <a className="col-auto texto_nav" href="/completar-familia">Completar Familia</a>
                     </li>
-                    <li className="row no-gutters align-items-center justify-content-start pr-4">
+                    <li className="row no-gutters align-items-center justify-content-start pr-4"
+                        onClick={() => {
+                            window.location.replace("/notas-trimestrales");
+                        }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
                         <a className="texto_nav" href="/alta-curso">Registrar Curso</a>
                     </li>
-                    <li className="row no-gutters align-items-center justify-content-start pr-4">
+                    <li className="row no-gutters align-items-center justify-content-start pr-4"
+                        onClick={() => {
+                            window.location.replace("/alta-curso");
+                        }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
                         </div>
                         <a className="texto_nav" href="/notas-trimestrales">Registrar Notas Trimestrales</a>
                     </li>
                 </ul>
-                
+
                 {/*TODO:consultar si va o no, pq en ejemplo estaba, pero no es necesario*/}
                 <ul className="collapse">
                     <li className={this.getNavLinkClass("/")}>
