@@ -13,7 +13,6 @@ import AltaCurso from './components/AltaCurso';
 import Footer from './components/Footer';
 
 import './css/main.css'
-import Navbar from "./components/navbar";
 
 const Route = require('react-router-dom').Route;
 

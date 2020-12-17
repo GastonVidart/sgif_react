@@ -5,7 +5,9 @@
 header {    
     /*background: rgb(31, 155, 95);*/ /*original*/
 
-    background-color: rgb(24 90 169 / 0.3); /*Opcion 1*/
+    background-color: rgb(24, 90, 169, 0.3); /*Opcion 1*/
+    /*background-color: rgb(163, 193, 223);*/
+    
     /*background-color: #185aa91a;*/ /*OPCION 2*/
     
     /*background: rgb(24,90,169);
@@ -52,6 +54,7 @@ header {
 .contInfoUtil {
     height: 41px;
     background: rgba(255, 255, 255, 0.87);
+    /*background: rgb(243, 247, 251);*/
     overflow: hidden;
     display: flex;
     align-items: center;
