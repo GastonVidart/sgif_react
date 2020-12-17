@@ -3,7 +3,7 @@ import React from "react";
 import DenseTable from "./TableDictados"
 import FormDialog from './FormDialogAltaCurso'
 
-import AlertDialog from './AlertAltaCurso'
+import AlertDialog from './Alerts'
 
 class AltaCurso extends React.Component {
 
@@ -17,6 +17,10 @@ class AltaCurso extends React.Component {
                 dia: '',
                 horario: '',
                 programa: ''
+            },
+            alertSalir: {
+                title: 'Desea finalizar el registro?',
+                texto: 'Si finaliza el registro se guardarán los cambios realizados hasta el momento.'
             }
         }
 
@@ -39,7 +43,7 @@ class AltaCurso extends React.Component {
 
     render() {
 
-        const { dictado } = this.state
+        const { dictado, alertSalir } = this.state
 
         return (
             <div className="col" role="main">
@@ -52,8 +56,7 @@ class AltaCurso extends React.Component {
 
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between">
-                        {/* <button type="button" className="btn btn-primary mr-1 boton" onClick={AlertDialog}>Finalizar Registro</button> */}
-                        <AlertDialog/>
+                        <AlertDialog datos={alertSalir}/>
                     </div>
                 </div >
 

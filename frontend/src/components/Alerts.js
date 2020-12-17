@@ -6,7 +6,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 
-export default function AlertDialog() {
+export default function AlertDialog({ datos }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -26,10 +26,10 @@ export default function AlertDialog() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Desea finalizar el registro?"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{datos.title}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Si finaliza el registro se guardarán los cambios realizados hasta el momento.
+            {datos.texto}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

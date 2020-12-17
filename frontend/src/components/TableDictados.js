@@ -15,11 +15,11 @@ function createData(profesor, materia, dia, horario, programa) {
 }
 
 const rows = [
-  createData('Quadrini Silvia', 'Matemática', 'Lunes', '8:00', 'prog_Mat2020'),
-  createData('Rodolfo Walsh', 'Lengua y Literatura', 'Lunes', '11:00', 'prog_Len2020'),
-  createData('Lagos Fito', 'Biología', 'Martes', '8:00', 'prog_Mat2020'),
-  createData('Torres Amanda', 'Geografía', 'Miércoles', '10:00', 'prog_Geo2020'),
-  createData('Storani Sergio', 'Física', 'Jueves', '11:00', 'prog_Fis2020'),
+  createData('Quadrini Silvia', 'Matemática', 'Lunes', '8:00', 'prog_Mat2020.pdf'),
+  createData('Rodolfo Walsh', 'Lengua y Literatura', 'Lunes', '11:00', 'prog_Len2020.pdf'),
+  createData('Lagos Fito', 'Biología', 'Martes', '8:00', 'prog_Mat2020.pdf'),
+  createData('Torres Amanda', 'Geografía', 'Miércoles', '10:00', 'prog_Geo2020.pdf'),
+  createData('Storani Sergio', 'Física', 'Jueves', '11:00', 'prog_Fis2020.pdf'),
 ];
 
 

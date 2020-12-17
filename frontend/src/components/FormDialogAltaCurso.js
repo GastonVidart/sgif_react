@@ -16,31 +16,47 @@ import addRow from './TableDictados'
 
 export default function FormDialog({ addRow }) {
   const [open, setOpen] = React.useState(false);
+  const [profesor, setProfesor] = React.useState('');
+  const [materia, setMateria] = React.useState('');
+  const [horario, setHorario] = React.useState('');
+  const [programa, setPrograma] = React.useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
-    addRow('Maxi','filosofia', 'Viernes', '8:00', 'prog_Fil2020')
+    for (const property in dia) {
+        if (dia[property]) {
+
+            addRow(profesor, materia, property, horario, programa)
+            break;
+        }
+      }
     setOpen(false);
   };
 
 
-
     // START checkbox
-    const [state, setState] = React.useState({
-        checkedA: false,
-        checkedB: false,
-        checkedC: false,
-        checkedD: false,
-        checkedE: false,
+    const [dia, setDia] = React.useState({
+        lunes: false,
+        mates: false,
+        miercoles: false,
+        jueves: false,
+        viernes: false,
     });
 
+    
+
     const handleChange = (event) => {
-        setState({ ...state, [event.target.name]: event.target.checked });
+        setDia({ ...dia, [event.target.name]: event.target.checked });
     };
     // END checkbox
+
+    const shortRoute = (nameFile) => {
+        let nameShort = nameFile.substring(12)
+        setPrograma(nameShort)
+    }
   
 
   return (
@@ -58,7 +74,7 @@ export default function FormDialog({ addRow }) {
                         <div className="col col-md-4">
                             <input className="form-control" type="text" id="anio" name="anio"
                                 placeholder="Nombre Materia" alt="Año del curso" required
-                                // value={this.props.alumno.dni} onChange={this.props.handleInputChange}
+                                onChange={e => setMateria(e.target.value)}
                                 aria-labelledby="etiq_anio" aria-required="true" />
                         </div>
                     </div>
@@ -75,9 +91,9 @@ export default function FormDialog({ addRow }) {
                                 label="Lunes"
                                 control={
                                     <Checkbox 
-                                        checked={state.checkedA} 
+                                        checked={dia.lunes} 
                                         onChange={handleChange} 
-                                        name="checkedA"
+                                        name="lunes"
                                         color="primary" 
                                     />
                                 }
@@ -85,9 +101,9 @@ export default function FormDialog({ addRow }) {
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        checked={state.checkedB}
+                                        checked={dia.martes}
                                         onChange={handleChange}
-                                        name="checkedB"
+                                        name="martes"
                                         color="primary"
                                     />
                                 }
@@ -96,9 +112,9 @@ export default function FormDialog({ addRow }) {
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        checked={state.checkedC}
+                                        checked={dia.miercoles}
                                         onChange={handleChange}
-                                        name="checkedC"
+                                        name="miercoles"
                                         color="primary"
                                     />
                                 }
@@ -107,9 +123,9 @@ export default function FormDialog({ addRow }) {
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        checked={state.checkedD}
+                                        checked={dia.jueves}
                                         onChange={handleChange}
-                                        name="checkedD"
+                                        name="jueves"
                                         color="primary"
                                     />
                                 }
@@ -118,9 +134,9 @@ export default function FormDialog({ addRow }) {
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        checked={state.checkedE}
+                                        checked={dia.viernes}
                                         onChange={handleChange}
-                                        name="checkedE"
+                                        name="viernes"
                                         color="primary"
                                     />
                                 }
@@ -137,11 +153,13 @@ export default function FormDialog({ addRow }) {
                         <label className="col-auto px-3 py-1 my-0 mr-3 requerido" htmlFor="horario">Seleccionar Horario</label>
                         <div className="col-sm">
                             <select name="horario" id="horario" className="form-control" required aria-required="true"
-                                // value={this.props.responsable.genero} onChange={this.props.handleInputChange}
+                                onChange={e => setHorario(e.target.value)}
                                 >
-                                <option value="nueve">9:00</option>
-                                <option value="diez">10:00</option>
-                                <option value="once">11:00</option>
+                                <option value="8:00">8:00</option>
+                                <option value="9:00">9:00</option>
+                                <option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option>
+                                <option value="12:00">12:00</option>
                             </select>
                         </div>
                     </div>
@@ -154,11 +172,11 @@ export default function FormDialog({ addRow }) {
                         <label className="col-auto px-3 py-1 my-0 mr-3 requerido" htmlFor="profesor">Seleccionar Profesor</label>
                         <div className="col-sm">
                             <select name="profesor" id="profesor" className="form-control" required aria-required="true"
-                                // value={this.props.responsable.genero} onChange={this.props.handleInputChange}
+                                onChange={ e => setProfesor(e.target.value)}
                                 >
-                                <option value="Seleccione">Rafaela Mazu</option>
-                                <option value="Masculino">Gabriela Aranda</option>
-                                <option value="Femenino">Andrés Flores</option>
+                                <option value="Rafaela Mazu">Rafaela Mazu</option>
+                                <option value="Gabriela Aranda">Gabriela Aranda</option>
+                                <option value="Andrés Flores">Andrés Flores</option>
                             </select>
                         </div>
                     </div>
@@ -168,11 +186,11 @@ export default function FormDialog({ addRow }) {
             <div className="col-lg-3 ml-3 d-flex align-items-center">
                 <div className="form-group row no-gutters mb-2 justify-content-center">
                     <div>
-                        <label className="custom-file-label" id="etiq_programaMat" htmlFor="programaMat">Subir Programa</label>
+                        <label className="custom-file-label" id="etiq_programa" htmlFor="programa">Subir Programa</label>
                     </div>
                     <div className="custom-file">
-                        <input type="file" className="custom-file-input" id="programaMat"
-                            aria-describedby="etiq_programaMat" onChange={null} 
+                        <input type="file" className="custom-file-input" id="programa"
+                            aria-describedby="etiq_programa" onChange={ e => shortRoute(e.target.value)} 
                         />
                     </div>
                 </div>
