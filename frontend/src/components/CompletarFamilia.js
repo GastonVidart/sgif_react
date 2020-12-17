@@ -9,7 +9,7 @@ class CompletarFamilia extends React.Component {
                     <AlertTriangle width={"8rem"} height={"8rem"} />
                 </div>
                 <div className="row no-gutters m-4 justify-content-center">
-                    <h2 className="m-0 titulo">Pagina En construcción</h2>
+                    <h2 className="m-0 titulo">Página En construcción</h2>
                 </div>
             </div>
         )
