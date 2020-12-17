@@ -29,7 +29,7 @@ class InscribirAlumno extends React.Component {
                 anioCorrespondiente: '',
                 estadoInscripcion: '' //TODO: mostrar cuando se hace el get por dni                
             },
-            nombreFoto: '',
+            nombreFoto: 'Subir Foto Alumno',
 
             //FIXME: ver en model falta de fecha y lugar nac
             responsable: {
