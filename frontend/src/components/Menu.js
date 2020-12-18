@@ -45,7 +45,7 @@ class Menu extends React.Component {
                     </li>
                     <li className="row no-gutters align-items-center justify-content-start pr-4"
                         onClick={() => {
-                            window.location.href="/notas-trimestrales";
+                            window.location.href="/alta-curso";
                         }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
@@ -54,7 +54,7 @@ class Menu extends React.Component {
                     </li>
                     <li className="row no-gutters align-items-center justify-content-start pr-4"
                         onClick={() => {
-                            window.location.href="/alta-curso";
+                            window.location.href="/notas-trimestrales";
                         }}>
                         <div className="col-auto ml-2 cont_item_nav">
                             <Icon.Circle className="item_nav" />
@@ -62,8 +62,7 @@ class Menu extends React.Component {
                         <a className="texto_nav" href="/notas-trimestrales">Registrar Notas Trimestrales</a>
                     </li>
                 </ul>
-
-                {/*TODO:consultar si va o no, pq en ejemplo estaba, pero no es necesario*/}
+                
                 <ul className="collapse">
                     <li className={this.getNavLinkClass("/")}>
                         <NavLink to="/" >Inicio</NavLink></li>
