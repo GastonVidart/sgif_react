@@ -5,7 +5,9 @@ import * as Icon from 'react-feather';
 
 class FormularioAlumno extends React.Component {
     constructor(props) {
-        super(props);        
+        super(props);
+        this.idPaso = 0;
+
     }
     /*componentDidMount(){ sino hacerlo antes de este punto, que valide el navbar
         hacer validar fecha inscripción
@@ -13,9 +15,9 @@ class FormularioAlumno extends React.Component {
     }*/
 
     render() {
-        //Control sobre si se tiene que mostrar o no esta parte del formulario
+        //Control sobre si se tiene que mostrar o no esta parte del formulario        
 
-        if (!this.props.formAlumno) {
+        if (this.props.pasoActual !== this.idPaso) {
             return null;
         }
 
@@ -33,7 +35,7 @@ class FormularioAlumno extends React.Component {
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between">
                         <button type="button" className="btn btn-primary mr-1 boton">Completar Familia</button>
-                        <button type="button" className="btn btn-primary boton" onClick={this.props.cambioPantalla}>
+                        <button type="button" className="btn btn-primary boton" onClick={this.props.pasoSiguiente}>
                             Continuar
                             <Icon.ArrowRight width={"1.3rem"} height={"1.3rem"} className="ml-1" />
                         </button>
@@ -45,7 +47,7 @@ class FormularioAlumno extends React.Component {
                     <div className="col">
                         {/*className="was-validated" */}
                         {/* TODO: ver si subir al formulario principal? */}
-                        <form className="was-validated">
+                        <form className="needs-validation" noValidate>
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card shadow">
                                 <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos">
@@ -60,7 +62,15 @@ class FormularioAlumno extends React.Component {
                                                             <input className="form-control" type="text" id="dni" name="dni"
                                                                 placeholder="Ingrese un Dni" alt="IngresoDni" required
                                                                 value={this.props.alumno.dni} onChange={this.props.handleInputChange}
-                                                                aria-labelledby="etiq_dni" aria-required="true" />
+                                                                aria-labelledby="etiq_dni" aria-required="true"
+                                                            />
+                                                            <div className="valid-feedback">
+                                                                Looks good!
+                                                            </div>
+                                                            <div className="invalid-feedback">
+                                                                DNI Inválido!
+                                                                {/*Poner msj segun el error*/}
+                                                            </div>
                                                         </div>
                                                         <div className="col-auto mx-3">
                                                             <button type="button" className="btn btn-primary boton"
@@ -81,6 +91,10 @@ class FormularioAlumno extends React.Component {
                                                             <input type="text" className="form-control" id="nombre" name="nombre"
                                                                 value={this.props.alumno.nombre} onChange={this.props.handleInputChange}
                                                                 required aria-labelledby="etiq_nombre" aria-required="true" />
+                                                            <div className="invalid-feedback">
+                                                                Nombre Inválido!
+                                                                {/*Poner msj segun el error*/}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -91,6 +105,10 @@ class FormularioAlumno extends React.Component {
                                                             <input type="text" className="form-control" id="apellido" name="apellido"
                                                                 value={this.props.alumno.apellido} onChange={this.props.handleInputChange}
                                                                 required aria-labelledby="etiq_apellido" aria-required="true" />
+                                                            <div className="invalid-feedback">
+                                                                Apellido Inválido!
+                                                                {/*Poner msj segun el error*/}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

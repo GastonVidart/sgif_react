@@ -6,8 +6,9 @@ const { Component } = require("react");
 
 class FormularioResponsable extends Component {
 
-    constructor(props){
-        super(props)
+    constructor(props) {
+        super(props);
+        this.idPaso = 1;
 
         this.state = {
             datos: {
@@ -18,9 +19,9 @@ class FormularioResponsable extends Component {
     }
 
     render() {
-        //Control sobre si se tiene que mostrar o no esta parte del formulario
+        //Control sobre si se tiene que mostrar o no esta parte del formulario        
 
-        if (this.props.formAlumno) {
+        if (this.props.pasoActual !== this.idPaso) {
             return null;
         }
 
@@ -36,11 +37,12 @@ class FormularioResponsable extends Component {
 
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between">
-                        <button type="button" className="btn btn-primary mr-1 boton" onClick={this.props.cambioPantalla}>
+                        <button type="button" className="btn btn-primary mr-1 boton" onClick={this.props.pasoPrevio}>
                             <Icon.ArrowLeft width={"1.3rem"} height={"1.3rem"} />
                         </button>
-                        {/*submit del formulario completo */}
-                        <AlertDialog datos={this.state.datos}/>
+                        {/*submit del formulario completo 
+                        //TODO: agregar paso siguiente */}                        
+                        <AlertDialog datos={this.state.datos} />
                     </div>
                 </div >
 

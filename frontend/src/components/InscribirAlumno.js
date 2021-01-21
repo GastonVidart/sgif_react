@@ -54,13 +54,15 @@ class InscribirAlumno extends React.Component {
                 provincia: '',
                 codigoPostal: ''
             },
-            formAlumno: true
+            cantPasos: 2,
+            pasoActual: 0
         };
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
         this.handleChangeResponsable = this.handleChangeResponsable.bind(this);
         this.handleChangeFoto = this.handleChangeFoto.bind(this);
-        this.cambiaPantalla = this.cambiaPantalla.bind(this);
+        this.pasoSiguiente = this.pasoSiguiente.bind(this);
+        this.pasoPrevio = this.pasoPrevio.bind(this);
     }
 
     //Cambio el estado segun el input que se haya modificado.
@@ -132,21 +134,22 @@ class InscribirAlumno extends React.Component {
             <React.Fragment>
 
                 <FormularioAlumno
-                    formAlumno={this.state.formAlumno}
+                    pasoActual={this.state.pasoActual}
                     handleInputChange={this.handleChangeAlumno}
                     handleChangeFoto={this.handleChangeFoto}
                     alumno={this.state.alumno}
                     nombreFoto={this.state.nombreFoto}
                     searchAlumno={this.searchAlumno}
-                    cambioPantalla={() => this.cambiaPantalla()}
+                    pasoSiguiente={() => this.pasoSiguiente()}
                 />
 
                 <FormularioResponsable
-                    formAlumno={this.state.formAlumno}
+                    pasoActual={this.state.pasoActual}
                     handleInputChange={this.handleChangeResponsable}
                     responsable={this.state.responsable}
                     searchResponsable={this.searchResponsable}
-                    cambioPantalla={() => this.cambiaPantalla()}
+                    pasoSiguiente={() => this.pasoSiguiente()}
+                    pasoPrevio={() => this.pasoPrevio()}
                 />
 
             </React.Fragment>
@@ -194,9 +197,21 @@ class InscribirAlumno extends React.Component {
             .catch((err) => console.log("Error: ", err));
     }
 
-    cambiaPantalla() {
+    pasoSiguiente() {
         this.setState(state => {
-            return { formAlumno: !state.formAlumno }
+            let siguiente = state.pasoActual + 1;
+            if (siguiente < state.cantPasos) {
+                return { pasoActual: siguiente }
+            }
+        });
+    }
+    
+    pasoPrevio() {
+        this.setState(state => {
+            let anterior = state.pasoActual - 1;
+            if (anterior >= 0) {
+                return { pasoActual: anterior }
+            }
         });
     }
 
