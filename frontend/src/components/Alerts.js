@@ -6,7 +6,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 
-export default function AlertDialog({ datos }) {
+export default function AlertDialog({ datos,siguiente }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -19,7 +19,10 @@ export default function AlertDialog({ datos }) {
 
   return (
     <div>
-      <button type="button" className="btn btn-primary mr-1 boton" onClick={handleClickOpen}>Finalizar Registro</button>
+      {/*<button type="button" className="btn btn-primary mr-1 boton" onClick={handleClickOpen}>Finalizar Registro</button>*/}
+      {/*TODO: si es valido que salga el alerta, sino que se mantenga ahi */}
+      <button type="button" className="btn btn-primary mr-1 boton" onClick={siguiente}>Finalizar Registro</button>
+
       <Dialog
         open={open}
         onClose={handleClose}
