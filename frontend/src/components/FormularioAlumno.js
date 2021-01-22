@@ -5,7 +5,9 @@ import * as Icon from 'react-feather';
 
 class FormularioAlumno extends React.Component {
     constructor(props) {
-        super(props);        
+        super(props);
+        this.idPaso = 0;
+
     }
     /*componentDidMount(){ sino hacerlo antes de este punto, que valide el navbar
         hacer validar fecha inscripción
@@ -13,9 +15,9 @@ class FormularioAlumno extends React.Component {
     }*/
 
     render() {
-        //Control sobre si se tiene que mostrar o no esta parte del formulario
+        //Control sobre si se tiene que mostrar o no esta parte del formulario        
 
-        if (!this.props.formAlumno) {
+        if (this.props.pasoActual !== this.idPaso) {
             return null;
         }
 
@@ -33,7 +35,7 @@ class FormularioAlumno extends React.Component {
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between">
                         <button type="button" className="btn btn-primary mr-1 boton">Completar Familia</button>
-                        <button type="button" className="btn btn-primary boton" onClick={this.props.cambioPantalla}>
+                        <button type="button" className="btn btn-primary boton" onClick={this.props.pasoSiguiente}>
                             Continuar
                             <Icon.ArrowRight width={"1.3rem"} height={"1.3rem"} className="ml-1" />
                         </button>
@@ -43,9 +45,8 @@ class FormularioAlumno extends React.Component {
                 {/* < !--Formulario--> */}
                 <div className="row m-3 p-3 rounded-lg no-gutters contFormulario">
                     <div className="col">
-                        {/*className="was-validated" */}
                         {/* TODO: ver si subir al formulario principal? */}
-                        <form className="was-validated">
+                        <form className={this.props.datos.validar ? "was-validated" : ""} noValidate>
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card shadow">
                                 <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos">
@@ -59,8 +60,12 @@ class FormularioAlumno extends React.Component {
                                                         <div className="col col-md-4">
                                                             <input className="form-control" type="text" id="dni" name="dni"
                                                                 placeholder="Ingrese un Dni" alt="IngresoDni" required
-                                                                value={this.props.alumno.dni} onChange={this.props.handleInputChange}
-                                                                aria-labelledby="etiq_dni" aria-required="true" />
+                                                                value={this.props.datos.alumno.dni.valor} onChange={this.props.handleInputChange}
+                                                                aria-labelledby="etiq_dni" aria-required="true"
+                                                            />
+                                                            <div className="invalid-feedback">
+                                                                {this.props.datos.alumno.dni.msjError}
+                                                            </div>
                                                         </div>
                                                         <div className="col-auto mx-3">
                                                             <button type="button" className="btn btn-primary boton"
@@ -79,8 +84,11 @@ class FormularioAlumno extends React.Component {
                                                         <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_nombre" htmlFor="nombre">Nombre</label>
                                                         <div className="col-sm">
                                                             <input type="text" className="form-control" id="nombre" name="nombre"
-                                                                value={this.props.alumno.nombre} onChange={this.props.handleInputChange}
+                                                                value={this.props.datos.alumno.nombre.valor} onChange={this.props.handleInputChange}
                                                                 required aria-labelledby="etiq_nombre" aria-required="true" />
+                                                            <div className="invalid-feedback">
+                                                                {this.props.datos.alumno.nombre.msjError}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -89,8 +97,11 @@ class FormularioAlumno extends React.Component {
                                                         <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_apellido" htmlFor="apellido">Apellido</label>
                                                         <div className="col-sm">
                                                             <input type="text" className="form-control" id="apellido" name="apellido"
-                                                                value={this.props.alumno.apellido} onChange={this.props.handleInputChange}
+                                                                value={this.props.datos.alumno.apellido.valor} onChange={this.props.handleInputChange}
                                                                 required aria-labelledby="etiq_apellido" aria-required="true" />
+                                                            <div className="invalid-feedback">
+                                                                {this.props.datos.alumno.apellido.msjError}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -102,12 +113,13 @@ class FormularioAlumno extends React.Component {
                                                         <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_genero" htmlFor="genero">Género</label>
                                                         <div className="col-sm">
                                                             <select id="genero" name="genero" className="form-control" required
-                                                                value={this.props.alumno.genero} onChange={this.props.handleInputChange}
+                                                                value={this.props.datos.alumno.genero.valor} onChange={this.props.handleInputChange}
                                                                 aria-labelledby="etiq_genero" aria-required="true">
                                                                 <option value="Seleccione">Seleccione</option>
                                                                 <option value="Masculino">Masculino</option>
                                                                 <option value="Femenino">Femenino</option>
                                                             </select>
+                                                            {/*TODO: agregar invalid feedback */}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -117,9 +129,11 @@ class FormularioAlumno extends React.Component {
                                                         <div className="col-md">
                                                             {/*aria-describedby="emailHelp"*/}
                                                             <input type="email" id="email" name="email" className="form-control"
-                                                                value={this.props.alumno.email} onChange={this.props.handleInputChange}
+                                                                value={this.props.datos.alumno.email.valor} onChange={this.props.handleInputChange}
                                                                 aria-labelledby="etiq_email" required aria-required="true" />
-                                                            {/*<small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>*/}
+                                                            <div className="invalid-feedback">
+                                                                {this.props.datos.alumno.email.msjError}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -131,8 +145,11 @@ class FormularioAlumno extends React.Component {
                                                         <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_fnac" htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
                                                         <div className="col-sm">
                                                             <input type="date" id="fechaNacimiento" name="fechaNacimiento" className="form-control"
-                                                                value={this.props.alumno.fechaNacimiento} onChange={this.props.handleInputChange}
+                                                                value={this.props.datos.alumno.fechaNacimiento.valor} onChange={this.props.handleInputChange}
                                                                 required aria-labelledby="etiq_fnac" aria-required="true" />
+                                                            <div className="invalid-feedback">
+                                                                {this.props.datos.alumno.fechaNacimiento.msjError}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -141,8 +158,12 @@ class FormularioAlumno extends React.Component {
                                                         <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_lnac" htmlFor="lugarNacimiento">Lugar de Nacimiento</label>
                                                         <div className="col-sm">
                                                             <input type="text" id="lugarNacimiento" name="lugarNacimiento" className="form-control"
-                                                                value={this.props.alumno.lugarNacimiento} onChange={this.props.handleInputChange}
+                                                                value={this.props.datos.alumno.lugarNacimiento.valor} onChange={this.props.handleInputChange}
                                                                 required aria-labelledby="etiq_lnac" aria-required="true" />
+                                                            <div className="invalid-feedback">
+                                                                {this.props.datos.alumno.lugarNacimiento.msjError}
+                                                            </div>
+                                                            {/*TODO: poner breakpoint antes */}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -150,12 +171,15 @@ class FormularioAlumno extends React.Component {
                                         </div>
                                         <div className="col-lg-3 ml-3 d-flex align-items-center">
                                             <div className="form-group row no-gutters mb-2 justify-content-center">
-                                                <img src={this.props.alumno.foto} className="img-thumbnail m-2"
+                                                <img src={this.props.datos.alumno.foto.valor} className="img-thumbnail m-2"
                                                     alt="Foto Alumno" />
                                                 <div className="custom-file">
                                                     <input type="file" className="custom-file-input" id="fotoAlumno"
-                                                        aria-describedby="etiq_falumno" onChange={this.props.handleChangeFoto} />
-                                                    <label className="custom-file-label" id="etiq_falumno" htmlFor="fotoAlumno">{this.props.nombreFoto}</label>
+                                                        aria-describedby="etiq_falumno" onChange={this.props.handleInputChange} />
+                                                    <label className="custom-file-label" id="etiq_falumno" htmlFor="fotoAlumno">{this.props.datos.nombreFoto}</label>
+                                                    <div className="invalid-feedback">
+                                                        {this.props.datos.alumno.foto.msjError}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -171,8 +195,11 @@ class FormularioAlumno extends React.Component {
                                                 <label className="col-auto px-3 py-1 my-1 mr-3 requerido" htmlFor="fechaIngreso">Fecha de Ingreso</label>
                                                 <div className="col-sm">
                                                     <input type="date" id="fechaIngreso" name="fechaIngreso" className="form-control"
-                                                        value={this.props.alumno.fechaIngreso} onChange={this.props.handleInputChange}
+                                                        value={this.props.datos.alumno.fechaIngreso.valor} onChange={this.props.handleInputChange}
                                                         required aria-required="true" />
+                                                    <div className="invalid-feedback">
+                                                        {this.props.datos.alumno.fechaIngreso.msjError}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -181,8 +208,11 @@ class FormularioAlumno extends React.Component {
                                                 <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_fegreso" htmlFor="fechaEgreso">Fecha de Egreso</label>
                                                 <div className="col-sm">
                                                     <input type="date" id="fechaEgreso" name="fechaEgreso" className="form-control"
-                                                        value={this.props.alumno.fechaEgreso} onChange={this.props.handleInputChange}
+                                                        value={this.props.datos.alumno.fechaEgreso.valor} onChange={this.props.handleInputChange}
                                                         aria-labelledby="etiq_fegreso" />
+                                                    <div className="invalid-feedback">
+                                                        {this.props.datos.alumno.fechaEgreso.msjError}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -193,8 +223,11 @@ class FormularioAlumno extends React.Component {
                                                 <label className="col px-3 py-1 my-1 mr-3 requerido" id="etiq_nescuela" htmlFor="nombreEscuelaAnt">Nombre Escuela Anterior</label>
                                                 <div className="col-sm">
                                                     <input type="text" id="nombreEscuelaAnt" name="nombreEscuelaAnt" className="form-control"
-                                                        value={this.props.alumno.nombreEscuelaAnt} onChange={this.props.handleInputChange}
+                                                        value={this.props.datos.alumno.nombreEscuelaAnt.valor} onChange={this.props.handleInputChange}
                                                         required aria-labelledby="etiq_nescuela" aria-required="true" />
+                                                    <div className="invalid-feedback">
+                                                        {this.props.datos.alumno.nombreEscuelaAnt.msjError}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -203,8 +236,11 @@ class FormularioAlumno extends React.Component {
                                                 <label className="col px-3 py-1 my-1 mr-3 requerido" id="etiq_acorresp" htmlFor="anioCorrespondiente">Año Correspondiente</label>
                                                 <div className="col-sm">
                                                     <input type="number" id="anioCorrespondiente" name="anioCorrespondiente" className="form-control"
-                                                        value={this.props.alumno.anioCorrespondiente} onChange={this.props.handleInputChange}
+                                                        value={this.props.datos.alumno.anioCorrespondiente.valor} onChange={this.props.handleInputChange}
                                                         required min={"1"} max={"5"} aria-labelledby="etiq_acorresp" aria-required="true" />
+                                                    <div className="invalid-feedback">
+                                                        {this.props.datos.alumno.anioCorrespondiente.msjError}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
