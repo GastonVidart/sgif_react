@@ -51,7 +51,7 @@ class FormularioResponsable extends Component {
                     <div className="col">
                         {/* //TODO: agregar form onSubmit={this.handleSubmit} 
                             TODO: submit por js*/}
-                        <form className={this.props.datos.validar ? "was-validated" : ""}>
+                        <form className={this.props.formulario.validar ? "was-validated" : ""}>
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card">
                                 <div className="col-10 card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos"> {/*<!--test-->*/}
@@ -64,9 +64,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col">
                                                     <input className="form-control" type="text" id="dni" name="dni"
                                                         placeholder="Ingrese un Dni" alt="IngresoDni" required aria-required="true"
-                                                        value={this.props.datos.responsable.dni.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.dni.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.dni.msjError}
+                                                        {this.props.formulario.inputs.dni.msjError}
                                                     </div>
                                                 </div>
                                                 <div className="col-auto ml-2 mr-1">
@@ -85,9 +85,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input className="form-control" type="text" id="cuitCuil" name="cuitCuil"
                                                         alt="IngresoCuitCuilt" required aria-required="true"
-                                                        value={this.props.datos.responsable.cuitCuil.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.cuitCuil.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.cuitCuil.msjError}
+                                                        {this.props.formulario.inputs.cuitCuil.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -101,9 +101,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="text" className="form-control" id="nombre" name="nombre"
                                                         required aria-required="true"
-                                                        value={this.props.datos.responsable.nombre.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.nombre.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.nombre.msjError}
+                                                        {this.props.formulario.inputs.nombre.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -114,9 +114,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="text" className="form-control" id="apellido" name="apellido"
                                                         required aria-required="true"
-                                                        value={this.props.datos.responsable.apellido.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.apellido.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.apellido.msjError}
+                                                        {this.props.formulario.inputs.apellido.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -129,7 +129,7 @@ class FormularioResponsable extends Component {
                                                 <label className="col-auto px-3 py-1 my-0 mr-3 requerido" htmlFor="genero">Género</label>
                                                 <div className="col-sm">
                                                     <select name="genero" id="genero" className="form-control" required aria-required="true"
-                                                        value={this.props.datos.responsable.genero.valor} onChange={this.props.handleInputChange}>
+                                                        value={this.props.formulario.inputs.genero.valor} onChange={this.props.handleInputChange}>
                                                         <option value="Seleccione">Seleccione</option>
                                                         <option value="Masculino">Masculino</option>
                                                         <option value="Femenino">Femenino</option>
@@ -148,9 +148,9 @@ class FormularioResponsable extends Component {
                                                     <input type="date" id="fechaNacimiento" name="fechaNacimiento"
                                                         className="form-control" required aria-required="true"
                                                         //FIXME: no hay fecha nac en model
-                                                        value={this.props.datos.responsable.fechaNacimiento.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.fechaNacimiento.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.fechaNacimiento.msjError}
+                                                        {this.props.formulario.inputs.fechaNacimiento.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -162,9 +162,9 @@ class FormularioResponsable extends Component {
                                                     <input type="text" id="lugarNacimiento" name="lugarNacimiento"
                                                         className="form-control" required aria-required="true"
                                                         //FIXME: no hay lugar nac en model
-                                                        value={this.props.datos.responsable.lugarNacimiento.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.lugarNacimiento.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.lugarNacimiento.msjError}
+                                                        {this.props.formulario.inputs.lugarNacimiento.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -177,10 +177,10 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="text" id="telefono" name="telefono"
                                                         className="form-control" required aria-required="true"
-                                                        value={this.props.datos.responsable.telefono.valor} onChange={this.props.handleInputChange}
+                                                        value={this.props.formulario.inputs.telefono.valor} onChange={this.props.handleInputChange}
                                                     />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.telefono.msjError}
+                                                        {this.props.formulario.inputs.telefono.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -192,9 +192,9 @@ class FormularioResponsable extends Component {
                                                     {/* aria-describedby="emailHelp" */}
                                                     <input type="email" id="email"
                                                         className="form-control" required aria-required="true"
-                                                        value={this.props.datos.responsable.email.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.email.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.email.msjError}
+                                                        {this.props.formulario.inputs.email.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -214,9 +214,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="text" id="calle" name="calle"
                                                         className="form-control" required aria-required="true"
-                                                        value={this.props.datos.responsable.calle.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.calle.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.calle.msjError}
+                                                        {this.props.formulario.inputs.calle.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -227,9 +227,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="text" id="altura" name="altura"
                                                         className="form-control" required aria-required="true"
-                                                        value={this.props.datos.responsable.altura.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.altura.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.altura.msjError}
+                                                        {this.props.formulario.inputs.altura.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -240,9 +240,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="text" id="barrio" name="barrio"
                                                         className="form-control" required aria-required="true"
-                                                        value={this.props.datos.responsable.barrio.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.barrio.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.barrio.msjError}
+                                                        {this.props.formulario.inputs.barrio.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -255,9 +255,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="number" id="piso" name="piso"
                                                         className="form-control" min={0}
-                                                        value={this.props.datos.responsable.piso.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.piso.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.piso.msjError}
+                                                        {this.props.formulario.inputs.piso.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -268,9 +268,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="text" id="depto" name="depto"
                                                         className="form-control" min={0}
-                                                        value={this.props.datos.responsable.depto.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.depto.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.depto.msjError}
+                                                        {this.props.formulario.inputs.depto.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -279,9 +279,9 @@ class FormularioResponsable extends Component {
                                                 <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="tira">Tira</label>
                                                 <div className="col-sm">
                                                     <input type="text" id="tira" name="tira" className="form-control"
-                                                        value={this.props.datos.responsable.tira.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.tira.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.tira.msjError}
+                                                        {this.props.formulario.inputs.tira.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -293,9 +293,9 @@ class FormularioResponsable extends Component {
                                                 <label className="col-auto px-3 py-1 my-1 mr-3" htmlFor="modulo">Módulo</label>
                                                 <div className="col-sm">
                                                     <input type="text" id="modulo" name="modulo" className="form-control"
-                                                        value={this.props.datos.responsable.modulo.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.modulo.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.modulo.msjError}
+                                                        {this.props.formulario.inputs.modulo.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -306,9 +306,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="text" id="localidad" name="localidad"
                                                         className="form-control" required aria-required="true"
-                                                        value={this.props.datos.responsable.localidad.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.localidad.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.localidad.msjError}
+                                                        {this.props.formulario.inputs.localidad.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -319,9 +319,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="text" id="provincia" name="provincia"
                                                         className="form-control" required aria-required="true"
-                                                        value={this.props.datos.responsable.provincia.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.provincia.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.provincia.msjError}
+                                                        {this.props.formulario.inputs.provincia.msjError}
                                                     </div>
                                                 </div>
                                             </div>
@@ -334,9 +334,9 @@ class FormularioResponsable extends Component {
                                                 <div className="col-sm">
                                                     <input type="number" id="codigoPostal" name="codigoPostal"
                                                         className="form-control" min={0} required aria-required="true"
-                                                        value={this.props.datos.responsable.codigoPostal.valor} onChange={this.props.handleInputChange} />
+                                                        value={this.props.formulario.inputs.codigoPostal.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
-                                                        {this.props.datos.responsable.codigoPostal.msjError}
+                                                        {this.props.formulario.inputs.codigoPostal.msjError}
                                                     </div>
                                                 </div>
                                             </div>

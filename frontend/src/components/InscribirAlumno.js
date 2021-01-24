@@ -15,7 +15,7 @@ class InscribirAlumno extends React.Component {
 
         this.state = {
             paso0: {
-                alumno: {
+                inputs: {
                     dni: {
                         valor: '',
                         valido: false,
@@ -91,13 +91,16 @@ class InscribirAlumno extends React.Component {
                     } //TODO: mostrar cuando se hace el get por dni
                     //TODO estadoInscr ver la validez por defecto
                 },
+                oidAlumno: '',
+                oidPersona: '',
+                alumnoNuevo: true, //Define si se esta creando un alumno por completo, o solo el rol
                 nombreFoto: 'Subir Foto Alumno',
                 validar: false
             },
 
             //FIXME: ver en model falta de fecha y lugar nac
             paso1: {
-                responsable: {
+                inputs: {
                     dni: {
                         valor: '',
                         valido: false,
@@ -229,10 +232,10 @@ class InscribirAlumno extends React.Component {
                 this.setState(estadoPrevio => ({
                     paso0: {
                         ...estadoPrevio.paso0,
-                        alumno: {
-                            ...estadoPrevio.paso0.alumno,
+                        inputs: {
+                            ...estadoPrevio.paso0.inputs,
                             "foto": {
-                                ...estadoPrevio.paso0.alumno.foto,
+                                ...estadoPrevio.paso0.inputs.foto,
                                 valor: URL.createObjectURL(archivo),
                                 valido: valido
                             }
@@ -247,10 +250,10 @@ class InscribirAlumno extends React.Component {
             this.setState(estadoPrevio => ({
                 paso0: {
                     ...estadoPrevio.paso0,
-                    alumno: {
-                        ...estadoPrevio.paso0.alumno,
+                    inputs: {
+                        ...estadoPrevio.paso0.inputs,
                         [id]: {
-                            ...estadoPrevio.paso0.alumno[id],
+                            ...estadoPrevio.paso0.inputs[id],
                             valor: data,
                             valido: valido
                         }
@@ -275,10 +278,10 @@ class InscribirAlumno extends React.Component {
         this.setState(estadoPrevio => ({
             paso1: {
                 ...estadoPrevio.paso1,
-                responsable: {
-                    ...estadoPrevio.paso1.responsable,
+                inputs: {
+                    ...estadoPrevio.paso1.inputs,
                     [id]: {
-                        ...estadoPrevio.paso1.responsable[id],
+                        ...estadoPrevio.paso1.inputs[id],
                         valor: data,
                         valido: valido
                     }
@@ -329,7 +332,7 @@ class InscribirAlumno extends React.Component {
                 <FormularioAlumno
                     pasoActual={this.state.pasoActual}
                     handleInputChange={this.handleChangeAlumno}
-                    datos={this.state.paso0}
+                    formulario={this.state.paso0}
                     searchAlumno={this.searchAlumno}
                     pasoSiguiente={() => this.pasoSiguiente()}
                 />
@@ -337,7 +340,7 @@ class InscribirAlumno extends React.Component {
                 <FormularioResponsable
                     pasoActual={this.state.pasoActual}
                     handleInputChange={this.handleChangeResponsable}
-                    datos={this.state.paso1}
+                    formulario={this.state.paso1}
                     searchResponsable={this.searchResponsable}
                     pasoSiguiente={() => this.pasoSiguiente()}
                     pasoPrevio={() => this.pasoPrevio()}
@@ -348,7 +351,7 @@ class InscribirAlumno extends React.Component {
     }
 
     searchResponsable = async () => {
-        const dniResp = this.state.paso1.responsable.dni.valor;
+        const dniResp = this.state.paso1.inputs.dni.valor;
         console.log("dniResp", dniResp);
         fetch('http://localhost:5000/insc-alumno/responsable/' + dniResp)
             .then(response => {
@@ -391,13 +394,13 @@ class InscribirAlumno extends React.Component {
                             const datos = data.persona;
                             this.setState(function (state) {
                                 //TODO: almacenar oid de persona
-                                const responsable = { ...state.paso1.responsable };
-                                Object.assign(responsable, this.reiniciarFormulario(state));
-                                Object.assign(responsable, this.extraeDatosPersona(state, datos));
+                                const inputs = { ...state.paso1.inputs };
+                                Object.assign(inputs, this.reiniciarFormulario(state));
+                                Object.assign(inputs, this.extraeDatosPersona(state, datos));
                                 return {
                                     paso1: {
                                         ...state.paso1,
-                                        responsable
+                                        inputs
                                     }
                                 };
                                 //TODO: notif
@@ -408,12 +411,12 @@ class InscribirAlumno extends React.Component {
                                 console.error("Responsable - Persona: ", error)
                                 console.log("Puede crear un responsable nuevo")
                                 this.setState(state => {
-                                    const responsable = { ...state.paso1.responsable };
-                                    Object.assign(responsable, this.reiniciarFormulario(state));
+                                    const inputs = { ...state.paso1.inputs };
+                                    Object.assign(inputs, this.reiniciarFormulario(state));
                                     return {
                                         paso1: {
                                             ...state.paso1,
-                                            responsable
+                                            inputs
                                         }
                                     }
                                 })
@@ -425,12 +428,11 @@ class InscribirAlumno extends React.Component {
                 } else {
                     console.error("Error: ", err)
                 }
-            }
-            )
+            })
     }
 
     searchAlumno = async () => {
-        const dniAlumno = this.state.paso0.alumno.dni.valor;
+        const dniAlumno = this.state.paso0.inputs.dni.valor;
         console.log("dniAlum", dniAlumno);
         fetch('http://localhost:5000/insc-alumno/alumno/' + dniAlumno)
             .then(response => {
@@ -456,7 +458,7 @@ class InscribirAlumno extends React.Component {
                             //TODO: almacenar oid de alumno                            
                             return this.extraeDatosAlumno(state, datos);
                         })
-                        //TODO: buscar responsable y mostrarlo
+                        //TODO: buscar responsable y mostrarlo - puse que no, ver
                     } else {
                         //Inscripcion
                         fetch('http://localhost:5000/insc-alumno/persona/' + dniAlumno)
@@ -501,7 +503,7 @@ class InscribirAlumno extends React.Component {
     }
 
     reiniciarFormulario(state) {
-        const clavesFormulario = Object.keys(this.state.paso1.responsable);
+        const clavesFormulario = Object.keys(this.state.paso1.inputs);
         let aux, validoAux;
         let vacio = {};
 
@@ -516,7 +518,7 @@ class InscribirAlumno extends React.Component {
             }
             aux = {
                 [clave]: {
-                    ...state.paso1.responsable[clave],
+                    ...state.paso1.inputs[clave],
                     valor: '',
                     valido: validoAux,
                 }
@@ -544,7 +546,7 @@ class InscribirAlumno extends React.Component {
             }
             aux = {
                 [clave]: {
-                    ...state.paso1.responsable[clave],
+                    ...state.paso1.inputs[clave],
                     valor: valorRecibido,
                     valido: true
                 }
@@ -555,21 +557,21 @@ class InscribirAlumno extends React.Component {
         return persona;
     }
 
-    extraeDatosResponsable(state, datos) {        
-        const datosResponsable = datos.responsable;        
+    extraeDatosResponsable(state, datos) {
+        const datosResponsable = datos.responsable;
         const clavesResponsableRec = Object.keys(datosResponsable);
-        const clavesFormulario = Object.keys(this.state.paso1.responsable);
+        const clavesFormulario = Object.keys(this.state.paso1.inputs);
 
         //Se hace la interseccion de solo las claves que se necesitan                
-        const clavesUtilesResponsable = clavesFormulario.filter(x => clavesResponsableRec.includes(x));        
+        const clavesUtilesResponsable = clavesFormulario.filter(x => clavesResponsableRec.includes(x));
         //console.log("Intersecccion Claves Responsable", clavesUtilesResponsable);
 
-        const responsable = { ...state.paso1.responsable };
+        const inputs = { ...state.paso1.inputs };
         let aux, valorRecibido;
 
-        Object.assign(responsable, this.reiniciarFormulario(state));
+        Object.assign(inputs, this.reiniciarFormulario(state));
 
-        Object.assign(responsable, this.extraeDatosPersona(state, datos));
+        Object.assign(inputs, this.extraeDatosPersona(state, datos));
 
         clavesUtilesResponsable.forEach(clave => {
             if (datosResponsable[clave] === null) {
@@ -583,31 +585,31 @@ class InscribirAlumno extends React.Component {
             }
             aux = {
                 [clave]: {
-                    ...state.paso1.responsable[clave],
+                    ...state.paso1.inputs[clave],
                     valor: valorRecibido,
                     valido: true
                 }
             };
-            Object.assign(responsable, aux);
+            Object.assign(inputs, aux);
         });
 
         return {
             paso1: {
                 ...state.paso1,
-                responsable
+                inputs
             }
         };
     }
 
     extraeDatosAlumno(state, datos) {
         const clavesRecibidas = Object.keys(datos);
-        const clavesFormulario = Object.keys(this.state.paso0.alumno);
+        const clavesFormulario = Object.keys(this.state.paso0.inputs);
 
         //Se hace la interseccion de solo las claves que se necesitan        
         const clavesUtiles = clavesFormulario.filter(x => clavesRecibidas.includes(x));
         //console.log("Intersecccion Claves", clavesUtiles);
 
-        const alumno = { ...state.paso0.alumno };
+        const inputs = { ...state.paso0.inputs };
         let aux, valorRecibido, validoAux;
 
         //Reinicio los datos del formulario
@@ -621,12 +623,12 @@ class InscribirAlumno extends React.Component {
             }
             aux = {
                 [clave]: {
-                    ...state.paso0.alumno[clave],
+                    ...state.paso0.inputs[clave],
                     valor: '',
                     valido: validoAux,
                 }
             }
-            Object.assign(alumno, aux);
+            Object.assign(inputs, aux);
         })
 
         //Guardo en el estado los datos recibidos necesarios
@@ -639,17 +641,17 @@ class InscribirAlumno extends React.Component {
             }
             aux = {
                 [clave]: {
-                    ...state.paso0.alumno[clave],
+                    ...state.paso0.inputs[clave],
                     valor: valorRecibido,
                     valido: true
                 }
             };
-            Object.assign(alumno, aux);
+            Object.assign(inputs, aux);
         });
         return {
             paso0: {
                 ...state.paso0,
-                alumno
+                inputs
             }
         };
     }
@@ -693,14 +695,14 @@ class InscribirAlumno extends React.Component {
         let formValido = false;
         switch (idPaso) {
             case 0:
-                let datosAlumno = Object.values(datosPasoActual.alumno);
+                let datosAlumno = Object.values(datosPasoActual.inputs);
                 console.log("Alumno ", datosPasoActual);
                 formValido = datosAlumno.every(campo => {
                     return campo.valido;
                 })
                 break;
             case 1:
-                let datosResponsable = Object.values(datosPasoActual.responsable);
+                let datosResponsable = Object.values(datosPasoActual.inputs);
                 //console.log("Responsable ", datosResponsable);
                 formValido = datosResponsable.every(campo => {
                     return campo.valido;
