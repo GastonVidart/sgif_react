@@ -1,8 +1,10 @@
 import React, { Component } from "react";
+import { Edit3 } from "react-feather";
 
 import '../css/formulario.css';
 import FormularioAlumno from "./FormularioAlumno";
 import FormularioResponsable from "./FormularioResponsable";
+import { NoExisteResponsable, NoExistePersona } from "../utils/Errores"
 
 class InscribirAlumno extends React.Component {
     //Componente principal para formulario con multiples partes
@@ -39,7 +41,7 @@ class InscribirAlumno extends React.Component {
                         valor: '',
                         valido: false,
                         msjError: "Ingrese un email"
-                    },
+                    },//TODO: email no esta en esquema
                     fechaNacimiento: {
                         valor: '',
                         valido: false,
@@ -216,7 +218,7 @@ class InscribirAlumno extends React.Component {
         const target = event.target;
         const { id, value, type } = target;
 
-        console.log("Alumno id target", id);        
+        console.log("Alumno id target", id);
 
         valido = this.validarCampo(target);
 
@@ -264,7 +266,7 @@ class InscribirAlumno extends React.Component {
         const target = event.target;
         const { id, value, type } = target;
 
-        console.log("Responsable id target", id);        
+        console.log("Responsable id target", id);
 
         valido = this.validarCampo(target);
 
@@ -320,8 +322,6 @@ class InscribirAlumno extends React.Component {
         console.error("Implementar")
     }
 
-    //TODO: metodos para hacer los pasos intermedos de la transacción
-
     render() {
         return (
             <React.Fragment>
@@ -348,47 +348,310 @@ class InscribirAlumno extends React.Component {
     }
 
     searchResponsable = async () => {
-        const dniResp = this.state.responsable.dni;
+        const dniResp = this.state.paso1.responsable.dni.valor;
         console.log("dniResp", dniResp);
-        console.error("Implementar searchResponsable");
+        fetch('http://localhost:5000/insc-alumno/responsable/' + dniResp)
+            .then(response => {
+                //TODO: manejo de estados de error aca https://developer.mozilla.org/es/docs/Web/API/Response/status
+                //TODO: cuando no tiene conexión loading https://getbootstrap.com/docs/4.5/components/spinners/
+                return response.json().then(data => {
+                    console.log("Status Search Responsable", response.status)
+                    if (response.status === 404) {
+                        throw new NoExisteResponsable(data.message);
+                    } else if (response.status === 500) {
+                        throw new Error(data.message);
+                    }
+                    return data
+                })
+            })
+            .then(data => {
+                console.log("data: ", data);
+                const datos = data.responsable;
+                this.setState(function (state) {
+                    //TODO: almacenar oid de responsable
+                    return this.extraeDatosResponsable(state, datos);
+                })
+            })
+            .catch(err => {
+                if (err instanceof NoExisteResponsable) {
+                    console.error("Responsable: ", err)
+                    //TODO: llevar a una func
+                    fetch('http://localhost:5000/insc-alumno/persona/' + dniResp)
+                        .then(response => {
+                            console.log(response)
+                            return response.json().then(data => {
+                                console.log("Status Search Persona Responsable", response.status)
+                                if (response.status === 404) {
+                                    throw new NoExistePersona(data.message);
+                                }
+                                return data
+                            })
+                        }).then(data => {
+                            console.log("Persona Encontrada ", data)
+                            const datos = data.persona;
+                            this.setState(function (state) {
+                                //TODO: almacenar oid de persona
+                                const responsable = { ...state.paso1.responsable };
+                                Object.assign(responsable, this.reiniciarFormulario(state));
+                                Object.assign(responsable, this.extraeDatosPersona(state, datos));
+                                return {
+                                    paso1: {
+                                        ...state.paso1,
+                                        responsable
+                                    }
+                                };
+                                //TODO: notif
+                            })
+                        })
+                        .catch(error => {
+                            if (error instanceof NoExistePersona) {
+                                console.error("Responsable - Persona: ", error)
+                                console.log("Puede crear un responsable nuevo")
+                                this.setState(state => {
+                                    const responsable = { ...state.paso1.responsable };
+                                    Object.assign(responsable, this.reiniciarFormulario(state));
+                                    return {
+                                        paso1: {
+                                            ...state.paso1,
+                                            responsable
+                                        }
+                                    }
+                                })
+                                //TODO: notif
+                            } else {
+                                console.log("Ha ocurrido un error: ", error)
+                            }
+                        })
+                } else {
+                    console.error("Error: ", err)
+                }
+            }
+            )
     }
 
     searchAlumno = async () => {
-        //const dniAlumno = document.getElementById('dni').value;
-        const dniAlumno = this.state.alumno.dni;
+        const dniAlumno = this.state.paso0.alumno.dni.valor;
         console.log("dniAlum", dniAlumno);
         fetch('http://localhost:5000/insc-alumno/alumno/' + dniAlumno)
-            .then(response => response.json())
-            .then(data => {
-                console.log("data:", data)
-                const datos = data.response.alumnoDB
-
-                //TODO: controlar inscripción / reinscripción
-                //TODO: controlar multiples clicks?
-
-                this.setState({
-                    paso0: {
-                        ...this.state.paso0,
-                        alumno: {
-                            ...this.state.paso0.alumno,
-                            nombre: datos.nombre,
-                            apellido: datos.apellido,
-                            genero: datos.genero,
-                            fechaIngreso: datos.fechaIngreso.substr(0, 10),
-                            fechaNacimiento: datos.fechaNacimiento.substr(0, 10),
-                            lugarNacimiento: datos.lugarNacimiento,
-                            anioCorrespondiente: datos.anioCorrespondiente,
-                            legajo: datos.legajo,
-                            fechaEgreso: datos.fechaEgreso,
-                            nombreEscuelaAnt: datos.nombreEscuelaAnt,
-                            foto: datos.foto,
-                            estadoInscripcion: datos.estadoInscripcion
-                            //TODO: ver como recuperar sacramentos
-                        }
-                    }
-                })
+            .then(response => {
+                //TODO: manejo de estados de error aca https://developer.mozilla.org/es/docs/Web/API/Response/status
+                //TODO: cuando no tiene conexión loading https://getbootstrap.com/docs/4.5/components/spinners/
+                console.log("Status Search Alumno", response.status)
+                return response.json()
             })
-            .catch((err) => console.log("Error: ", err));
+            .then(data => {
+                console.log("data:", data);
+                const datos = data.response.alumnoDB;
+                const valida = data.response.valido;
+                const { operacion, message } = data.response
+
+                //TODO: poner ref a los botones?
+                //TODO: avisar que se pierden los datos que no se guardaron
+                //TODO: tiene que borrar siempre, extraer a otra funcion
+
+                if (valida) {
+                    if (data.response.operacion === "Reinscribir") {
+                        this.setState(function (state) {
+                            console.log("Operacion válida, op", operacion);
+                            //TODO: almacenar oid de alumno                            
+                            return this.extraeDatosAlumno(state, datos);
+                        })
+                        //TODO: buscar responsable y mostrarlo
+                    } else {
+                        //Inscripcion
+                        fetch('http://localhost:5000/insc-alumno/persona/' + dniAlumno)
+                            .then(response => {
+                                return response.json().then(data => {
+                                    console.log("Status Search Persona Alumno", response.status)
+                                    if (response.status === 404) {
+                                        throw new NoExistePersona(data.message);
+                                    }
+                                    return data
+                                })
+                            }).then(data => {
+                                console.log("Persona Encontrada ", data)
+                                const datos = data.persona;
+
+                                this.setState(function (state) {
+                                    //TODO: almacenar oid de persona
+                                    return this.extraeDatosAlumno(state, datos);
+                                    //TODO: notif
+                                })
+                            })
+                            .catch(error => {
+                                if (error instanceof NoExistePersona) {
+                                    console.error("Alumno - Persona: ", error)
+                                    //TODO: poner estado para crear un alumno nuevo
+                                    //TODO: notif
+                                } else {
+                                    console.log("Ha ocurrido un error: ", error)
+                                }
+                            })
+                        console.log("Operacion válida, op", operacion);
+                    }
+                } else {
+                    //TODO: mostrar message con flotante
+                    console.log("Operacion inválida, message ", message);
+                }
+                //TODO: controlar multiples clicks? bloquear boton con disable
+
+            })
+            //TODO: flotante error
+            .catch((err) => console.error("Error: ", err));
+    }
+
+    reiniciarFormulario(state) {
+        const clavesFormulario = Object.keys(this.state.paso1.responsable);
+        let aux, validoAux;
+        let vacio = {};
+
+        clavesFormulario.forEach(clave => {
+            validoAux = true;
+            //Datos en required, al vaciarlos tienen que estar en false
+            //TODO: ver msj de error, pq ahora lo mantiene
+            const requeridos = ["dni", "cuitCuil", "nombre", "apellido", "genero", "email", "telefono",
+                "fechaNacimiento", "lugarNacimiento", "calle", "altura", "barrio", "localidad", "provincia", "codigoPostal"];
+            if (requeridos.includes(clave)) {
+                validoAux = false;
+            }
+            aux = {
+                [clave]: {
+                    ...state.paso1.responsable[clave],
+                    valor: '',
+                    valido: validoAux,
+                }
+            }
+            Object.assign(vacio, aux);
+        })
+        return vacio;
+    }
+
+    extraeDatosPersona(state, datosPersona) {
+        let persona = {};
+        let aux, valorRecibido;
+
+        const clavesPersonaRec = Object.keys(datosPersona);
+        const clavesPersona = ["dni", "nombre", "apellido", "genero"];
+
+        const clavesUtilesPersona = clavesPersona.filter(x => clavesPersonaRec.includes(x));
+        //console.log("Intersecccion Claves Persona", clavesUtilesPersona);
+
+        clavesUtilesPersona.forEach(clave => {
+            if (clave.includes("fecha")) {
+                valorRecibido = datosPersona[clave].substr(0, 10);
+            } else {
+                valorRecibido = datosPersona[clave];
+            }
+            aux = {
+                [clave]: {
+                    ...state.paso1.responsable[clave],
+                    valor: valorRecibido,
+                    valido: true
+                }
+            };
+            Object.assign(persona, aux);
+        });
+
+        return persona;
+    }
+
+    extraeDatosResponsable(state, datos) {        
+        const datosResponsable = datos.responsable;        
+        const clavesResponsableRec = Object.keys(datosResponsable);
+        const clavesFormulario = Object.keys(this.state.paso1.responsable);
+
+        //Se hace la interseccion de solo las claves que se necesitan                
+        const clavesUtilesResponsable = clavesFormulario.filter(x => clavesResponsableRec.includes(x));        
+        //console.log("Intersecccion Claves Responsable", clavesUtilesResponsable);
+
+        const responsable = { ...state.paso1.responsable };
+        let aux, valorRecibido;
+
+        Object.assign(responsable, this.reiniciarFormulario(state));
+
+        Object.assign(responsable, this.extraeDatosPersona(state, datos));
+
+        clavesUtilesResponsable.forEach(clave => {
+            if (datosResponsable[clave] === null) {
+                valorRecibido = '';
+            } else {
+                if (clave.includes("fecha")) {
+                    valorRecibido = datosResponsable[clave].substr(0, 10);
+                } else {
+                    valorRecibido = datosResponsable[clave];
+                }
+            }
+            aux = {
+                [clave]: {
+                    ...state.paso1.responsable[clave],
+                    valor: valorRecibido,
+                    valido: true
+                }
+            };
+            Object.assign(responsable, aux);
+        });
+
+        return {
+            paso1: {
+                ...state.paso1,
+                responsable
+            }
+        };
+    }
+
+    extraeDatosAlumno(state, datos) {
+        const clavesRecibidas = Object.keys(datos);
+        const clavesFormulario = Object.keys(this.state.paso0.alumno);
+
+        //Se hace la interseccion de solo las claves que se necesitan        
+        const clavesUtiles = clavesFormulario.filter(x => clavesRecibidas.includes(x));
+        //console.log("Intersecccion Claves", clavesUtiles);
+
+        const alumno = { ...state.paso0.alumno };
+        let aux, valorRecibido, validoAux;
+
+        //Reinicio los datos del formulario
+        clavesFormulario.forEach(clave => {
+            validoAux = true;
+            //Datos en required, al vaciarlos tienen que estar en false
+            //TODO: ver msj de error, pq ahora lo mantiene
+            const requeridos = ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "lugarNacimiento", "nombreEscuelaAnt", "anioCorrespondiente"];
+            if (requeridos.includes(clave)) {
+                validoAux = false;
+            }
+            aux = {
+                [clave]: {
+                    ...state.paso0.alumno[clave],
+                    valor: '',
+                    valido: validoAux,
+                }
+            }
+            Object.assign(alumno, aux);
+        })
+
+        //Guardo en el estado los datos recibidos necesarios
+        clavesUtiles.forEach(clave => {
+            //TODO: para la foto
+            if (clave.includes("fecha")) {
+                valorRecibido = datos[clave].substr(0, 10);
+            } else {
+                valorRecibido = datos[clave];
+            }
+            aux = {
+                [clave]: {
+                    ...state.paso0.alumno[clave],
+                    valor: valorRecibido,
+                    valido: true
+                }
+            };
+            Object.assign(alumno, aux);
+        });
+        return {
+            paso0: {
+                ...state.paso0,
+                alumno
+            }
+        };
     }
 
     pasoSiguiente() {
@@ -414,6 +677,15 @@ class InscribirAlumno extends React.Component {
         }
     }
 
+    pasoPrevio() {
+        this.setState(state => {
+            let anterior = state.pasoActual - 1;
+            if (anterior >= 0) {
+                return { pasoActual: anterior }
+            }
+        });
+    }
+
     formularioValido() {
         let idPaso = this.state.pasoActual;
         let paso = "paso" + idPaso;
@@ -422,7 +694,7 @@ class InscribirAlumno extends React.Component {
         switch (idPaso) {
             case 0:
                 let datosAlumno = Object.values(datosPasoActual.alumno);
-                //console.log("Alumno ", datosAlumno);
+                console.log("Alumno ", datosPasoActual);
                 formValido = datosAlumno.every(campo => {
                     return campo.valido;
                 })
@@ -438,15 +710,6 @@ class InscribirAlumno extends React.Component {
                 break;
         }
         return formValido;
-    }
-
-    pasoPrevio() {
-        this.setState(state => {
-            let anterior = state.pasoActual - 1;
-            if (anterior >= 0) {
-                return { pasoActual: anterior }
-            }
-        });
     }
 
     fechaDefault() {
