@@ -95,7 +95,9 @@ class InscribirAlumno extends React.Component {
                 oidPersona: '',
                 alumnoNuevo: true, //Define si se esta creando un alumno por completo, o solo el rol
                 nombreFoto: 'Subir Foto Alumno',
-                validar: false
+                validar: false,
+                requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "lugarNacimiento", "nombreEscuelaAnt", "anioCorrespondiente"]
+
             },
 
             //FIXME: ver en model falta de fecha y lugar nac
@@ -203,7 +205,9 @@ class InscribirAlumno extends React.Component {
                         msjError: "Ingrese un Código Postal"
                     }
                 },
-                validar: false
+                validar: false,
+                requeridos: ["dni", "cuitCuil", "nombre", "apellido", "genero", "email", "telefono",
+                    "fechaNacimiento", "lugarNacimiento", "calle", "altura", "barrio", "localidad", "provincia", "codigoPostal"]
             },
             cantPasos: 2,
             pasoActual: 0,
@@ -483,7 +487,16 @@ class InscribirAlumno extends React.Component {
                             .catch(error => {
                                 if (error instanceof NoExistePersona) {
                                     console.error("Alumno - Persona: ", error)
-                                    //TODO: poner estado para crear un alumno nuevo
+                                    this.setState(state => {
+                                        const inputs = { ...state.paso0.inputs };
+                                        Object.assign(inputs, this.reiniciarFormulario(state));                                        
+                                        return {
+                                            paso0: {
+                                                ...state.paso0,
+                                                inputs
+                                            }
+                                        }
+                                    })
                                     //TODO: notif
                                 } else {
                                     console.log("Ha ocurrido un error: ", error)
@@ -503,7 +516,8 @@ class InscribirAlumno extends React.Component {
     }
 
     reiniciarFormulario(state) {
-        const clavesFormulario = Object.keys(this.state.paso1.inputs);
+        const pasoActual = "paso"+state.pasoActual;
+        const clavesFormulario = Object.keys(state[pasoActual].inputs);
         let aux, validoAux;
         let vacio = {};
 
@@ -511,14 +525,13 @@ class InscribirAlumno extends React.Component {
             validoAux = true;
             //Datos en required, al vaciarlos tienen que estar en false
             //TODO: ver msj de error, pq ahora lo mantiene
-            const requeridos = ["dni", "cuitCuil", "nombre", "apellido", "genero", "email", "telefono",
-                "fechaNacimiento", "lugarNacimiento", "calle", "altura", "barrio", "localidad", "provincia", "codigoPostal"];
+            const requeridos = this.state[pasoActual].requeridos;
             if (requeridos.includes(clave)) {
                 validoAux = false;
             }
             aux = {
                 [clave]: {
-                    ...state.paso1.inputs[clave],
+                    ...state[pasoActual].inputs[clave],
                     valor: '',
                     valido: validoAux,
                 }
@@ -612,24 +625,8 @@ class InscribirAlumno extends React.Component {
         const inputs = { ...state.paso0.inputs };
         let aux, valorRecibido, validoAux;
 
-        //Reinicio los datos del formulario
-        clavesFormulario.forEach(clave => {
-            validoAux = true;
-            //Datos en required, al vaciarlos tienen que estar en false
-            //TODO: ver msj de error, pq ahora lo mantiene
-            const requeridos = ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "lugarNacimiento", "nombreEscuelaAnt", "anioCorrespondiente"];
-            if (requeridos.includes(clave)) {
-                validoAux = false;
-            }
-            aux = {
-                [clave]: {
-                    ...state.paso0.inputs[clave],
-                    valor: '',
-                    valido: validoAux,
-                }
-            }
-            Object.assign(inputs, aux);
-        })
+        //Reinicio los datos del formulario        
+        Object.assign(inputs,this.reiniciarFormulario(state));
 
         //Guardo en el estado los datos recibidos necesarios
         clavesUtiles.forEach(clave => {
