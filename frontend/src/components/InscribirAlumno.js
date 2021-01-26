@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-import { Edit3 } from "react-feather";
 
 import '../css/formulario.css';
 import FormularioAlumno from "./FormularioAlumno";
 import FormularioResponsable from "./FormularioResponsable";
-import { NoExisteResponsable, NoExistePersona } from "../utils/Errores"
+import { NoExisteResponsable, NoExistePersona, BadRequest } from "../utils/Errores";
 
 class InscribirAlumno extends React.Component {
     //Componente principal para formulario con multiples partes
@@ -94,7 +93,7 @@ class InscribirAlumno extends React.Component {
                 oidAlumno: '',
                 oidPersona: '',
                 existeAlumno: false,
-                alumnoNuevo: true, //Define si se esta creando un alumno por completo, o solo el rol
+                alumnoCompleto: true, //Define si se esta creando un alumno por completo, o solo el rol
                 nombreFoto: 'Subir Foto Alumno',
                 validar: false,
                 requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "lugarNacimiento", "nombreEscuelaAnt", "anioCorrespondiente"]
@@ -206,9 +205,9 @@ class InscribirAlumno extends React.Component {
                         msjError: "Ingrese un Código Postal"
                     }
                 },
-                oidAlumno: '',
+                oidPersona: '',
                 oidResponsable: '',
-                responsableNuevo: true,
+                responsableCompleto: true,
                 existeResponsable: false,
                 validar: false,
                 requeridos: ["dni", "cuitCuil", "nombre", "apellido", "genero", "email", "telefono",
@@ -216,6 +215,8 @@ class InscribirAlumno extends React.Component {
             },
             cantPasos: 2,
             pasoActual: 0,
+            //TODO: cuando ponga el modal lo tiene que hacer y el cancelar pone en false
+            finalizaRegistro: false
         };
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
@@ -334,6 +335,122 @@ class InscribirAlumno extends React.Component {
         console.error("Implementar")
     }
 
+    componentDidUpdate(propsPrevias, estadoPrevio) {
+
+        if ((estadoPrevio.finalizaRegistro === false) && (this.state.finalizaRegistro === true)) {
+            console.log("Finaliza Registro");
+
+            const existeAlumno = estadoPrevio.paso0.existeAlumno;
+            const alumnoCompleto = estadoPrevio.paso0.alumnoCompleto;
+            const existeResponsable = estadoPrevio.paso1.existeResponsable;
+            const responsableCompleto = estadoPrevio.paso1.responsableCompleto;
+            let idResponsable;
+
+            if (!existeAlumno) {
+                //TODO: si existe ver que se hace con el responsable, si solo se muestra y listo
+                if (!existeResponsable) {
+                    //TODO: poner spiner mientras termina la transaccion
+                    if (responsableCompleto) {
+                        console.log("Crea Responsable Completo")
+                        //idResponsable = this.crearResponsableCompleto(estadoPrevio);
+                        idResponsable = this.crearResponsable(estadoPrevio, true)
+                    } else if (!responsableCompleto) {
+                        console.log("Crea Rol Responsable")
+                        //idResponsable = this.crearResponsableRol(estadoPrevio);
+                        idResponsable = this.crearResponsable(estadoPrevio, false)
+                    }
+                } else if (existeResponsable) {
+                    console.log("El responsable existe")
+                    idResponsable = Promise.resolve(estadoPrevio.paso1.oidResponsable)
+                }
+
+                if (alumnoCompleto) {
+                    console.log("Crea Alumno Completo")
+                    idResponsable.then(id => {
+                        console.log("Id Responsable: ", id)
+                    })
+                        .catch(err => {
+                            console.log("ERROR: ", err)
+                        })
+                    //TODO: alumno completo
+                } else if (!alumnoCompleto) {
+                    console.log("Crea Rol Alumno")
+                    //TODO: alumno rol
+                }
+            }
+        }
+    }
+
+    //TODO: enviar los datos que faltan en esquema tmb
+    async crearResponsable(estadoPrevio, esCompleto) {
+        let idResponsable;
+        const urlBase = 'http://localhost:5000/insc-alumno';
+        const urlCompleto = '/responsable';
+        const urlRol = '/responsable/persona/';
+        let url;
+        let metodo = 'PUT';
+        let datos = {
+            responsable: {
+                cuitCuil: estadoPrevio.paso1.inputs.cuitCuil.valor,
+                telefono: estadoPrevio.paso1.inputs.telefono.valor,
+                email: estadoPrevio.paso1.inputs.email.valor,
+                calle: estadoPrevio.paso1.inputs.calle.valor,
+                altura: estadoPrevio.paso1.inputs.altura.valor,
+                barrio: estadoPrevio.paso1.inputs.barrio.valor,
+                localidad: estadoPrevio.paso1.inputs.localidad.valor,
+                codigoPostal: estadoPrevio.paso1.inputs.codigoPostal.valor,
+                provincia: estadoPrevio.paso1.inputs.provincia.valor
+            }
+        }
+
+        if (esCompleto) {
+            url = urlBase + urlCompleto;
+            metodo = 'POST';
+            const persona = {
+                responsable: {
+                    dni: estadoPrevio.paso1.inputs.dni.valor,
+                    nombre: estadoPrevio.paso1.inputs.nombre.valor,
+                    apellido: estadoPrevio.paso1.inputs.apellido.valor,
+                    genero: estadoPrevio.paso1.inputs.genero.valor,
+                }
+            }
+            Object.assign(datos.responsable, persona.responsable)
+        } else {
+            url = urlBase + urlRol + estadoPrevio.paso1.oidPersona
+        }
+
+        idResponsable = await fetch(url, {
+            method: metodo,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datos)
+        })
+            .then(response => {
+                //Si es necesario se pueden agregar errores personalizados segun el tipo de creacion
+                return response.json().then(data => {
+                    if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 404) {
+                        throw new NoExistePersona(data.message)
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                });
+            })
+            .then(data => {
+                console.log("Respuesta Creación Responsable " + esCompleto ? 'Completo' : 'Rol', data)
+                if (data.response.hasOwnProperty("_id")) {
+                    return data.response._id;
+                } else {
+                    throw new Error("Crear responsable respondio sin oid");
+                }
+            })
+        return idResponsable;
+
+    }
+
     render() {
         return (
             <React.Fragment>
@@ -377,11 +494,19 @@ class InscribirAlumno extends React.Component {
                 })
             })
             .then(data => {
-                console.log("data: ", data);
+                console.log("Responsable Encontrado ", data);
                 const datos = data.responsable;
                 this.setState(function (state) {
-                    //TODO: almacenar oid de responsable
-                    return this.extraeDatosResponsable(state, datos);
+                    const inputs = { ...state.paso1.inputs };
+                    Object.assign(inputs, this.extraeDatosResponsable(state, datos));
+                    return {
+                        paso1: {
+                            ...state.paso1,
+                            inputs,
+                            existeResponsable: true,
+                            oidResponsable: data.responsable._id
+                        }
+                    };
                 })
             })
             .catch(err => {
@@ -395,29 +520,35 @@ class InscribirAlumno extends React.Component {
                                 console.log("Status Search Persona Responsable", response.status)
                                 if (response.status === 404) {
                                     throw new NoExistePersona(data.message);
+                                } else if (response.status === 500) {
+                                    throw new Error(data.message);
                                 }
-                                return data
+                                return data;
                             })
+                            //TODO: notif
                         }).then(data => {
                             console.log("Persona Encontrada ", data)
                             const datos = data.persona;
                             this.setState(function (state) {
-                                //TODO: almacenar oid de persona
                                 const inputs = { ...state.paso1.inputs };
                                 Object.assign(inputs, this.reiniciarFormulario(state));
                                 Object.assign(inputs, this.extraeDatosPersona(state, datos));
                                 return {
                                     paso1: {
                                         ...state.paso1,
-                                        inputs
+                                        inputs,
+                                        oidPersona: datos._id,
+                                        responsableCompleto: false,
+                                        existeResponsable: false
                                     }
-                                };
-                                //TODO: notif
+                                };                                
                             })
+                            //TODO: notif
+                            console.log("id Persona", this.state.paso1.oidPersona)
                         })
                         .catch(error => {
                             if (error instanceof NoExistePersona) {
-                                console.error("Responsable - Persona: ", error)
+                                //console.error("Responsable - Persona: ", error)
                                 console.log("Puede crear un responsable nuevo")
                                 this.setState(state => {
                                     const inputs = { ...state.paso1.inputs };
@@ -426,7 +557,7 @@ class InscribirAlumno extends React.Component {
                                         paso1: {
                                             ...state.paso1,
                                             inputs,
-                                            responsableNuevo: true,
+                                            responsableCompleto: true,
                                             existeResponsable: false
                                         }
                                     }
@@ -614,12 +745,7 @@ class InscribirAlumno extends React.Component {
             Object.assign(inputs, aux);
         });
 
-        return {
-            paso1: {
-                ...state.paso1,
-                inputs
-            }
-        };
+        return inputs;
     }
 
     extraeDatosAlumno(state, datos) {
@@ -664,87 +790,14 @@ class InscribirAlumno extends React.Component {
     pasoSiguiente() {
         if (this.formularioValido()) {
             console.log("Formulario Válido")
-            this.setState(state => {
+            this.setState(function (state) {
                 let siguiente = state.pasoActual + 1;
                 if (siguiente < state.cantPasos) {
                     return { pasoActual: siguiente }
                 } else if (state.pasoActual === state.cantPasos - 1) {
-                    //Si es el ultimo paso
-                    const existeAlumno = this.state.paso0.existeAlumno;
-                    const alumnoNuevo = this.state.paso0.alumnoNuevo;
-                    const existeResponsable = this.state.paso1.existeResponsable;
-                    const responsableNuevo = this.state.paso1.responsableNuevo;
-
-                    if (!existeAlumno) {
-                        //TODO: si existe ver que se hace con el responsable, si solo se muestra y listo
-                        if (!existeResponsable) {
-                            if (responsableNuevo) {
-                                console.log("Crea Responsable Completo")
-                                //TODO: crear resp nuevo completo, guardar oid y pasar a alumno nuevo
-                                var payload = {
-                                    responsable: {
-                                        dni: this.state.paso1.inputs.dni.valor,
-                                        nombre: this.state.paso1.inputs.nombre.valor,
-                                        apellido: this.state.paso1.inputs.apellido.valor,
-                                        genero: this.state.paso1.inputs.genero.valor,
-                                        cuitCuil: this.state.paso1.inputs.cuitCuil.valor,
-                                        telefono: this.state.paso1.inputs.telefono.valor,
-                                        email: this.state.paso1.inputs.email.valor,
-                                        calle: this.state.paso1.inputs.calle.valor,
-                                        altura: this.state.paso1.inputs.altura.valor,
-                                        barrio: this.state.paso1.inputs.barrio.valor,
-                                        localidad: this.state.paso1.inputs.localidad.valor,
-                                        codigoPostal: this.state.paso1.inputs.codigoPostal.valor,
-                                        provincia: this.state.paso1.inputs.provincia.valor
-                                    }
-                                }
-                                var data = new FormData();
-                                data.append("json", JSON.stringify(payload));
-                                fetch('http://localhost:5000/insc-alumno/responsable', {
-                                    method: "POST",
-                                    body: data
-                                })
-                                    .then(response => {
-                                        //TODO: ver status
-                                        return response.json();
-                                    })
-                                    .then(data => {
-                                        console.log("Respuesta Creacion Responsable Completo ", data)
-                                        /*if (data.response.hasOwnProperty("_id")) {
-                                            this.setState(state => {
-                                                return {
-                                                    paso1: {
-                                                        ...state.paso1,
-                                                        oidResponsable: data.response._id
-                                                    }
-                                                }
-                                            })
-                                            console.log("oidResponsable Completo", this.state.paso1.oidResponsable)
-                                        }*/
-                                    })
-                                    .catch(function (res) {
-                                        console.log("Error crear Responsable Nuevo: ", res)
-                                    })
-                                //FIXME: resolver doble llamado https://stackoverflow.com/questions/29775797/fetch-post-json-data ulimo
-                                //FIXME: resolver cadena de llamados para que espere a la respuesta del post
-                                //TODO: poner spiner mientras termina la transaccion
-                            } else if (!responsableNuevo) {
-                                console.log("Crea Rol Responsable")
-                                //TODO: crear resp rol, guardar oid y pasar a alumno nuevo
-                            }
-                        } else if (existeResponsable) {
-                            console.log("El responsable existe")
-                            //TODO: ir directamente a alumno nuevo con oidResponsable
-                        }
-
-                        if (alumnoNuevo) {
-                            console.log("Crea Alumno Completo")
-                            //TODO: alumno completo
-                        } else if (!alumnoNuevo) {
-                            console.log("Crea Rol Alumno")
-                            //TODO: alumno rol
-                        }
-                    }
+                    //Si es el ultimo paso, define que tiene que registrar los datos
+                    //TODO: no cambiar aca, cambiar en modal aceptar
+                    return { finalizaRegistro: true }
                 }
             });
         } else {
@@ -778,7 +831,7 @@ class InscribirAlumno extends React.Component {
         switch (idPaso) {
             case 0:
                 let datosAlumno = Object.values(datosPasoActual.inputs);
-                console.log("Alumno ", datosPasoActual);
+                //console.log("Alumno ", datosPasoActual);
                 formValido = datosAlumno.every(campo => {
                     return campo.valido;
                 })

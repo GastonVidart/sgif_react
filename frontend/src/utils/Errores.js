@@ -26,4 +26,12 @@ class NoExistePersona extends Error {
     }
 }
 
-module.exports = { NoExisteResponsable, NoExistePersona }
+class BadRequest extends Error {
+    constructor(message, ...params) {
+        super(message, ...params);
+        this.name = 'Bad Request';
+        this.data = new Date();
+    }
+}
+
+module.exports = { NoExisteResponsable, NoExistePersona, BadRequest }
