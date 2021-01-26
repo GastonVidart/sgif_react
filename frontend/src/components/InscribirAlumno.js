@@ -366,19 +366,99 @@ class InscribirAlumno extends React.Component {
 
                 if (alumnoCompleto) {
                     console.log("Crea Alumno Completo")
-                    idResponsable.then(id => {
-                        console.log("Id Responsable: ", id)
+                    idResponsable.then(idResp => {
+                        //TODO: alumno completo
+                        console.log("Id Responsable: ", idResp);
+                        this.crearAlumno(estadoPrevio, alumnoCompleto, idResp)
+                            .catch(err => { console.log("error: ", err) })
                     })
                         .catch(err => {
                             console.log("ERROR: ", err)
                         })
-                    //TODO: alumno completo
+
                 } else if (!alumnoCompleto) {
                     console.log("Crea Rol Alumno")
-                    //TODO: alumno rol
+                    idResponsable.then(idResp => {
+                        //TODO: alumno rol
+                        console.log("Id Responsable: ", idResp)
+                        this.crearAlumno(estadoPrevio, alumnoCompleto, idResp)
+                            .catch(err => { console.log("error: ", err) })
+                    })
+                        .catch(err => {
+                            console.log("ERROR: ", err)
+                        })
                 }
+            } else {
+                console.log("El alumno existe, se reinscribe")
             }
         }
+    }
+
+    async crearAlumno(estadoPrevio, esCompleto, oidResponsable) {
+        const urlBase = 'http://localhost:5000/insc-alumno';
+        const urlCompleto = '/alumno';
+        const urlRol = '/alumno/persona/';
+        let url;
+        let metodo = 'PUT';
+
+        //TODO: tipo dni, sacramentos, no esta modelado aca y otros
+        var datos = {
+            oidResponsable,
+            alumno: {
+                tipoDni: 'DNI',
+                fechaNacimiento: estadoPrevio.paso0.inputs.fechaNacimiento.valor,
+                lugarNacimiento: estadoPrevio.paso0.inputs.lugarNacimiento.valor,
+                email: estadoPrevio.paso0.inputs.email.valor,
+                fechaIngreso: estadoPrevio.paso0.inputs.fechaIngreso.valor,
+                fechaEgreso: estadoPrevio.paso0.inputs.fechaEgreso.valor,
+                nombreEscuelaAnt: estadoPrevio.paso0.inputs.nombreEscuelaAnt.valor,
+                anioCorrespondiente: estadoPrevio.paso0.inputs.anioCorrespondiente.valor
+            }
+        }
+
+        if (esCompleto) {
+            url = urlBase + urlCompleto;
+            metodo = 'POST';
+            //TODO: tipo dni,
+            const persona = {
+                alumno: {
+                    dni: estadoPrevio.paso0.inputs.dni.valor,
+                    nombre: estadoPrevio.paso0.inputs.nombre.valor,
+                    apellido: estadoPrevio.paso0.inputs.apellido.valor,
+                    genero: estadoPrevio.paso0.inputs.genero.valor
+                }
+            }
+            Object.assign(datos.alumno, persona.alumno);
+        } else {
+            url = urlBase + urlRol + estadoPrevio.paso0.oidPersona
+        }        
+
+        await fetch(url, {
+            method: metodo,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datos),
+        }).then(response => {
+            //Si es necesario se pueden agregar errores personalizados segun el tipo de creacion
+            return response.json().then(data => {
+                if (response.status === 500) {
+                    throw new Error(data.message);
+                } else if (response.status === 404) {
+                    throw new NoExisteResponsable(data.message);
+                } else if (response.status === 400) {
+                    throw new BadRequest(data.message);
+                }
+                return data;
+            })
+        }).then(data => {
+            console.log("Respuesta Creación Alumno ", esCompleto ? 'Completo' : 'Rol', data.response)            
+            if (data.response.alumno.hasOwnProperty("_id")) {
+                return data.response.alumno._id;
+            } else {
+                throw new Error("Crear alumno respondio sin oid");
+            }
+        })
     }
 
     //TODO: enviar los datos que faltan en esquema tmb
@@ -414,7 +494,7 @@ class InscribirAlumno extends React.Component {
                     genero: estadoPrevio.paso1.inputs.genero.valor,
                 }
             }
-            Object.assign(datos.responsable, persona.responsable)
+            Object.assign(datos.responsable, persona.responsable);
         } else {
             url = urlBase + urlRol + estadoPrevio.paso1.oidPersona
         }
@@ -440,7 +520,7 @@ class InscribirAlumno extends React.Component {
                 });
             })
             .then(data => {
-                console.log("Respuesta Creación Responsable " + esCompleto ? 'Completo' : 'Rol', data)
+                console.log("Respuesta Creación Responsable ", esCompleto ? 'Completo' : 'Rol', data)
                 if (data.response.hasOwnProperty("_id")) {
                     return data.response._id;
                 } else {
@@ -541,7 +621,7 @@ class InscribirAlumno extends React.Component {
                                         responsableCompleto: false,
                                         existeResponsable: false
                                     }
-                                };                                
+                                };
                             })
                             //TODO: notif
                             console.log("id Persona", this.state.paso1.oidPersona)
@@ -564,7 +644,7 @@ class InscribirAlumno extends React.Component {
                                 })
                                 //TODO: notif
                             } else {
-                                console.log("Ha ocurrido un error: ", error)
+                                console.log("Error Buscar Responsable: ", error)
                             }
                         })
                 } else {
@@ -578,13 +658,17 @@ class InscribirAlumno extends React.Component {
         console.log("dniAlum", dniAlumno);
         fetch('http://localhost:5000/insc-alumno/alumno/' + dniAlumno)
             .then(response => {
-                //TODO: manejo de estados de error aca https://developer.mozilla.org/es/docs/Web/API/Response/status
                 //TODO: cuando no tiene conexión loading https://getbootstrap.com/docs/4.5/components/spinners/
-                console.log("Status Search Alumno", response.status)
-                return response.json()
+                return response.json().then(data => {
+                    console.log("Status Search Alumno", response.status)
+                    if (response.status === 500) {
+                        throw new Error(data.message);
+                    }
+                    return data;
+                })
             })
             .then(data => {
-                console.log("data:", data);
+                console.log("Respuesta Búsqueda Alumno:", data);
                 const datos = data.response.alumnoDB;
                 const valida = data.response.valido;
                 const { operacion, message } = data.response
@@ -596,10 +680,19 @@ class InscribirAlumno extends React.Component {
                 if (valida) {
                     if (data.response.operacion === "Reinscribir") {
                         this.setState(function (state) {
-                            console.log("Operacion válida, op", operacion);
-                            //TODO: almacenar oid de alumno                            
-                            return this.extraeDatosAlumno(state, datos);
+                            console.log("Alumno encontrado. Operacion: ", operacion);
+                            const inputs = { ...state.paso0.inputs };
+                            Object.assign(inputs, this.extraeDatosAlumno(state, datos));
+                            return {
+                                paso0: {
+                                    ...state.paso0,
+                                    inputs,
+                                    existeAlumno: true,
+                                    oidAlumno: datos._id
+                                }
+                            };
                         })
+                        console.log("oid Alumno", this.state.paso0.oidAlumno)
                         //TODO: buscar responsable y mostrarlo - puse que no, ver
                     } else {
                         //Inscripcion
@@ -609,18 +702,28 @@ class InscribirAlumno extends React.Component {
                                     console.log("Status Search Persona Alumno", response.status)
                                     if (response.status === 404) {
                                         throw new NoExistePersona(data.message);
+                                    } else if (response.status === 500) {
+                                        throw new Error(data.message);
                                     }
                                     return data
                                 })
                             }).then(data => {
                                 console.log("Persona Encontrada ", data)
                                 const datos = data.persona;
-
                                 this.setState(function (state) {
-                                    //TODO: almacenar oid de persona
-                                    return this.extraeDatosAlumno(state, datos);
-                                    //TODO: notif
+                                    const inputs = { ...state.paso0.inputs };
+                                    Object.assign(inputs, this.extraeDatosAlumno(state, datos));
+                                    return {
+                                        paso0: {
+                                            ...state.paso0,
+                                            inputs,
+                                            oidPersona: datos._id,
+                                            alumnoCompleto: false,
+                                            existeAlumno: false
+                                        }
+                                    };
                                 })
+                                //TODO: notif
                             })
                             .catch(error => {
                                 if (error instanceof NoExistePersona) {
@@ -631,13 +734,15 @@ class InscribirAlumno extends React.Component {
                                         return {
                                             paso0: {
                                                 ...state.paso0,
-                                                inputs
+                                                inputs,
+                                                alumnoCompleto: true,
+                                                existeAlumno: false
                                             }
                                         }
                                     })
                                     //TODO: notif
                                 } else {
-                                    console.log("Ha ocurrido un error: ", error)
+                                    console.log("Error Buscar Alumno: ", error)
                                 }
                             })
                         console.log("Operacion válida, op", operacion);
@@ -658,6 +763,7 @@ class InscribirAlumno extends React.Component {
         const clavesFormulario = Object.keys(state[pasoActual].inputs);
         let aux, validoAux;
         let vacio = {};
+        clavesFormulario.shift();
 
         clavesFormulario.forEach(clave => {
             validoAux = true;
@@ -757,7 +863,7 @@ class InscribirAlumno extends React.Component {
         //console.log("Intersecccion Claves", clavesUtiles);
 
         const inputs = { ...state.paso0.inputs };
-        let aux, valorRecibido, validoAux;
+        let aux, valorRecibido;
 
         //Reinicio los datos del formulario        
         Object.assign(inputs, this.reiniciarFormulario(state));
@@ -779,12 +885,7 @@ class InscribirAlumno extends React.Component {
             };
             Object.assign(inputs, aux);
         });
-        return {
-            paso0: {
-                ...state.paso0,
-                inputs
-            }
-        };
+        return inputs;
     }
 
     pasoSiguiente() {
