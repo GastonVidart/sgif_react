@@ -18,77 +18,94 @@ class InscribirAlumno extends React.Component {
                     dni: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese un DNI"
+                        msjError: "Ingrese un DNI",
+                        habilitado: true
+                    },
+                    tipoDni: {
+                        valor: 'DNI',
+                        valido: true,
+                        msjError: "Seleccione un Tipo de DNI",
+                        habilitado: true
                     },
                     nombre: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese el nombre"
+                        msjError: "Ingrese el nombre",
+                        habilitado: false
                     },
                     apellido: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese el apellido"
+                        msjError: "Ingrese el apellido",
+                        habilitado: false
                     },
                     genero: {
                         valor: '',
                         valido: false,
-                        msjError: "Seleccione un género"
+                        msjError: "Seleccione un género",
+                        habilitado: false
                     },
-                    //TODO: validar valor correctamente
                     email: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese un email"
+                        msjError: "Ingrese un email",
+                        habilitado: false
                     },//TODO: email no esta en esquema
                     fechaNacimiento: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese la Fecha de Nacimiento"
+                        msjError: "Ingrese la Fecha de Nacimiento",
+                        habilitado: false
                     },
                     lugarNacimiento: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese el Lugar de Nacimiento"
+                        msjError: "Ingrese el Lugar de Nacimiento",
+                        habilitado: false
                     },
                     legajo: {
                         valor: '',
                         valido: true,
-                        msjError: "Implementar"
-                    }, //TODO: agregar a formulario para get por dni,
-                    //TODO legajo ver la validez por defecto
+                        msjError: "Implementar",
+                        habilitado: false
+                    },
                     fechaIngreso: {
                         valor: this.fechaDefault(),
                         valido: true,
-                        msjError: "Fecha de Ingreso Inválida"
+                        msjError: "Fecha de Ingreso Inválida",
+                        habilitado: false
                     },
                     fechaEgreso: {
                         valor: '',
                         valido: true,
-                        msjError: "Fecha de Ingreso Inválida"
+                        msjError: "Fecha de Ingreso Inválida",
+                        habilitado: false
                     },
                     nombreEscuelaAnt: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese el Nombre de la Escuela"
+                        msjError: "Ingrese el Nombre de la Escuela",
+                        habilitado: false
                     },
                     //sacramento: [], //TODO: ver lo del sacramento
                     foto: {
                         valor: null,
                         valido: true,
-                        msjError: "Foto Incorrecta"
+                        msjError: "Foto Incorrecta",
+                        habilitado: false
                     },
                     anioCorrespondiente: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese un Año de Inscripción"
+                        msjError: "Ingrese un Año de Inscripción",
+                        habilitado: false
                     },
                     estadoInscripcion: {
                         valor: '',
                         valido: true,
-                        msjError: "Estado Inscripción Inválido"
-                    } //TODO: mostrar cuando se hace el get por dni
-                    //TODO estadoInscr ver la validez por defecto
+                        msjError: "Estado Inscripción Inválido",
+                        habilitado: false
+                    } //TODO: se muestra en un flotante cuando se hace el get por dni                    
                 },
                 oidAlumno: '',
                 oidPersona: '',
@@ -96,113 +113,130 @@ class InscribirAlumno extends React.Component {
                 alumnoCompleto: true, //Define si se esta creando un alumno por completo, o solo el rol
                 nombreFoto: 'Subir Foto Alumno',
                 validar: false,
-                requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "lugarNacimiento", "nombreEscuelaAnt", "anioCorrespondiente"]
-
+                requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "lugarNacimiento", "nombreEscuelaAnt", "anioCorrespondiente"],
             },
 
-            //FIXME: ver en model falta de fecha y lugar nac
             paso1: {
                 inputs: {
                     dni: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese un DNI"
+                        msjError: "Ingrese un DNI",
+                        habilitado: true
                     },
                     nombre: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese el nombre"
+                        msjError: "Ingrese el nombre",
+                        habilitado: false
                     },
                     apellido: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese el apellido"
+                        msjError: "Ingrese el apellido",
+                        habilitado: false
                     },
                     genero: {
                         valor: '',
                         valido: false,
-                        msjError: "Seleccione un género"
+                        msjError: "Seleccione un género",
+                        habilitado: false
                     },
                     fechaNacimiento: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese la Fecha de Nacimiento"
+                        msjError: "Ingrese la Fecha de Nacimiento",
+                        habilitado: false
                     },
                     lugarNacimiento: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese el Lugar de Nacimiento"
+                        msjError: "Ingrese el Lugar de Nacimiento",
+                        habilitado: false
                     },
                     legajo: {
                         valor: '',
                         valido: true,
-                        msjError: "Implementar"
-                    }, //TODO: agregar a formulario
-                    //TODO legajo ver la validez por defecto
+                        msjError: "Implementar",
+                        habilitado: false
+                    }, //TODO: agregar a formulario                    
                     cuitCuil: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese un CUIL/CUIT"
+                        msjError: "Ingrese un CUIL/CUIT",
+                        habilitado: false
                     },
                     telefono: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese un Teléfono"
+                        msjError: "Ingrese un Teléfono",
+                        habilitado: false
                     },
                     email: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese un Email"
+                        msjError: "Ingrese un Email",
+                        habilitado: false
                     },
                     calle: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese una Calle"
+                        msjError: "Ingrese una Calle",
+                        habilitado: false
                     },
                     altura: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese una Altura"
+                        msjError: "Ingrese una Altura",
+                        habilitado: false
                     },
                     barrio: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese un Barrio"
+                        msjError: "Ingrese un Barrio",
+                        habilitado: false
                     },
                     piso: {
                         valor: '',
                         valido: true,
-                        msjError: "Piso Inválido"
+                        msjError: "Piso Inválido",
+                        habilitado: false
                     },
                     depto: {
                         valor: '',
                         valido: true,
-                        msjError: "Dpto Inválido"
+                        msjError: "Dpto Inválido",
+                        habilitado: false
                     },
                     tira: {
                         valor: '',
                         valido: true,
-                        msjError: "Tira Inválida"
+                        msjError: "Tira Inválida",
+                        habilitado: false
                     },
                     modulo: {
                         valor: '',
                         valido: true,
-                        msjError: "Módulo Iválido"
+                        msjError: "Módulo Iválido",
+                        habilitado: false
                     },
                     localidad: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese una Localidad"
+                        msjError: "Ingrese una Localidad",
+                        habilitado: false
                     },
                     provincia: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese una Provincia"
+                        msjError: "Ingrese una Provincia",
+                        habilitado: false
                     },
                     codigoPostal: {
                         valor: '',
                         valido: false,
-                        msjError: "Ingrese un Código Postal"
+                        msjError: "Ingrese un Código Postal",
+                        habilitado: false
                     }
                 },
                 oidPersona: '',
@@ -215,14 +249,16 @@ class InscribirAlumno extends React.Component {
             },
             cantPasos: 2,
             pasoActual: 0,
-            //TODO: cuando ponga el modal lo tiene que hacer y el cancelar pone en false
-            finalizaRegistro: false
+            finalizaRegistro: false,
+            registro: false
         };
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
         this.handleChangeResponsable = this.handleChangeResponsable.bind(this);
         this.pasoSiguiente = this.pasoSiguiente.bind(this);
         this.pasoPrevio = this.pasoPrevio.bind(this);
+        this.handleFinRegistro = this.handleFinRegistro.bind(this);
+        this.registro = this.registro.bind(this);
     }
 
     //Cambio el estado segun el input que se haya modificado.
@@ -346,52 +382,51 @@ class InscribirAlumno extends React.Component {
             const responsableCompleto = estadoPrevio.paso1.responsableCompleto;
             let idResponsable;
 
-            if (!existeAlumno) {
+            if (existeAlumno) {
                 //TODO: si existe ver que se hace con el responsable, si solo se muestra y listo
+                //TODO: poner spiner mientras termina la transaccion
                 if (!existeResponsable) {
-                    //TODO: poner spiner mientras termina la transaccion
-                    if (responsableCompleto) {
-                        console.log("Crea Responsable Completo")
-                        //idResponsable = this.crearResponsableCompleto(estadoPrevio);
-                        idResponsable = this.crearResponsable(estadoPrevio, true)
-                    } else if (!responsableCompleto) {
-                        console.log("Crea Rol Responsable")
-                        //idResponsable = this.crearResponsableRol(estadoPrevio);
-                        idResponsable = this.crearResponsable(estadoPrevio, false)
-                    }
+
+                    //Tanto si es responsable completo como rol, se crea de la misma manera
+                    console.log("Crea Responsable", responsableCompleto ? 'Completo' : 'Rol')
+                    idResponsable = this.crearResponsable(estadoPrevio, responsableCompleto)
+
                 } else if (existeResponsable) {
                     console.log("El responsable existe")
                     idResponsable = Promise.resolve(estadoPrevio.paso1.oidResponsable)
                 }
 
-                if (alumnoCompleto) {
-                    console.log("Crea Alumno Completo")
-                    idResponsable.then(idResp => {
-                        //TODO: alumno completo
-                        console.log("Id Responsable: ", idResp);
-                        this.crearAlumno(estadoPrevio, alumnoCompleto, idResp)
-                            .catch(err => { console.log("error: ", err) })
-                    })
-                        .catch(err => {
-                            console.log("ERROR: ", err)
+                //Tanto si es alumno completo, como alumno rol, se crea de la misma manera
+                console.log("Crea Alumno", alumnoCompleto ? 'Completo' : 'Rol');
+                idResponsable.then(idResp => {
+                    //FIXME: arreglar aca--------------------------------------------
+                    idResp = "0";
+                    console.log("Id Responsable: ", idResp);
+                    this.crearAlumno(estadoPrevio, alumnoCompleto, idResp)
+                        .then(data => {
+                            //TODO: lo que dice abajo
+                            console.log("pudo crear, poner para avanzar de pantalla")
                         })
+                        .catch(err => {
+                            console.log("error: ", err)
+                            this.setState(sate => {
+                                return {
+                                    registro: true
+                                }
+                            })
+                        })
+                }).catch(err => {
+                    console.log("ERROR: ", err)
+                })
 
-                } else if (!alumnoCompleto) {
-                    console.log("Crea Rol Alumno")
-                    idResponsable.then(idResp => {
-                        //TODO: alumno rol
-                        console.log("Id Responsable: ", idResp)
-                        this.crearAlumno(estadoPrevio, alumnoCompleto, idResp)
-                            .catch(err => { console.log("error: ", err) })
-                    })
-                        .catch(err => {
-                            console.log("ERROR: ", err)
-                        })
-                }
             } else {
                 console.log("El alumno existe, se reinscribe")
             }
         }
+    }
+
+    registro() {
+        return this.state.registro;
     }
 
     async crearAlumno(estadoPrevio, esCompleto, oidResponsable) {
@@ -401,11 +436,11 @@ class InscribirAlumno extends React.Component {
         let url;
         let metodo = 'PUT';
 
-        //TODO: tipo dni, sacramentos, no esta modelado aca y otros
+        //TODO: sacramentos, no esta modelado aca y otros
         var datos = {
             oidResponsable,
             alumno: {
-                tipoDni: 'DNI',
+                tipoDni: estadoPrevio.paso0.inputs.tipoDni.valor,
                 fechaNacimiento: estadoPrevio.paso0.inputs.fechaNacimiento.valor,
                 lugarNacimiento: estadoPrevio.paso0.inputs.lugarNacimiento.valor,
                 email: estadoPrevio.paso0.inputs.email.valor,
@@ -419,7 +454,6 @@ class InscribirAlumno extends React.Component {
         if (esCompleto) {
             url = urlBase + urlCompleto;
             metodo = 'POST';
-            //TODO: tipo dni,
             const persona = {
                 alumno: {
                     dni: estadoPrevio.paso0.inputs.dni.valor,
@@ -431,7 +465,8 @@ class InscribirAlumno extends React.Component {
             Object.assign(datos.alumno, persona.alumno);
         } else {
             url = urlBase + urlRol + estadoPrevio.paso0.oidPersona
-        }        
+        }
+        console.log("datos a enviar", datos)
 
         await fetch(url, {
             method: metodo,
@@ -452,7 +487,7 @@ class InscribirAlumno extends React.Component {
                 return data;
             })
         }).then(data => {
-            console.log("Respuesta Creación Alumno ", esCompleto ? 'Completo' : 'Rol', data.response)            
+            console.log("Respuesta Creación Alumno ", esCompleto ? 'Completo' : 'Rol', data.response)
             if (data.response.alumno.hasOwnProperty("_id")) {
                 return data.response.alumno._id;
             } else {
@@ -461,7 +496,6 @@ class InscribirAlumno extends React.Component {
         })
     }
 
-    //TODO: enviar los datos que faltan en esquema tmb
     async crearResponsable(estadoPrevio, esCompleto) {
         let idResponsable;
         const urlBase = 'http://localhost:5000/insc-alumno';
@@ -474,12 +508,18 @@ class InscribirAlumno extends React.Component {
                 cuitCuil: estadoPrevio.paso1.inputs.cuitCuil.valor,
                 telefono: estadoPrevio.paso1.inputs.telefono.valor,
                 email: estadoPrevio.paso1.inputs.email.valor,
+                fechaNacimiento: estadoPrevio.paso1.inputs.fechaNacimiento.valor,
+                lugarNacimiento: estadoPrevio.paso1.inputs.lugarNacimiento.valor,
                 calle: estadoPrevio.paso1.inputs.calle.valor,
                 altura: estadoPrevio.paso1.inputs.altura.valor,
                 barrio: estadoPrevio.paso1.inputs.barrio.valor,
+                piso: estadoPrevio.paso1.inputs.piso.valor,
+                depto: estadoPrevio.paso1.inputs.depto.valor,
+                tira: estadoPrevio.paso1.inputs.tira.valor,
+                modulo: estadoPrevio.paso1.inputs.modulo.valor,
                 localidad: estadoPrevio.paso1.inputs.localidad.valor,
                 codigoPostal: estadoPrevio.paso1.inputs.codigoPostal.valor,
-                provincia: estadoPrevio.paso1.inputs.provincia.valor
+                provincia: estadoPrevio.paso1.inputs.provincia.valor,
             }
         }
 
@@ -550,8 +590,10 @@ class InscribirAlumno extends React.Component {
                     searchResponsable={this.searchResponsable}
                     pasoSiguiente={() => this.pasoSiguiente()}
                     pasoPrevio={() => this.pasoPrevio()}
+                    finRegistro={this.handleFinRegistro}
+                    registro={this.registro}
                 />
-
+                {/*TODO: mostrar notifs*/}
             </React.Fragment>
         )
     }
@@ -656,6 +698,12 @@ class InscribirAlumno extends React.Component {
     searchAlumno = async () => {
         const dniAlumno = this.state.paso0.inputs.dni.valor;
         console.log("dniAlum", dniAlumno);
+        if (dniAlumno === '') {
+            //TODO: notif
+            console.log("Dni Vacío")
+            return
+        }
+
         fetch('http://localhost:5000/insc-alumno/alumno/' + dniAlumno)
             .then(response => {
                 //TODO: cuando no tiene conexión loading https://getbootstrap.com/docs/4.5/components/spinners/
@@ -672,10 +720,6 @@ class InscribirAlumno extends React.Component {
                 const datos = data.response.alumnoDB;
                 const valida = data.response.valido;
                 const { operacion, message } = data.response
-
-                //TODO: poner ref a los botones?
-                //TODO: avisar que se pierden los datos que no se guardaron
-                //TODO: tiene que borrar siempre, extraer a otra funcion
 
                 if (valida) {
                     if (data.response.operacion === "Reinscribir") {
@@ -761,24 +805,31 @@ class InscribirAlumno extends React.Component {
     reiniciarFormulario(state) {
         const pasoActual = "paso" + state.pasoActual;
         const clavesFormulario = Object.keys(state[pasoActual].inputs);
-        let aux, validoAux;
+        let aux, validoAux, habilitadoAux;
+        let valorAux = '';
         let vacio = {};
         clavesFormulario.shift();
 
         clavesFormulario.forEach(clave => {
             validoAux = true;
             //Datos en required, al vaciarlos tienen que estar en false
-            //TODO: ver msj de error, pq ahora lo mantiene
-            //TODO: no se tiene que borrar dni
+            //TODO: ver msj de error, pq ahora lo mantiene            
             const requeridos = this.state[pasoActual].requeridos;
             if (requeridos.includes(clave)) {
                 validoAux = false;
             }
+
+            if (state.pasoActual === 0) {
+                valorAux = clave === 'fechaIngreso' ? this.fechaDefault() : clave === 'tipoDni' ? 'DNI' : '';
+            }
+            habilitadoAux = clave === "legajo" ? false : true;
+
             aux = {
                 [clave]: {
                     ...state[pasoActual].inputs[clave],
-                    valor: '',
+                    valor: valorAux,
                     valido: validoAux,
+                    habilitado: habilitadoAux
                 }
             }
             Object.assign(vacio, aux);
@@ -845,7 +896,8 @@ class InscribirAlumno extends React.Component {
                 [clave]: {
                     ...state.paso1.inputs[clave],
                     valor: valorRecibido,
-                    valido: true
+                    valido: true,
+                    habilitado: false
                 }
             };
             Object.assign(inputs, aux);
@@ -880,7 +932,8 @@ class InscribirAlumno extends React.Component {
                 [clave]: {
                     ...state.paso0.inputs[clave],
                     valor: valorRecibido,
-                    valido: true
+                    valido: true,
+                    habilitado: false
                 }
             };
             Object.assign(inputs, aux);
@@ -897,10 +950,10 @@ class InscribirAlumno extends React.Component {
                     return { pasoActual: siguiente }
                 } else if (state.pasoActual === state.cantPasos - 1) {
                     //Si es el ultimo paso, define que tiene que registrar los datos
-                    //TODO: no cambiar aca, cambiar en modal aceptar
-                    return { finalizaRegistro: true }
+                    console.log("Ultimo paso, Finalizar Transacción")
                 }
             });
+            return true;
         } else {
             console.log("Formulario Inválido")
             this.setState(state => {
@@ -912,6 +965,7 @@ class InscribirAlumno extends React.Component {
                     }
                 }
             })
+            return false;
         }
     }
 
@@ -922,6 +976,19 @@ class InscribirAlumno extends React.Component {
                 return { pasoActual: anterior }
             }
         });
+    }
+
+    handleFinRegistro(accion) {
+        this.setState(state => {
+            if (accion === 'cancelar') {
+                console.log("Cancela Registro")
+                return { finalizaRegistro: false }
+
+            } else if (accion === 'aceptar') {
+                console.log("Acepta Registro")
+                return { finalizaRegistro: true }
+            }
+        })
     }
 
     formularioValido() {
