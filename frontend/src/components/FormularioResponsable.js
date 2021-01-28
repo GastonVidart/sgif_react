@@ -42,28 +42,21 @@ class FormularioResponsable extends Component {
                         <button type="button" className="btn btn-primary mr-1 boton" onClick={this.props.pasoPrevio}>
                             <Icon.ArrowLeft width={"1.3rem"} height={"1.3rem"} />
                         </button>
-                        {/*submit del formulario completo 
-                        //TODO: agregar paso siguiente */}
                         <Alerta
                             datos={this.state.datos}
                             funciones={
                                 {
                                     siguiente: this.props.pasoSiguiente,
-                                    finalizaRegistro: this.props.finRegistro,
-                                    registro: this.props.registro
+                                    registrar: this.props.registrar
                                 }
-                            }                            
+                            }
                         />
-                        {/* TODO: no funciona registro*/}
-                        {/*<AlertDialog datos={this.state.datos} siguiente={this.props.pasoSiguiente} />*/}
                     </div>
                 </div >
 
                 {/* < !--Formulario--> */}
                 <div className="row m-3 p-3 rounded-lg no-gutters contFormulario">
                     <div className="col">
-                        {/* //TODO: agregar form onSubmit={this.handleSubmit} 
-                            TODO: submit por js*/}
                         <form className={formulario.validar ? "was-validated" : ""}>
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card">

@@ -1,27 +1,33 @@
 import { Modal } from 'react-bootstrap';
 import { useState } from "react";
 
-export default function Alerta({ datos, funciones, registro }) {
+export default function Alerta({ datos, funciones }) {
     const [show, setShow] = useState(false);
+    const [spinner, setSpinner] = useState(false);
 
     const handleClose = () => {
-        funciones.finalizaRegistro('cancelar')
+        setSpinner(false);
         setShow(false);
     }
     const handleShow = () => {
         console.log(funciones.siguiente())
         if (funciones.siguiente()) {
+            setSpinner(false);
             setShow(true)
         }
     };
 
     const handleAceptar = () => {
-        funciones.finalizaRegistro('aceptar');
-        //FIXME: ¡¡¡¡arreglar!!!! no funciona
-        let aux = setInterval(funciones.registro(), 250 * 1);
-        //clearInterval(aux);
-
-
+        setSpinner(true);
+        funciones.registrar().then(exito => {
+            if (exito) {
+                window.location.href = '/';
+                //TODO: notif exito (ya lo haria registrar)
+            } else {
+                //TODO: notif error (se puede hacer catch del error) y mostrar (ya lo haria registrar)
+                handleClose();
+            }
+        });
     }
 
     return (
@@ -43,8 +49,14 @@ export default function Alerta({ datos, funciones, registro }) {
                     <p>{datos.texto}</p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <button type="button" className="btn btn-secondary" onClick={handleClose}>Close</button>
-                    <button type="button" className="btn btn-primary" onClick={handleAceptar}>Save changes</button>
+                    <button type="button" className="btn btn-secondary boton botonSecundario" onClick={handleClose}>Cancelar</button>
+                    <button type="button" className="btn btn-primary boton d-flex justify-content-center" style={{ width: "5rem" }} onClick={handleAceptar}
+                        disabled={spinner}>
+                        <span className={!spinner ? '' : 'd-none'}>Aceptar</span>
+                        <div className={`spinner-border spinner-border-sm text-light my-1 ${spinner ? '' : 'd-none'}`} role="status">
+                            <span className="sr-only">Loading...</span>
+                        </div>
+                    </button>
                 </Modal.Footer>
             </Modal>
         </>

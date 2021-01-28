@@ -25,7 +25,6 @@ class FormularioAlumno extends React.Component {
 
         return (
             /*<!--Contenedor Derecha-->*/
-            //TODO: subir al formulario principal?
             <div className="col" role="main">
 
                 {/*< !--Sub - Header Página-- >*/}
@@ -47,7 +46,6 @@ class FormularioAlumno extends React.Component {
                 {/* < !--Formulario--> */}
                 <div className="row m-3 p-3 rounded-lg no-gutters contFormulario">
                     <div className="col">
-                        {/* TODO: ver si subir al formulario principal? */}
                         <form className={formulario.validar ? "was-validated" : ""} noValidate>
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card shadow">
@@ -63,8 +61,13 @@ class FormularioAlumno extends React.Component {
                                                         <div className="col-auto ml-md-3 mr-3 order-md-12">
                                                             <button type="button" className="btn btn-primary boton"
                                                                 id="dni" aria-labelledby="etiq_dni" onClick={this.props.searchAlumno}>
-                                                                Buscar
-                                                                <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-1" />
+                                                                <div className = {!formulario.spinner ? '' : 'd-none'}>
+                                                                    Buscar
+                                                                    <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-1" />
+                                                                </div>
+                                                                <div className={`spinner-border spinner-border-sm text-light my-1 ${formulario.spinner ? '' : 'd-none'}`} role="status">
+                                                                    <span className="sr-only">Loading...</span>
+                                                                </div>
                                                                 {/*<div className="d-sm-block d-none">Buscar</div>
                                                                 <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-md-1" />*/}
                                                             </button>

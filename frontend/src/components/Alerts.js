@@ -20,8 +20,6 @@ export default function AlertDialog({ datos,siguiente }) {
   return (
     <div>
       <button type="button" className="btn btn-primary mr-1 boton" onClick={handleClickOpen}>Finalizar Registro</button>
-      {/*TODO: si es valido que salga el alerta, sino que se mantenga ahi */}
-      {/*<button type="button" className="btn btn-primary mr-1 boton" onClick={siguiente}>Finalizar Registro</button>*/}
 
       <Dialog
         open={open}

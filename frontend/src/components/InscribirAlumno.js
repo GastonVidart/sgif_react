@@ -50,7 +50,7 @@ class InscribirAlumno extends React.Component {
                         valido: false,
                         msjError: "Ingrese un email",
                         habilitado: false
-                    },//TODO: email no esta en esquema
+                    },
                     fechaNacimiento: {
                         valor: '',
                         valido: false,
@@ -114,6 +114,7 @@ class InscribirAlumno extends React.Component {
                 nombreFoto: 'Subir Foto Alumno',
                 validar: false,
                 requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "lugarNacimiento", "nombreEscuelaAnt", "anioCorrespondiente"],
+                spinner: false
             },
 
             paso1: {
@@ -245,20 +246,18 @@ class InscribirAlumno extends React.Component {
                 existeResponsable: false,
                 validar: false,
                 requeridos: ["dni", "cuitCuil", "nombre", "apellido", "genero", "email", "telefono",
-                    "fechaNacimiento", "lugarNacimiento", "calle", "altura", "barrio", "localidad", "provincia", "codigoPostal"]
+                    "fechaNacimiento", "lugarNacimiento", "calle", "altura", "barrio", "localidad", "provincia", "codigoPostal"],
+                spinner: false
             },
             cantPasos: 2,
             pasoActual: 0,
-            finalizaRegistro: false,
-            registro: false
         };
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
         this.handleChangeResponsable = this.handleChangeResponsable.bind(this);
         this.pasoSiguiente = this.pasoSiguiente.bind(this);
         this.pasoPrevio = this.pasoPrevio.bind(this);
-        this.handleFinRegistro = this.handleFinRegistro.bind(this);
-        this.registro = this.registro.bind(this);
+        this.registrar = this.registrar.bind(this);
     }
 
     //Cambio el estado segun el input que se haya modificado.
@@ -371,62 +370,61 @@ class InscribirAlumno extends React.Component {
         console.error("Implementar")
     }
 
-    componentDidUpdate(propsPrevias, estadoPrevio) {
+    registrar() {
+        const estado = this.state;
+        let exito = Promise.resolve(false);
 
-        if ((estadoPrevio.finalizaRegistro === false) && (this.state.finalizaRegistro === true)) {
-            console.log("Finaliza Registro");
+        console.log("Finaliza Registro");
 
-            const existeAlumno = estadoPrevio.paso0.existeAlumno;
-            const alumnoCompleto = estadoPrevio.paso0.alumnoCompleto;
-            const existeResponsable = estadoPrevio.paso1.existeResponsable;
-            const responsableCompleto = estadoPrevio.paso1.responsableCompleto;
-            let idResponsable;
+        const existeAlumno = estado.paso0.existeAlumno;
+        const alumnoCompleto = estado.paso0.alumnoCompleto;
+        const existeResponsable = estado.paso1.existeResponsable;
+        const responsableCompleto = estado.paso1.responsableCompleto;
+        let idResponsable;
 
-            if (existeAlumno) {
-                //TODO: si existe ver que se hace con el responsable, si solo se muestra y listo
-                //TODO: poner spiner mientras termina la transaccion
-                if (!existeResponsable) {
+        if (!existeAlumno) {
+            //TODO: si existe ver que se hace con el responsable, si solo se muestra y listo                
+            if (!existeResponsable) {
 
-                    //Tanto si es responsable completo como rol, se crea de la misma manera
-                    console.log("Crea Responsable", responsableCompleto ? 'Completo' : 'Rol')
-                    idResponsable = this.crearResponsable(estadoPrevio, responsableCompleto)
+                //Tanto si es responsable completo como rol, se crea de la misma manera
+                console.log("Crea Responsable", responsableCompleto ? 'Completo' : 'Rol')
+                idResponsable = this.crearResponsable(estado, responsableCompleto)
 
-                } else if (existeResponsable) {
-                    console.log("El responsable existe")
-                    idResponsable = Promise.resolve(estadoPrevio.paso1.oidResponsable)
-                }
-
-                //Tanto si es alumno completo, como alumno rol, se crea de la misma manera
-                console.log("Crea Alumno", alumnoCompleto ? 'Completo' : 'Rol');
-                idResponsable.then(idResp => {
-                    //FIXME: arreglar aca--------------------------------------------
-                    idResp = "0";
-                    console.log("Id Responsable: ", idResp);
-                    this.crearAlumno(estadoPrevio, alumnoCompleto, idResp)
-                        .then(data => {
-                            //TODO: lo que dice abajo
-                            console.log("pudo crear, poner para avanzar de pantalla")
-                        })
-                        .catch(err => {
-                            console.log("error: ", err)
-                            this.setState(sate => {
-                                return {
-                                    registro: true
-                                }
-                            })
-                        })
-                }).catch(err => {
-                    console.log("ERROR: ", err)
-                })
-
-            } else {
-                console.log("El alumno existe, se reinscribe")
+            } else if (existeResponsable) {
+                console.log("El responsable existe")
+                idResponsable = Promise.resolve(estado.paso1.oidResponsable)
             }
-        }
-    }
 
-    registro() {
-        return this.state.registro;
+            //Tanto si es alumno completo, como alumno rol, se crea de la misma manera
+            console.log("Crea Alumno", alumnoCompleto ? 'Completo' : 'Rol');
+            exito = idResponsable.then(idResp => {
+                console.log("Id Responsable: ", idResp);
+                return this.crearAlumno(estado, alumnoCompleto, idResp)
+                    .then(data => {
+                        //TODO: notif lo que dice abajo
+                        console.log("Inscripción Exitosa!", data)
+                        return true;
+                    })
+                    .catch(err => {
+                        console.log("Error Inscribir Alumno: ", err)
+                        return false;
+                    })
+
+            }).catch(err => {
+                console.log("ERROR: ", err)
+                throw new Error(err.message);
+            })
+
+            return exito;
+
+        } else {
+            console.log("El alumno existe, se reinscribe")
+            //TODO: reinscribir, que llame al endpoint que lo hace
+            //TODO: para el otro componente, mandar un flag de si es solo la transac o parte de reinscr
+            //TODO: en la reinscr solo tiene que estar disponible el nuevo año a inscribir y que sea mayor o igual al que ya tiene
+            //TODO: que devuelva true despues de reinscr asi cambia de pantalla y notifique tmb            
+            return exito;
+        }
     }
 
     async crearAlumno(estadoPrevio, esCompleto, oidResponsable) {
@@ -468,7 +466,7 @@ class InscribirAlumno extends React.Component {
         }
         console.log("datos a enviar", datos)
 
-        await fetch(url, {
+        const idAlumno = await fetch(url, {
             method: metodo,
             headers: {
                 'Content-Type': 'application/json'
@@ -494,6 +492,7 @@ class InscribirAlumno extends React.Component {
                 throw new Error("Crear alumno respondio sin oid");
             }
         })
+        return idAlumno
     }
 
     async crearResponsable(estadoPrevio, esCompleto) {
@@ -590,8 +589,7 @@ class InscribirAlumno extends React.Component {
                     searchResponsable={this.searchResponsable}
                     pasoSiguiente={() => this.pasoSiguiente()}
                     pasoPrevio={() => this.pasoPrevio()}
-                    finRegistro={this.handleFinRegistro}
-                    registro={this.registro}
+                    registrar={this.registrar}
                 />
                 {/*TODO: mostrar notifs*/}
             </React.Fragment>
@@ -601,6 +599,13 @@ class InscribirAlumno extends React.Component {
     searchResponsable = async () => {
         const dniResp = this.state.paso1.inputs.dni.valor;
         console.log("dniResp", dniResp);
+
+        if (dniResp === '') {
+            //TODO: notif
+            console.log("Dni Responsable Vacío")
+            return
+        }
+
         fetch('http://localhost:5000/insc-alumno/responsable/' + dniResp)
             .then(response => {
                 //TODO: manejo de estados de error aca https://developer.mozilla.org/es/docs/Web/API/Response/status
@@ -700,13 +705,14 @@ class InscribirAlumno extends React.Component {
         console.log("dniAlum", dniAlumno);
         if (dniAlumno === '') {
             //TODO: notif
-            console.log("Dni Vacío")
+            console.log("Dni Alumno Vacío")
             return
         }
 
+        //this.toggleSpinner();
+
         fetch('http://localhost:5000/insc-alumno/alumno/' + dniAlumno)
             .then(response => {
-                //TODO: cuando no tiene conexión loading https://getbootstrap.com/docs/4.5/components/spinners/
                 return response.json().then(data => {
                     console.log("Status Search Alumno", response.status)
                     if (response.status === 500) {
@@ -800,6 +806,23 @@ class InscribirAlumno extends React.Component {
             })
             //TODO: flotante error
             .catch((err) => console.error("Error: ", err));
+    }
+
+    //TODO: probar
+    toggleSpinner() {
+        let paso = "paso";
+        this.setState(state => {
+            console.log(state);
+            paso = paso + state.pasoActual;
+            console.log(paso);
+            const spinnerPrevio = state[paso].spinner;
+            return {
+                [paso]: {
+                    ...state[paso],
+                    spinner: !spinnerPrevio
+                }
+            }
+        })
     }
 
     reiniciarFormulario(state) {
@@ -976,19 +999,6 @@ class InscribirAlumno extends React.Component {
                 return { pasoActual: anterior }
             }
         });
-    }
-
-    handleFinRegistro(accion) {
-        this.setState(state => {
-            if (accion === 'cancelar') {
-                console.log("Cancela Registro")
-                return { finalizaRegistro: false }
-
-            } else if (accion === 'aceptar') {
-                console.log("Acepta Registro")
-                return { finalizaRegistro: true }
-            }
-        })
     }
 
     formularioValido() {
