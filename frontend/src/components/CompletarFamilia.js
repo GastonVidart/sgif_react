@@ -225,6 +225,8 @@ class CompletarFamilia extends React.Component {
                 }
             },
             spinnerAlumno: false,
+            cantPasos: 1, //TODO: se incrementa cuando clickea el +, por defecto siempre esta el del padre
+            pasoActual: 0,
         }
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
@@ -294,8 +296,56 @@ class CompletarFamilia extends React.Component {
         return validoAux && validoHTML;
     }
 
-    handleChangePersona(target) {
-        console.error("IMPLEMENTAR HANDLE CHANGE");
+    handleChangePersona(event) {
+        let valido, valorAux, campo
+        let inputAux = {};
+        const target = event.target;
+        const { id, value, type } = target;
+        const paso = "paso" + this.state.pasoActual;
+
+        console.log(paso, " id input: ", id);
+
+        valido = this.validarCampo(target);
+
+        /*partidaNacimiento: {
+            valor: '',
+            valido: true,
+            msjError: "Partida de Nacimiento Inválida",
+            habilitado: true,
+            nombre: 'Subir Partida de Nacimiento'
+        }*/
+
+        //Cambio Partida Nac
+        if (id === "partidaNacimiento") {
+            const archivo = target.files[0];
+            if (archivo != undefined) {
+                valorAux = URL.createObjectURL(archivo);
+                inputAux = {
+                    nombre: archivo.name
+                }
+            } else {
+                return;
+            }
+        } else {
+            valorAux = type === "checkbox" ? target.checked : value;
+        }
+        this.setState(state => {
+            campo = {
+                ...state[paso].inputs[id],
+                valor: valorAux,
+                valido,                
+            }
+            Object.assign(campo, inputAux);
+            return {
+                [paso]: {
+                    ...state[paso],
+                    inputs: {
+                        ...state[paso].inputs,
+                        [id]: campo
+                    }
+                }
+            }
+        })
     }
 
     render() {
@@ -428,7 +478,7 @@ class CompletarFamilia extends React.Component {
                                             <React.Fragment>
                                                 {/*<FormularioPadre
                                                     formulario={this.state.paso0}
-                                                handleInputChange={this.handleChangePersona} />*/}
+                                                    handleInputChange={this.handleChangePersona} />*/}
                                                 <FormularioHermano
                                                     formulario={this.state.paso1}
                                                     handleInputChange={this.handleChangePersona} />

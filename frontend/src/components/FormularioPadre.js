@@ -5,8 +5,7 @@ class FormularioPadre extends React.Component {
 
     render() {
         const { formulario, handleInputChange } = this.props
-        const campo = formulario.inputs
-        console.log(campo)
+        const campo = formulario.inputs        
 
         {/*TODO: implementar cambio de componente*/}
 
@@ -295,7 +294,7 @@ class FormularioPadre extends React.Component {
                                             {/*TODO: convertir para archivo primero hacer handle change*/}
                                             <div className="custom-file">
                                                 <input type="file" className="custom-file-input" id="partidaNacimiento"
-                                                    aria-describedby="etiq_partidaNacimiento" onChange={this.handleChangeAlumno}
+                                                    aria-describedby="etiq_partidaNacimiento" onChange={handleInputChange}
                                                     disabled={!campo.partidaNacimiento.habilitado} />
                                                 <label className="custom-file-label" id="etiq_partidaNacimiento" htmlFor="partidaNacimiento">
                                                     {campo.partidaNacimiento.nombre}

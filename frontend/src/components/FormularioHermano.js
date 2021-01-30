@@ -5,8 +5,7 @@ class FormularioHermano extends React.Component {
 
     render() {
         const { formulario, handleInputChange } = this.props
-        const campo = formulario.inputs
-        console.log(campo)
+        const campo = formulario.inputs        
 
         {/*TODO: implementar cambio de componente*/ }
 
@@ -75,7 +74,7 @@ class FormularioHermano extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-lg  ml-lg-3">
+                            <div className="col-lg ml-lg-3">
                                 <div className="form-group row no-gutters mb-2 align-items-center">
                                     <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_apellido" htmlFor="apellido">Apellido</label>
                                     <div className="col-sm">
@@ -90,7 +89,7 @@ class FormularioHermano extends React.Component {
                             </div>
                         </div>
                         <div className="form-row">
-                            <div className="col-xl-4">
+                            <div className="col-lg">
                                 <div className="form-group row no-gutters mb-2 align-items-center">
                                     <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_genero" htmlFor="genero">Género</label>
                                     <div className="col-sm">
@@ -105,9 +104,7 @@ class FormularioHermano extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="form-row text-center">
-                            <div className="col-lg">
+                            <div className="col-lg ml-lg-3">
                                 <div className="form-group row no-gutters mb-2 align-items-center">
                                     <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_fnac" htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
                                     <div className="col-sm">
