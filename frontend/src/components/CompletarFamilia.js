@@ -294,12 +294,12 @@ class CompletarFamilia extends React.Component {
         return validoAux && validoHTML;
     }
 
-    handleChangePersona(target){
+    handleChangePersona(target) {
         console.error("IMPLEMENTAR HANDLE CHANGE");
     }
 
     render() {
-        
+
         const { alertaRegistro, datosAlumno, spinnerAlumno } = this.state;
 
         return (
@@ -418,7 +418,7 @@ class CompletarFamilia extends React.Component {
                                             {/*TODO: alinear foto al centro*/}
                                             <div className="form-group row no-gutters mb-2 align-items-middle justify-content-center">
                                                 <img src={datosAlumno.foto.valor} className="img-thumbnail m-2"
-                                                    alt="Foto Alumno" />                                                
+                                                    alt="Foto Alumno" />
                                             </div>
                                         </div>
                                     </div>
@@ -426,10 +426,12 @@ class CompletarFamilia extends React.Component {
                                         {/*TODO: ver aria-labelledby, ver titulo de la seccion*/}
                                         <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_familiar">
                                             <React.Fragment>
-                                                <FormularioPadre
+                                                {/*<FormularioPadre
                                                     formulario={this.state.paso0}
-                                                    handleInputChange={this.handleChangePersona} />                                                                                                  
-                                                {/*<FormularioHermano /> */}
+                                                handleInputChange={this.handleChangePersona} />*/}
+                                                <FormularioHermano
+                                                    formulario={this.state.paso1}
+                                                    handleInputChange={this.handleChangePersona} />
                                             </React.Fragment>
                                         </div>
                                         {/*TODO: navegacion y creacion de familiar */}
