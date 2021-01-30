@@ -3,6 +3,7 @@ import * as Icon from 'react-feather';
 import Alerta from "./Alerta";
 import FormularioPadre from "./FormularioPadre";
 import FormularioHermano from "./FormularioHermano";
+import { Col, Nav, Row, Tab, TabContainer } from "react-bootstrap";
 
 class CompletarFamilia extends React.Component {
 
@@ -231,6 +232,7 @@ class CompletarFamilia extends React.Component {
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
         this.handleChangePersona = this.handleChangePersona.bind(this);
+        this.handleSelect = this.handleSelect.bind(this);
     }
 
     handleChangeAlumno(event) {
@@ -333,7 +335,7 @@ class CompletarFamilia extends React.Component {
             campo = {
                 ...state[paso].inputs[id],
                 valor: valorAux,
-                valido,                
+                valido,
             }
             Object.assign(campo, inputAux);
             return {
@@ -345,6 +347,13 @@ class CompletarFamilia extends React.Component {
                     }
                 }
             }
+        })
+    }
+
+    handleSelect(idTab) {
+        console.log("IdTab", idTab)
+        this.setState({
+            pasoActual: idTab
         })
     }
 
@@ -472,21 +481,45 @@ class CompletarFamilia extends React.Component {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row no-gutters px-3 mb-3 mt-5 card shadow-sm">
-                                        {/*TODO: ver aria-labelledby, ver titulo de la seccion*/}
-                                        <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_familiar">
-                                            <React.Fragment>
-                                                {/*<FormularioPadre
-                                                    formulario={this.state.paso0}
-                                                    handleInputChange={this.handleChangePersona} />*/}
-                                                <FormularioHermano
-                                                    formulario={this.state.paso1}
-                                                    handleInputChange={this.handleChangePersona} />
-                                            </React.Fragment>
-                                        </div>
-                                        {/*TODO: navegacion y creacion de familiar */}
-                                    </div>
-
+                                    {/*TODO: ver aria-labelledby, ver titulo de la seccion*/}
+                                    <Row className="no-gutters mt-3">
+                                        <Col>
+                                            <TabContainer id="left-tabs-example" defaultActiveKey="0" onSelect={this.handleSelect}>
+                                                <Row className="no-gutters">
+                                                    {/*TODO: arreglar pading 0.9 */}
+                                                    <Col>
+                                                        <Nav variant="tabs">
+                                                            <Nav.Item>
+                                                                <Nav.Link eventKey="0">Padre</Nav.Link>
+                                                            </Nav.Item>
+                                                            <Nav.Item>
+                                                                <Nav.Link eventKey="1">Hermano</Nav.Link>
+                                                            </Nav.Item>
+                                                        </Nav>
+                                                    </Col>
+                                                </Row>
+                                                <div className="row no-gutters mb-3 card shadow-sm border-top-0">
+                                                    <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_familiar">
+                                                        <Row className="row no-gutters px-3">
+                                                            <Col>
+                                                                <Tab.Content>
+                                                                    <Tab.Pane eventKey="0">
+                                                                        <FormularioPadre
+                                                                            formulario={this.state.paso0}
+                                                                            handleInputChange={this.handleChangePersona} />
+                                                                    </Tab.Pane>
+                                                                    <Tab.Pane eventKey="1">
+                                                                        <FormularioHermano
+                                                                            formulario={this.state.paso1}
+                                                                            handleInputChange={this.handleChangePersona} />
+                                                                    </Tab.Pane>
+                                                                </Tab.Content>
+                                                            </Col>
+                                                        </Row>
+                                                    </div></div>
+                                            </TabContainer>
+                                        </Col>
+                                    </Row>
                                 </div>
                             </div>
                         </form>

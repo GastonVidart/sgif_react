@@ -10,7 +10,7 @@ class FormularioHermano extends React.Component {
         {/*TODO: implementar cambio de componente*/ }
 
         return (
-            <div>
+            <div >
                 {/*TODO: padre/madre */}
                 <h4 className="card-title my-2 titSeccion" id="datos_alumno ">Datos Hermano</h4>
                 <div className="row no-gutters">
