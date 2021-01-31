@@ -1,9 +1,8 @@
 import React from "react";
 import * as Icon from 'react-feather';
 import Alerta from "./Alerta";
-import FormularioPadre from "./FormularioPadre";
-import FormularioHermano from "./FormularioHermano";
 import { Col, Nav, Row, Tab, TabContainer } from "react-bootstrap";
+import ModalFormNuevo from "./ModalFormNuevo";
 
 class CompletarFamilia extends React.Component {
 
@@ -13,6 +12,11 @@ class CompletarFamilia extends React.Component {
             alertaRegistro: {
                 title: 'Desea finalizar el registro?',
                 texto: 'Si finaliza el registro se guardarán los cambios realizados hasta el momento.'
+            },
+            modalFormNuevo: {
+                title: 'Nuevo Familiar',
+                texto: 'Si finaliza el registro se guardarán los cambios realizados hasta el momento.',
+                tipos: ['Padre', 'Hermano']
             },
             datosAlumno: {
                 dni: {
@@ -53,186 +57,55 @@ class CompletarFamilia extends React.Component {
                     nombreFoto: 'Subir Foto Alumno'
                 },
             },
-            //TODO: ver si aca y en el otro se extrae a un esquema a parte para mejor gestion
-            paso0: {
-                inputs: {
-                    dni: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese un DNI",
-                        habilitado: true
-                    },
-                    tipoDni: {
-                        valor: 'DNI',
-                        valido: true,
-                        msjError: "Seleccione un Tipo de DNI",
-                        habilitado: true
-                    },
-                    nombre: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese el nombre",
-                        habilitado: false
-                    },
-                    apellido: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese el apellido",
-                        habilitado: false
-                    },
-                    genero: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Seleccione un género",
-                        habilitado: false
-                    },
-                    email: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese un email",
-                        habilitado: false
-                    },
-                    fechaNacimiento: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese la Fecha de Nacimiento",
-                        habilitado: false
-                    },
-                    nacionalidad: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese la Nacionalidad",
-                        habilitado: false
-                    },
-                    telefono: {
-                        valor: '',
-                        valido: true,
-                        msjError: "Ingrese un Número de Tel.",
-                        habilitado: false
-                    },
-                    ocupacion: {
-                        valor: '',
-                        valido: true,
-                        msjError: "Fecha la Ocupación",
-                        habilitado: false
-                    },
-                    lugarTrabajo: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese el Lugar de Trabajo",
-                        habilitado: false
-                    },
-                    telefonoLaboral: {
-                        valor: '',
-                        valido: true,
-                        msjError: "Ingrese un Tel. Laboral",
-                        habilitado: false
-                    },
-                    emailLaboral: {
-                        valor: '',
-                        valido: true,
-                        msjError: "Ingrese un email",
-                        habilitado: false
-                    },
-                    partidaNacimiento: {
-                        valor: '',
-                        valido: true,
-                        msjError: "Partida de Nacimiento Inválida",
-                        habilitado: true,
-                        nombre: 'Subir Partida de Nacimiento'
-                    },
-                    //TODO: ver si va valido y msj de error*/
-                    bautismo: {
-                        valor: false,
-                        habilitado: false
-                    },
-                    comunion: {
-                        valor: false,
-                        habilitado: false
-                    },
-                    confirmacion: {
-                        valor: false,
-                        habilitado: false
-                    },
-                    egresoPrimario: {
-                        valor: false,
-                        habilitado: false
-                    },
-                    egresoSecundario: {
-                        valor: false,
-                        habilitado: false
-                    },
-                    //TODO: ver si lo pongo en el form (componente) o en la barra de navegación o que se extraiga de ahi
-                    relacionParentesco: {
-                        valor: '',
-                        habilitado: false,
-                        valido: true,
-                        msjError: "Parentezco inválido",
-                    }
-                },
-            },
-            paso1: {
-                inputs: {
-                    dni: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese un DNI",
-                        habilitado: true
-                    },
-                    tipoDni: {
-                        valor: 'DNI',
-                        valido: true,
-                        msjError: "Seleccione un Tipo de DNI",
-                        habilitado: true
-                    },
-                    nombre: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese el nombre",
-                        habilitado: false
-                    },
-                    apellido: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese el apellido",
-                        habilitado: false
-                    },
-                    genero: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Seleccione un género",
-                        habilitado: false
-                    },
-                    fechaNacimiento: {
-                        valor: '',
-                        valido: false,
-                        msjError: "Ingrese la Fecha de Nacimiento",
-                        habilitado: false
-                    },
-                    escuelaActual: {
-                        valor: '',
-                        valido: true,
-                        msjError: "Nombre de la Escuela Inválido",
-                        habilitado: false
-                    },
-                    grado: {
-                        valor: '',
-                        valido: true,
-                        msjError: "Grado Inválido",
-                        habilitado: false
-                    },
-                    //TODO: ver que pasa aca
-                    //hermanos: [{ type: Schema.Types.ObjectId, ref: 'Persona' }]
-                }
-            },
             spinnerAlumno: false,
-            cantPasos: 1, //TODO: se incrementa cuando clickea el +, por defecto siempre esta el del padre
+            cantPasos: 2,
             pasoActual: 0,
+            formularios: [],
+            tabs: []
         }
+        this.formulariosRef = [];
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
-        this.handleChangePersona = this.handleChangePersona.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
+        this.siguiente = this.siguiente.bind(this);
+        this.registrar = this.registrar.bind(this);
+        this.addFormulario = this.addFormulario.bind(this);
+    }
+
+    //TODO: cuando se cree por boton, hay que poner los props que van a inicializar al formulario, solo se mandarian valores
+    addFormulario = async tipo => {
+        console.log(`Cargando Formulario ${tipo}...`);
+        const exito = await import(`./Formularios/Formulario${tipo}.js`)
+            .then(Component => {
+                this.setState(state => {
+                    const idFormulario = state.formularios.length;
+                    const paso = "paso" + idFormulario;                    
+                    //FIXME: warning shortid
+                    return {
+                        formularios: state.formularios.concat(
+                            <Tab.Pane eventKey={idFormulario}>
+                                <Component.default ref={(formulario) => { this.formulariosRef.push(formulario) }} />
+                            </Tab.Pane>),
+                        tabs: state.tabs.concat(
+                            <Nav.Item>
+                                <Nav.Link eventKey={idFormulario}>{tipo}</Nav.Link>
+                            </Nav.Item>
+                        ),
+                        cantPasos: state.cantPasos + 1
+                    }
+                })
+                return true;
+            })
+            .catch(error => {
+                console.log(`Formulario${tipo} Inválido.`)
+                return false;
+            })
+        return exito;
+    }
+
+    async componentDidMount() {
+        const tipos = ['Padre', 'Hermano'];
+        tipos.map(async tipo => await this.addFormulario(tipo))
     }
 
     handleChangeAlumno(event) {
@@ -298,58 +171,6 @@ class CompletarFamilia extends React.Component {
         return validoAux && validoHTML;
     }
 
-    handleChangePersona(event) {
-        let valido, valorAux, campo
-        let inputAux = {};
-        const target = event.target;
-        const { id, value, type } = target;
-        const paso = "paso" + this.state.pasoActual;
-
-        console.log(paso, " id input: ", id);
-
-        valido = this.validarCampo(target);
-
-        /*partidaNacimiento: {
-            valor: '',
-            valido: true,
-            msjError: "Partida de Nacimiento Inválida",
-            habilitado: true,
-            nombre: 'Subir Partida de Nacimiento'
-        }*/
-
-        //Cambio Partida Nac
-        if (id === "partidaNacimiento") {
-            const archivo = target.files[0];
-            if (archivo != undefined) {
-                valorAux = URL.createObjectURL(archivo);
-                inputAux = {
-                    nombre: archivo.name
-                }
-            } else {
-                return;
-            }
-        } else {
-            valorAux = type === "checkbox" ? target.checked : value;
-        }
-        this.setState(state => {
-            campo = {
-                ...state[paso].inputs[id],
-                valor: valorAux,
-                valido,
-            }
-            Object.assign(campo, inputAux);
-            return {
-                [paso]: {
-                    ...state[paso],
-                    inputs: {
-                        ...state[paso].inputs,
-                        [id]: campo
-                    }
-                }
-            }
-        })
-    }
-
     handleSelect(idTab) {
         console.log("IdTab", idTab)
         this.setState({
@@ -357,9 +178,31 @@ class CompletarFamilia extends React.Component {
         })
     }
 
-    render() {
+    //TODO: implementar form valido
+    siguiente() {
+        return true;
+    }
 
-        const { alertaRegistro, datosAlumno, spinnerAlumno } = this.state;
+    //TODO: implementar que recolecte los estados y arme las llamadas
+    registrar() {
+        console.log("Registrar Familiares")
+        console.log("formRef", this.formulariosRef)
+        if (this.formulariosRef.length > 0) {
+            console.log("afsafsa", this.formulariosRef[0].state)
+        }
+    }
+
+    render() {
+        const { alertaRegistro, modalFormNuevo, datosAlumno, spinnerAlumno, formularios, tabs } = this.state;
+        let componentes, navLinks;
+        if (formularios.length === 0) {
+            componentes = <div>Cargando...</div>;
+            navLinks = <div>Cargando...</div>;
+        } else {
+            componentes = formularios;
+            navLinks = tabs;
+        }
+        console.log(componentes)
 
         return (
             <div className="col" role="main">
@@ -372,14 +215,17 @@ class CompletarFamilia extends React.Component {
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between ml-2 mt-2">
                         {/*TODO: refactor alerta */}
-                        <Alerta datos={alertaRegistro} />
+                        <Alerta datos={alertaRegistro} funciones={{
+                            siguiente: this.siguiente,
+                            registrar: this.registrar
+                        }} />
                     </div>
                 </div >
                 {/* < !--Formulario--> */}
                 <div className="row m-3 p-3 rounded-lg no-gutters contFormulario">
                     <div className="col">
                         {/*<form className={formulario.validar ? "was-validated" : ""} noValidate> */}
-                        <form noValidate>
+                        <form noValidate> {/*TODO: ver si lo recorto para que cada parte tenga su validacion*/}
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card shadow">
                                 <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_alumno">
@@ -485,16 +331,13 @@ class CompletarFamilia extends React.Component {
                                     <Row className="no-gutters mt-3">
                                         <Col>
                                             <TabContainer id="left-tabs-example" defaultActiveKey="0" onSelect={this.handleSelect}>
-                                                <Row className="no-gutters">
-                                                    {/*TODO: arreglar pading 0.9 */}
+                                                <Row className="no-gutters">                                                    
                                                     <Col>
                                                         <Nav variant="tabs">
-                                                            <Nav.Item>
-                                                                <Nav.Link eventKey="0">Padre</Nav.Link>
-                                                            </Nav.Item>
-                                                            <Nav.Item>
-                                                                <Nav.Link eventKey="1">Hermano</Nav.Link>
-                                                            </Nav.Item>
+                                                            {navLinks}
+                                                            <ModalFormNuevo
+                                                                datos={modalFormNuevo}
+                                                                funciones={{ nuevo: this.addFormulario }} />
                                                         </Nav>
                                                     </Col>
                                                 </Row>
@@ -503,16 +346,7 @@ class CompletarFamilia extends React.Component {
                                                         <Row className="row no-gutters px-3">
                                                             <Col>
                                                                 <Tab.Content>
-                                                                    <Tab.Pane eventKey="0">
-                                                                        <FormularioPadre
-                                                                            formulario={this.state.paso0}
-                                                                            handleInputChange={this.handleChangePersona} />
-                                                                    </Tab.Pane>
-                                                                    <Tab.Pane eventKey="1">
-                                                                        <FormularioHermano
-                                                                            formulario={this.state.paso1}
-                                                                            handleInputChange={this.handleChangePersona} />
-                                                                    </Tab.Pane>
+                                                                    {componentes}
                                                                 </Tab.Content>
                                                             </Col>
                                                         </Row>
