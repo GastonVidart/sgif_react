@@ -236,7 +236,7 @@ class FormularioPadre extends React.Component {
             })
             .catch(err => {
                 if (err instanceof NoExistePadre) {
-                    console.error("Padre: ", err);
+                    //console.error("Padre: ", err);
                     fetch(this.urlBase + '/completar-familia/persona/' + dniPadre)
                         .then(response => {                            
                             return response.json().then(data => {
@@ -672,7 +672,7 @@ class FormularioPadre extends React.Component {
 
     reiniciarFormulario(state) {
         const clavesFormulario = Object.keys(state.campo);
-        let aux, validoAux, habilitadoAux;
+        let aux, validoAux;
         let valorAux = '';
         let vacio = {};
         clavesFormulario.shift();
@@ -687,8 +687,7 @@ class FormularioPadre extends React.Component {
             }
 
             //TODO: sobreescribe valor recibido en tipoDni
-            valorAux = clave === 'tipoDni' ? 'DNI' : '';
-            habilitadoAux = clave === "legajo" ? false : true;
+            valorAux = clave === 'tipoDni' ? 'DNI' : '';            
 
             //TODO: reinciar partida de nac con 'subir partida' en nombre
             aux = {
@@ -696,7 +695,7 @@ class FormularioPadre extends React.Component {
                     ...state.campo[clave],
                     valor: valorAux,
                     valido: validoAux,
-                    habilitado: habilitadoAux
+                    habilitado: true
                 }
             }
             Object.assign(vacio, aux);
