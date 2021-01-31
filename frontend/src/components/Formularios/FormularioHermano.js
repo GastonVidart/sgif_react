@@ -1,5 +1,6 @@
 import React from 'react';
-import * as Icon from 'react-feather'
+import * as Icon from 'react-feather';
+import { NoExisteHermano, BadRequest, NoExistePersona } from '../../utils/Errores';
 
 class FormularioHermano extends React.Component {
 
@@ -70,6 +71,8 @@ class FormularioHermano extends React.Component {
             //TODO: implementar spinner
             spinner: false
         }
+
+        this.urlBase = this.props.urlBase;
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
@@ -134,6 +137,101 @@ class FormularioHermano extends React.Component {
         })
     }
 
+    searchHermano = async () => {
+        const dniHermano = this.state.campo.dni.valor;
+        console.log("Search Hermano dni:", dniHermano);
+        if (dniHermano === '') {
+            //TODO:notif
+            console.log("Dni Hermano Vacío")
+            return;
+        }
+
+        fetch(this.urlBase + '/completar-familia/hermano/' + dniHermano)
+            .then(response => {
+                return response.json().then(data => {
+                    if (response.status === 404) {
+                        throw new NoExisteHermano(data.message)
+                    } else if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                })
+            })
+            .then(data => {
+                console.log("Hermano Encontrado ", data);
+                const datos = data.hermano;
+                this.setState(state => {
+                    const campo = { ...state.campo };
+                    Object.assign(campo, this.extraeDatosHermano(state, datos));
+                    return {
+                        campo,
+                        existeHermano: true,
+                        oidHermano: data.hermano._id
+                    };
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                if (err instanceof NoExisteHermano) {
+                    //console.error("Hermano: ", err);
+                    fetch(this.urlBase + '/completar-familia/persona/' + dniHermano)
+                        .then(response => {
+                            return response.json().then(data => {
+                                console.log("Status Search Persona Hermano", response.status)
+                                if (response.status === 404) {
+                                    throw new NoExistePersona(data.message);
+                                } else if (response.status === 400) {
+                                    throw new BadRequest(data.message);
+                                } else if (response.status === 500) {
+                                    throw new Error(data.message);
+                                }
+                                return data;
+                            })
+                            //TODO: notif
+                        }).then(data => {
+                            console.log("Persona Encontrada ", data)
+                            const datos = data.persona;
+                            this.setState(function (state) {
+                                const campo = { ...state.campo };
+                                Object.assign(campo, this.reiniciarFormulario(state));
+                                Object.assign(campo, this.extraeDatosPersona(state, datos));
+                                return {
+                                    campo,
+                                    oidPersona: datos._id,
+                                    hermanoCompleto: false,
+                                    existeHermano: false
+                                };
+                            })
+                            //TODO: notif
+                            console.log("Hermano id Persona", this.state.oidPersona)
+                        })
+                        .catch(error => {
+                            if (error instanceof NoExistePersona) {
+                                //console.error("Padre - Persona: ", error)
+                                console.log("Puede crear un hermano nuevo")
+                                this.setState(state => {
+                                    const campo = { ...state.campo };
+                                    Object.assign(campo, this.reiniciarFormulario(state));
+                                    return {
+                                        campo,
+                                        hermanoCompleto: true,
+                                        existeHermano: false
+                                    }
+                                })
+                                //TODO: notif
+                            } else {
+                                console.log("Error Buscar Hermano: ", error)
+                            }
+                        })
+                } else {
+                    //TODO: notif
+                    console.log("Error Buscar Hermano: ", err)
+                }
+            })
+    }
+
     render() {
         const { campo, spinner } = this.state;
 
@@ -149,7 +247,7 @@ class FormularioHermano extends React.Component {
                                     {/*className= "... ml-3 ..." */}
                                     <div className="col-auto ml-md-3 mr-3 order-md-12">
                                         <button type="button" className="btn btn-primary boton"
-                                            id="dni" aria-labelledby="etiq_dni" onClick={this.props.search}>
+                                            id="dni" aria-labelledby="etiq_dni" onClick={this.searchHermano}>
                                             <div className={!spinner ? '' : 'd-none'}>
                                                 Buscar
                                                 <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-1" />
@@ -287,6 +385,103 @@ class FormularioHermano extends React.Component {
                 </div>
             </div >
         )
+    }
+
+    extraeDatosHermano(state, datos) {
+        const datosHermano = datos.hermano;
+        const clavesHermanoRec = Object.keys(datosHermano);
+        const clavesFormulario = Object.keys(state.campo);
+
+        //Se hace la interseccion de solo las claves que se necesitan                
+        const clavesUtilesHermano = clavesFormulario.filter(x => clavesHermanoRec.includes(x));
+        //console.log("Intersecccion Claves Padre", clavesUtilesPadre);
+
+        const campo = { ...state.campo };
+        let aux, valorRecibido;
+
+        Object.assign(campo, this.reiniciarFormulario(state));
+
+        Object.assign(campo, this.extraeDatosPersona(state, datos));
+
+        clavesUtilesHermano.forEach(clave => {
+            if (datosHermano[clave] === null) {
+                valorRecibido = '';
+            } else {
+                if (clave.includes("fecha")) {
+                    valorRecibido = datosHermano[clave].substr(0, 10);
+                } else {
+                    valorRecibido = datosHermano[clave];
+                }
+            }
+
+            aux = {
+                [clave]: {
+                    ...state.campo[clave],
+                    valor: valorRecibido,
+                    valido: true,
+                    habilitado: false
+                }
+            };
+            Object.assign(campo, aux);
+        });
+        return campo;
+    }
+
+    extraeDatosPersona(state, datosPersona) {
+        let persona = {};
+        let aux;
+
+        const clavesPersonaRec = Object.keys(datosPersona);
+        const clavesPersona = ["dni", "nombre", "apellido", "genero"];
+
+        const clavesUtilesPersona = clavesPersona.filter(x => clavesPersonaRec.includes(x));
+        //console.log("Intersecccion Claves Persona", clavesUtilesPersona);
+
+        clavesUtilesPersona.forEach(clave => {
+            aux = {
+                [clave]: {
+                    ...state.campo[clave],
+                    valor: datosPersona[clave],
+                    valido: true,
+                    habilitado: false
+                }
+            };
+            Object.assign(persona, aux);
+        });
+
+        return persona;
+    }
+
+    reiniciarFormulario(state) {
+        const clavesFormulario = Object.keys(state.campo);
+        let aux, validoAux;
+        let valorAux = '';
+        let vacio = {};
+        clavesFormulario.shift();
+
+        clavesFormulario.forEach(clave => {
+            validoAux = true;
+            //Datos en required, al vaciarlos tienen que estar en false
+            //TODO: ver msj de error, pq ahora lo mantiene            
+            const requeridos = this.state.requeridos;
+            if (requeridos.includes(clave)) {
+                validoAux = false;
+            }
+
+            //TODO: sobreescribe valor recibido en tipoDni
+            valorAux = clave === 'tipoDni' ? 'DNI' : '';
+
+            aux = {
+                [clave]: {
+                    ...state.campo[clave],
+                    valor: valorAux,
+                    valido: validoAux,
+                    habilitado: true
+                }
+            }
+            Object.assign(vacio, aux);
+        })
+        return vacio;
     }
 }
 

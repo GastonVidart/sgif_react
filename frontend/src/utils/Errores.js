@@ -26,6 +26,20 @@ class NoExistePadre extends Error {
     }
 }
 
+class NoExisteHermano extends Error {
+    constructor(message, ...params) {
+        super(message, ...params);
+
+        /*if (Error.captureStackTrace) {
+                    Error.captureStackTrace(this, NoExisteResponsable)
+        }*/
+
+        this.name = 'No Existe Hermano'
+        // Información de depuración personalizada        
+        this.date = new Date()
+    }
+}
+
 class NoExistePersona extends Error {
     constructor(message, ...params) {
         super(message, ...params);
@@ -48,4 +62,4 @@ class BadRequest extends Error {
     }
 }
 
-module.exports = { NoExisteResponsable, NoExistePadre, NoExistePersona, BadRequest }
+module.exports = { NoExisteResponsable, NoExistePadre, NoExisteHermano, NoExistePersona, BadRequest }
