@@ -3,11 +3,15 @@ import * as Icon from 'react-feather';
 import Alerta from "./Alerta";
 import { Col, Nav, Row, Tab, TabContainer } from "react-bootstrap";
 import ModalFormNuevo from "./ModalFormNuevo";
+import { NoExistePersona, BadRequest } from "../utils/Errores";
+
+const urlBase = 'http://localhost:5000';
 
 class CompletarFamilia extends React.Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
+        //TODO: cuando viene de la otra llamar a search alumno o hacer otra funcio, pero con oid asi inicializa aca   
         this.state = {
             alertaRegistro: {
                 title: 'Desea finalizar el registro?',
@@ -23,37 +27,22 @@ class CompletarFamilia extends React.Component {
                     valor: '',
                     valido: false,
                     msjError: "Ingrese un DNI",
-                    habilitado: true
                 },
                 tipoDni: {
                     valor: 'DNI',
-                    valido: true,
                     msjError: "Seleccione un Tipo de DNI",
-                    habilitado: true
                 },
                 nombre: {
                     valor: '',
-                    valido: false,
-                    msjError: "Ingrese el nombre",
-                    habilitado: true
                 },
                 apellido: {
                     valor: '',
-                    valido: false,
-                    msjError: "Ingrese el apellido",
-                    habilitado: true
                 },
                 legajo: {
                     valor: '',
-                    valido: true,
-                    msjError: "Implementar",
-                    habilitado: true
                 },
                 foto: {
                     valor: null,
-                    valido: true,
-                    msjError: "Foto Incorrecta",
-                    habilitado: true,
                     nombreFoto: 'Subir Foto Alumno'
                 },
             },
@@ -79,12 +68,12 @@ class CompletarFamilia extends React.Component {
             .then(Component => {
                 this.setState(state => {
                     const idFormulario = state.formularios.length;
-                    const paso = "paso" + idFormulario;                    
+                    const paso = "paso" + idFormulario;
                     //FIXME: warning shortid
                     return {
                         formularios: state.formularios.concat(
                             <Tab.Pane eventKey={idFormulario}>
-                                <Component.default ref={(formulario) => { this.formulariosRef.push(formulario) }} />
+                                <Component.default urlBase={urlBase} ref={(formulario) => { this.formulariosRef.push(formulario) }} />
                             </Tab.Pane>),
                         tabs: state.tabs.concat(
                             <Nav.Item>
@@ -104,6 +93,7 @@ class CompletarFamilia extends React.Component {
     }
 
     async componentDidMount() {
+        //TODO: ver en tuto para extraer los familiares a crear o hacerlo en otro metodo
         const tipos = ['Padre', 'Hermano'];
         tipos.map(async tipo => await this.addFormulario(tipo))
     }
@@ -192,6 +182,55 @@ class CompletarFamilia extends React.Component {
         }
     }
 
+    searchAlumno = async () => {
+        const dniAlumno = this.state.datosAlumno.dni.valor;
+        console.log("Search Alumno dni:", dniAlumno);
+        if (dniAlumno === '') {
+            //TODO: notif
+            console.log("Dni Alumno Vacío")
+            return;
+        }
+
+        fetch(urlBase + '/completar-familia/alumno/dni/' + dniAlumno)
+            .then(response => {
+                return response.json().then(data => {
+                    console.log("Completar Familia - Status Search Alumno", response.status)
+                    if (response.status === 404) {
+                        throw new NoExistePersona(data.message)
+                    } else if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                })
+            })
+            .then(data => {
+                console.log("Alumno Encontrado ", data);
+                const datos = data.alumno;
+                //TODO: extraer familiares y agregar sus componentes correspondientes
+                //TODO: si no tiene, notif
+                this.setState(state => {
+                    return {
+                        datosAlumno: this.extraeDatosAlumno(state, datos)
+                    }
+                })
+            })
+            .catch(err => {
+                if (err instanceof NoExistePersona) {
+                    console.log("Completar Familia: ", err.message)
+                } else {
+                    console.log("Error Search Alumno: ", err.message)
+                }
+                this.setState(state => {
+                    return {
+                        datosAlumno: this.reiniciarFormulario(state)
+                    }
+                })
+
+            })
+    }
+
     render() {
         const { alertaRegistro, modalFormNuevo, datosAlumno, spinnerAlumno, formularios, tabs } = this.state;
         let componentes, navLinks;
@@ -239,7 +278,7 @@ class CompletarFamilia extends React.Component {
                                                         {/*className= "... ml-3 ..." */}
                                                         <div className="col-auto ml-md-3 mr-3 order-md-12">
                                                             <button type="button" className="btn btn-primary boton"
-                                                                id="dni" aria-labelledby="etiq_dni" onClick={this.props.searchAlumno}>
+                                                                id="dni" aria-labelledby="etiq_dni" onClick={this.searchAlumno}>
                                                                 <div className={!spinnerAlumno ? '' : 'd-none'}>
                                                                     Buscar
                                                                     <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-1" />
@@ -331,7 +370,7 @@ class CompletarFamilia extends React.Component {
                                     <Row className="no-gutters mt-3">
                                         <Col>
                                             <TabContainer id="left-tabs-example" defaultActiveKey="0" onSelect={this.handleSelect}>
-                                                <Row className="no-gutters">                                                    
+                                                <Row className="no-gutters">
                                                     <Col>
                                                         <Nav variant="tabs">
                                                             {navLinks}
@@ -361,6 +400,49 @@ class CompletarFamilia extends React.Component {
                 </div>
             </div>
         )
+    }
+
+    extraeDatosAlumno(state, datos) {
+        const clavesRecibidas = Object.keys(datos);
+        const clavesFormulario = Object.keys(state.datosAlumno);
+        let aux = {}, datosRecibidos = { ...state.datosAlumno };
+
+        const clavesUtiles = clavesFormulario.filter(x => clavesRecibidas.includes(x));
+
+        //Reinicio los datos del formulario        
+        Object.assign(datosRecibidos, this.reiniciarFormulario(state));
+
+        //Extraigo datos
+        clavesUtiles.forEach(clave => {
+            //TODO: extraer de esquema o generar nombre foto 
+            aux = {
+                [clave]: {
+                    ...state.datosAlumno[clave],
+                    valor: datos[clave],
+                }
+            };
+            Object.assign(datosRecibidos, aux);
+        })
+        return datosRecibidos;
+    }
+
+    reiniciarFormulario(state) {
+        const clavesFormulario = Object.keys(state.datosAlumno);
+        let valorAux, aux;
+        let vacio = { ...state.datosAlumno };
+        //ReinicioFormulario
+        clavesFormulario.shift(); //Remuevo a dni para que no lo reinicie
+        clavesFormulario.forEach(clave => {
+            valorAux = clave === 'foto' ? null : clave === "tipoDni" ? 'DNI' : '';
+            aux = {
+                [clave]: {
+                    ...state.datosAlumno[clave],
+                    valor: valorAux,
+                }
+            }
+            Object.assign(vacio, aux);
+        })
+        return vacio;
     }
 }
 

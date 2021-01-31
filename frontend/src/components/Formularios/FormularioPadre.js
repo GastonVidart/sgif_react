@@ -1,5 +1,6 @@
 import React from 'react';
 import * as Icon from 'react-feather'
+import { NoExistePadre, BadRequest, NoExistePersona } from '../../utils/Errores';
 
 class FormularioPadre extends React.Component {
     constructor(props) {
@@ -89,7 +90,7 @@ class FormularioPadre extends React.Component {
                     valor: '',
                     valido: true,
                     msjError: "Partida de Nacimiento Inválida",
-                    habilitado: true,
+                    habilitado: false,
                     nombre: 'Subir Partida de Nacimiento'
                 },
                 //TODO: ver si va valido y msj de error*/
@@ -133,6 +134,7 @@ class FormularioPadre extends React.Component {
             spinner: false
         }
 
+        this.urlBase = this.props.urlBase;
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
@@ -197,6 +199,100 @@ class FormularioPadre extends React.Component {
         })
     }
 
+    searchPadre = async () => {
+        const dniPadre = this.state.campo.dni.valor;
+        console.log("Search Padre dni:", dniPadre);
+        if (dniPadre === '') {
+            //TODO:notif
+            console.log("Dni Padre Vacío")
+            return;
+        }
+
+        fetch(this.urlBase + '/completar-familia/padre/' + dniPadre)
+            .then(response => {
+                return response.json().then(data => {
+                    if (response.status === 404) {
+                        throw new NoExistePadre(data.message)
+                    } else if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                })
+            })
+            .then(data => {
+                console.log("Padre Encontrado ", data);
+                const datos = data.padre;
+                this.setState(state => {
+                    const campo = { ...state.campo };
+                    Object.assign(campo, this.extraeDatosPadre(state, datos));
+                    return {
+                        campo,
+                        existePadre: true,
+                        oidPadre: data.padre._id
+                    };
+                })
+            })
+            .catch(err => {
+                if (err instanceof NoExistePadre) {
+                    console.error("Padre: ", err);
+                    fetch(this.urlBase + '/completar-familia/persona/' + dniPadre)
+                        .then(response => {                            
+                            return response.json().then(data => {
+                                console.log("Status Search Persona Padre", response.status)
+                                if (response.status === 404) {
+                                    throw new NoExistePersona(data.message);
+                                } else if (response.status === 400) {
+                                    throw new BadRequest(data.message);
+                                } else if (response.status === 500) {
+                                    throw new Error(data.message);
+                                }
+                                return data;
+                            })
+                            //TODO: notif
+                        }).then(data => {
+                            console.log("Persona Encontrada ", data)
+                            const datos = data.persona;
+                            this.setState(function (state) {
+                                const campo = { ...state.campo };
+                                Object.assign(campo, this.reiniciarFormulario(state));
+                                Object.assign(campo, this.extraeDatosPersona(state, datos));
+                                return {
+                                    campo,
+                                    oidPersona: datos._id,
+                                    padreCompleto: false,
+                                    existePadre: false
+                                };
+                            })
+                            //TODO: notif
+                            console.log("Padre id Persona", this.state.oidPersona)
+                        })
+                        .catch(error => {
+                            if (error instanceof NoExistePersona) {
+                                //console.error("Padre - Persona: ", error)
+                                console.log("Puede crear un padre nuevo")
+                                this.setState(state => {
+                                    const campo = { ...state.campo };
+                                    Object.assign(campo, this.reiniciarFormulario(state));
+                                    return {
+                                        campo,
+                                        padreCompleto: true,
+                                        existePadre: false
+                                    }
+                                })
+                                //TODO: notif
+                            } else {
+                                console.log("Error Buscar Padre: ", error)
+                            }
+                        })
+                } else {
+                    //TODO: notif
+                    console.log("Error Buscar Padre: ", err)
+                }
+            })
+    }
+
     render() {
         const { campo, spinner } = this.state;
 
@@ -213,7 +309,7 @@ class FormularioPadre extends React.Component {
                                     {/*className= "... ml-3 ..." */}
                                     <div className="col-auto ml-md-3 mr-3 order-md-12">
                                         <button type="button" className="btn btn-primary boton"
-                                            id="dni" aria-labelledby="etiq_dni" onClick={this.props.search}>
+                                            id="dni" aria-labelledby="etiq_dni" onClick={this.searchPadre}>
                                             <div className={!spinner ? '' : 'd-none'}>
                                                 Buscar
                                                 <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-1" />
@@ -435,7 +531,7 @@ class FormularioPadre extends React.Component {
                                             <label className="col px-3 py-1 my-1 mr-3 align-self-start"
                                                 id="etiq_egresoPrimario" htmlFor="egresoPrimario">Egresó Primario de la institución</label>
                                             <input type="checkbox" id="egresoPrimario" name="egresoPrimario" className="checkbox"
-                                                aria-labelledby="etiq_egresoPrimario" value={campo.egresoPrimario.valor} onChange={this.handleInputChange}
+                                                aria-labelledby="etiq_egresoPrimario" checked={campo.egresoPrimario.valor} onChange={this.handleInputChange}
                                                 disabled={!campo.egresoPrimario.habilitado} />
                                         </div>
                                     </div>
@@ -444,7 +540,7 @@ class FormularioPadre extends React.Component {
                                             <label className="col px-3 py-1 my-1 mr-3 align-self-start"
                                                 id="etiq_egresoSecundario" htmlFor="egresoSecundario">Egresó Secundario de la institución</label>
                                             <input type="checkbox" id="egresoSecundario" name="egresoSecundario" className="checkbox"
-                                                aria-labelledby="etiq_egresoSecundario" value={campo.egresoSecundario.valor} onChange={this.handleInputChange}
+                                                aria-labelledby="etiq_egresoSecundario" checked={campo.egresoSecundario.valor} onChange={this.handleInputChange}
                                                 disabled={!campo.egresoSecundario.habilitado} />
                                         </div>
                                     </div>
@@ -456,7 +552,7 @@ class FormularioPadre extends React.Component {
                                             <label className="px-3 py-1 my-1 mr-3 align-self-start"
                                                 id="etiq_bautismo" htmlFor="bautismo">Bautismo</label>
                                             <input type="checkbox" id="bautismo" name="bautismo" className="checkbox"
-                                                aria-labelledby="etiq_bautismo" value={campo.bautismo.valor} onChange={this.handleInputChange}
+                                                aria-labelledby="etiq_bautismo" checked={campo.bautismo.valor} onChange={this.handleInputChange}
                                                 disabled={!campo.bautismo.habilitado} />
                                         </div>
                                     </div>
@@ -465,7 +561,7 @@ class FormularioPadre extends React.Component {
                                             <label className=" px-3 py-1 my-1 mr-3 align-self-start"
                                                 id="etiq_comunion" htmlFor="comunion">Comunión</label>
                                             <input type="checkbox" id="comunion" name="comunion" className="checkbox"
-                                                aria-labelledby="etiq_comunion" value={campo.comunion.valor} onChange={this.handleInputChange}
+                                                aria-labelledby="etiq_comunion" checked={campo.comunion.valor} onChange={this.handleInputChange}
                                                 disabled={!campo.comunion.habilitado} />
                                         </div>
                                     </div>
@@ -474,7 +570,7 @@ class FormularioPadre extends React.Component {
                                             <label className=" px-3 py-1 my-1 mr-3 align-self-start"
                                                 id="etiq_confirmacion" htmlFor="confirmacion">Confirmación</label>
                                             <input type="checkbox" id="confirmacion" name="confirmacion" className="checkbox"
-                                                aria-labelledby="etiq_confirmacion" value={campo.confirmacion.valor} onChange={this.handleInputChange}
+                                                aria-labelledby="etiq_confirmacion" checked={campo.confirmacion.valor} onChange={this.handleInputChange}
                                                 disabled={!campo.confirmacion.habilitado} />
                                         </div>
                                     </div>
@@ -503,6 +599,109 @@ class FormularioPadre extends React.Component {
                 </div>
             </div >
         )
+    }
+
+    extraeDatosPadre(state, datos) {
+        const datosPadre = datos.padre;
+        const clavesPadreRec = Object.keys(datosPadre);
+        const clavesFormulario = Object.keys(state.campo);
+
+        //Se hace la interseccion de solo las claves que se necesitan                
+        const clavesUtilesPadre = clavesFormulario.filter(x => clavesPadreRec.includes(x));
+        //console.log("Intersecccion Claves Padre", clavesUtilesPadre);
+
+        const campo = { ...state.campo };
+        let aux, valorRecibido;
+
+        Object.assign(campo, this.reiniciarFormulario(state));
+
+        Object.assign(campo, this.extraeDatosPersona(state, datos));
+
+        clavesUtilesPadre.forEach(clave => {
+            if (datosPadre[clave] === null) {
+                valorRecibido = '';
+            } else {
+                if (clave.includes("fecha")) {
+                    valorRecibido = datosPadre[clave].substr(0, 10);
+                } else {
+                    valorRecibido = datosPadre[clave];
+                }
+            }
+
+            //FIXME: partida nac arreglar, pq se guarda en valor lo que se recibe y no el archivo
+            let inputAux = clave === "partidaNacimiento" ? { nombre: valorRecibido } : {};
+            let campoAux = {
+                ...state.campo[clave],
+                valor: valorRecibido,
+                valido: true,
+                habilitado: false
+            }
+            Object.assign(campoAux, inputAux);
+            aux = {
+                [clave]: campoAux
+            };
+            Object.assign(campo, aux);
+        });        
+        return campo;
+    }
+
+    extraeDatosPersona(state, datosPersona) {
+        let persona = {};
+        let aux;
+
+        const clavesPersonaRec = Object.keys(datosPersona);
+        const clavesPersona = ["dni", "nombre", "apellido", "genero"];
+
+        const clavesUtilesPersona = clavesPersona.filter(x => clavesPersonaRec.includes(x));
+        //console.log("Intersecccion Claves Persona", clavesUtilesPersona);
+
+        clavesUtilesPersona.forEach(clave => {
+            aux = {
+                [clave]: {
+                    ...state.campo[clave],
+                    valor: datosPersona[clave],
+                    valido: true,
+                    habilitado: false
+                }
+            };
+            Object.assign(persona, aux);
+        });
+
+        return persona;
+    }
+
+    reiniciarFormulario(state) {
+        const clavesFormulario = Object.keys(state.campo);
+        let aux, validoAux, habilitadoAux;
+        let valorAux = '';
+        let vacio = {};
+        clavesFormulario.shift();
+
+        clavesFormulario.forEach(clave => {
+            validoAux = true;
+            //Datos en required, al vaciarlos tienen que estar en false
+            //TODO: ver msj de error, pq ahora lo mantiene            
+            const requeridos = this.state.requeridos;
+            if (requeridos.includes(clave)) {
+                validoAux = false;
+            }
+
+            //TODO: sobreescribe valor recibido en tipoDni
+            valorAux = clave === 'tipoDni' ? 'DNI' : '';
+            habilitadoAux = clave === "legajo" ? false : true;
+
+            //TODO: reinciar partida de nac con 'subir partida' en nombre
+            aux = {
+                [clave]: {
+                    ...state.campo[clave],
+                    valor: valorAux,
+                    valido: validoAux,
+                    habilitado: habilitadoAux
+                }
+            }
+            Object.assign(vacio, aux);
+        })        
+        return vacio;
     }
 }
 
