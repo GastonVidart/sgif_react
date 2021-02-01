@@ -196,14 +196,14 @@ class CompletarFamilia extends React.Component {
         //TODO: ver analisis registro
         if (creaciones.length > 0) {
             registro = Promise.all(creaciones).then(registraron => {
-                console.log("adasd",registraron)
+                console.log("Registros Realizados", registraron)
                 const huboRegistro = registraron.every(idRegistro => {
                     console.log("idRegistro", idRegistro)
                     return idRegistro !== false
                 })
                 if (huboRegistro) {
                     return true;
-                }else {
+                } else {
                     return false;
                 }
             })

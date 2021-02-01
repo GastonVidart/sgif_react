@@ -314,8 +314,7 @@ class FormularioPadre extends React.Component {
     }
 
     esValido() {
-        let datosPadre = Object.values(this.state.campo);
-        //console.log("Alumno ", datosPasoActual);
+        let datosPadre = Object.values(this.state.campo);        
         const formValido = datosPadre.every(campo => {
             console.log(campo, " valido? ", campo.valido)
             return campo.valido;
@@ -425,7 +424,38 @@ class FormularioPadre extends React.Component {
     }
 
     async asociarPadre(oidPadre, oidAlumno) {
-        console.error("IMPLEMENTAR ASOCIAR")
+        let params = new URLSearchParams('');
+        params.append("oidAlumno", oidAlumno);
+        var url = `${this.urlBase}/asociar-padre/${oidPadre}`;
+        //console.log("URL asociar", (url +'?'+ params));
+        let exito = await fetch(url + '?' + params, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                return response.json().then(data => {
+                    if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 404) {
+                        throw new NoExistePersona(data.message);
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                })
+            })
+            .then(data => {
+                console.log("Respuesta Asociación Padre", data)
+                if (data.response.valido) {
+                    return data.response.valido
+                } else if (!data.response.valido) {
+                    throw new Error(data.response.message);
+                    //TODO: notif
+                }
+            })
+        return exito;
     }
 
     render() {
@@ -805,7 +835,7 @@ class FormularioPadre extends React.Component {
         //TODO: manejo de genero
         aux = {
             relacionParentesco: {
-                ...state.campo.relacionParentesco,                
+                ...state.campo.relacionParentesco,
                 valor: datosPersona.genero === 'Masculino' ? 'Padre' : datosPersona.genero === 'Femenino' ? 'Madre' : false,
                 valido: true,
                 habilitado: false
