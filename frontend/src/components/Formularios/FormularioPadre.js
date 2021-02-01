@@ -64,7 +64,7 @@ class FormularioPadre extends React.Component {
                 },
                 ocupacion: {
                     valor: '',
-                    valido: true,
+                    valido: false,
                     msjError: "Fecha la Ocupación",
                     habilitado: false
                 },
@@ -129,6 +129,7 @@ class FormularioPadre extends React.Component {
             //TODO: ver si la validacion se aplica a cada formulario o en gral
             validar: false,
             requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "nacionalidad", "telefono"],
+            booleanos: ["bautismo", "comunion", "confirmacion", "egresoPrimario", "egresoSecundario"],
 
             //TODO: implementar spinner
             spinner: false
@@ -136,6 +137,8 @@ class FormularioPadre extends React.Component {
 
         this.urlBase = this.props.urlBase;
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.esValido = this.esValido.bind(this);
+        this.registrarPersona = this.registrarPersona.bind(this);
     }
 
     validarCampo(target) {
@@ -159,8 +162,8 @@ class FormularioPadre extends React.Component {
     }
 
     handleInputChange(event) {
-        let valido, valorAux, campoAux
-        let inputAux = {};
+        let valido, valorAux, campoAux;
+        let inputAux = {}
         const target = event.target;
         const { id, value, type } = target;
 
@@ -197,6 +200,23 @@ class FormularioPadre extends React.Component {
 
             }
         })
+
+        //TODO: manejo de genero
+        if (id === 'genero') {
+            this.setState(state => {
+                return {
+                    campo: {
+                        ...state.campo,
+                        relacionParentesco: {
+                            ...state.campo.relacionParentesco,
+                            valor: value === 'Masculino' ? 'Padre' : value === 'Femenino' ? 'Madre' : '',
+                            valido: true
+                        }
+                    }
+
+                }
+            })
+        }
     }
 
     searchPadre = async () => {
@@ -208,7 +228,7 @@ class FormularioPadre extends React.Component {
             return;
         }
 
-        fetch(this.urlBase + '/completar-familia/padre/' + dniPadre)
+        fetch(this.urlBase + '/padre/' + dniPadre)
             .then(response => {
                 return response.json().then(data => {
                     if (response.status === 404) {
@@ -237,8 +257,8 @@ class FormularioPadre extends React.Component {
             .catch(err => {
                 if (err instanceof NoExistePadre) {
                     //console.error("Padre: ", err);
-                    fetch(this.urlBase + '/completar-familia/persona/' + dniPadre)
-                        .then(response => {                            
+                    fetch(this.urlBase + '/persona/' + dniPadre)
+                        .then(response => {
                             return response.json().then(data => {
                                 console.log("Status Search Persona Padre", response.status)
                                 if (response.status === 404) {
@@ -291,6 +311,121 @@ class FormularioPadre extends React.Component {
                     console.log("Error Buscar Padre: ", err)
                 }
             })
+    }
+
+    esValido() {
+        let datosPadre = Object.values(this.state.campo);
+        //console.log("Alumno ", datosPasoActual);
+        const formValido = datosPadre.every(campo => {
+            console.log(campo, " valido? ", campo.valido)
+            return campo.valido;
+        })
+        return formValido;
+    }
+
+    registrarPersona(oidAlumno) {
+        const { existePadre, oidPadre, padreCompleto } = this.state;
+        const estado = this.state;
+        let idPadre;
+        if (!existePadre) {
+            //Tanto si es padre completo como rol, se crea de la misma manera
+            console.log("Crea Padre", padreCompleto ? 'Completo' : 'Rol')
+            idPadre = this.crearPadre(estado, padreCompleto, oidAlumno)
+                .catch(err => {
+                    console.log("Error en Crear Padre:", err.message);
+                    //TODO:notif
+                    return false;
+                })
+
+        } else if (existePadre) {
+            console.log("El padre existe, se asocia con el alumno");
+            idPadre = this.asociarPadre(oidPadre, oidAlumno)
+                .catch(err => {
+                    console.log("Error en Asociar Padre:", err.message);
+                    //TODO:notif
+                    return false;
+                })
+            //Promise.resolve(estado.paso1.oidResponsable)
+        }
+        return idPadre;
+    }
+
+    async crearPadre(estado, esCompleto, oidAlumno) {
+        let idPadre;
+        const urlCompleto = '/padre';
+        const urlRol = '/padre/persona/';
+        let url;
+        let metodo = 'PUT';
+        let datos = {
+            padre: {
+                email: estado.campo.email.valor,
+                fechaNacimiento: estado.campo.fechaNacimiento.valor,
+                nacionalidad: estado.campo.nacionalidad.valor,
+                telefono: estado.campo.telefono.valor,
+                ocupacion: estado.campo.ocupacion.valor,
+                lugarTrabajo: estado.campo.lugarTrabajo.valor,
+                telefonoLaboral: estado.campo.telefonoLaboral.valor,
+                emailLaboral: estado.campo.emailLaboral.valor,
+                partidaNacimiento: estado.campo.partidaNacimiento.valor,
+                bautismo: estado.campo.bautismo.valor,
+                comunion: estado.campo.comunion.valor,
+                confirmacion: estado.campo.confirmacion.valor,
+                egresoPrimario: estado.campo.egresoPrimario.valor,
+                egresoSecundario: estado.campo.egresoSecundario.valor,
+                relacionParentesco: estado.campo.relacionParentesco.valor
+            },
+            oidAlumno
+        }
+
+        if (esCompleto) {
+            url = this.urlBase + urlCompleto;
+            metodo = 'POST';
+            const persona = {
+                padre: {
+                    dni: estado.campo.dni.valor,
+                    nombre: estado.campo.nombre.valor,
+                    apellido: estado.campo.apellido.valor,
+                    genero: estado.campo.genero.valor,
+                }
+            }
+            Object.assign(datos.padre, persona.padre);
+        } else {
+            url = this.urlBase + urlRol + estado.oidPersona;
+        }
+        console.log("datos enviados", datos)
+        idPadre = await fetch(url, {
+            method: metodo,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datos)
+        })
+            .then(response => {
+                //Si es necesario se pueden agregar errores personalizados segun el tipo de creacion
+                return response.json().then(data => {
+                    if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 404) {
+                        throw new NoExistePersona(data.message)
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                });
+            })
+            .then(data => {
+                console.log("Respuesta Creación Padre ", esCompleto ? 'Completo' : 'Rol', data)
+                if (data.response.padre.hasOwnProperty("_id")) {
+                    return data.response.padre._id;
+                } else {
+                    throw new Error("Crear padre respondio sin oid");
+                }
+            })
+        return idPadre;
+    }
+
+    async asociarPadre(oidPadre, oidAlumno) {
+        console.error("IMPLEMENTAR ASOCIAR")
     }
 
     render() {
@@ -461,11 +596,11 @@ class FormularioPadre extends React.Component {
                                 <div className="form-row">
                                     <div className="col-lg">
                                         <div className="form-group row no-gutters mb-2 align-items-center">
-                                            <label className="col-auto px-3 py-1 my-1 mr-3 align-self-start" id="etiq_ocupacion" htmlFor="ocupacion">Ocupación</label>
+                                            <label className="col-auto px-3 py-1 my-1 mr-3 align-self-start requerido" id="etiq_ocupacion" htmlFor="ocupacion">Ocupación</label>
                                             <div className="col-md">
                                                 <input type="text" id="ocupacion" name="ocupacion" className="form-control"
                                                     value={campo.ocupacion.valor} onChange={this.handleInputChange}
-                                                    aria-labelledby="etiq_ocupacion" disabled={!campo.ocupacion.habilitado} />
+                                                    aria-labelledby="etiq_ocupacion" disabled={!campo.ocupacion.habilitado} required />
                                                 <div className="invalid-feedback">
                                                     {campo.ocupacion.msjError}
                                                 </div>
@@ -641,7 +776,7 @@ class FormularioPadre extends React.Component {
                 [clave]: campoAux
             };
             Object.assign(campo, aux);
-        });        
+        });
         return campo;
     }
 
@@ -667,6 +802,18 @@ class FormularioPadre extends React.Component {
             Object.assign(persona, aux);
         });
 
+        //TODO: manejo de genero
+        aux = {
+            relacionParentesco: {
+                ...state.campo.relacionParentesco,                
+                valor: datosPersona.genero === 'Masculino' ? 'Padre' : datosPersona.genero === 'Femenino' ? 'Madre' : false,
+                valido: true,
+                habilitado: false
+            }
+        };
+        Object.assign(persona, aux);
+
+
         return persona;
     }
 
@@ -687,7 +834,9 @@ class FormularioPadre extends React.Component {
             }
 
             //TODO: sobreescribe valor recibido en tipoDni
-            valorAux = clave === 'tipoDni' ? 'DNI' : '';            
+            valorAux = clave === 'tipoDni' ? 'DNI' : '';
+
+            valorAux = this.state.booleanos.includes(clave) ? false : '';
 
             //TODO: reinciar partida de nac con 'subir partida' en nombre
             aux = {
@@ -699,7 +848,7 @@ class FormularioPadre extends React.Component {
                 }
             }
             Object.assign(vacio, aux);
-        })        
+        })
         return vacio;
     }
 }

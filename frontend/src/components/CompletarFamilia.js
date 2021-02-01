@@ -5,7 +5,7 @@ import { Col, Nav, Row, Tab, TabContainer } from "react-bootstrap";
 import ModalFormNuevo from "./ModalFormNuevo";
 import { NoExistePersona, BadRequest } from "../utils/Errores";
 
-const urlBase = 'http://localhost:5000';
+const urlBase = 'http://localhost:5000/completar-familia';
 
 class CompletarFamilia extends React.Component {
 
@@ -46,13 +46,17 @@ class CompletarFamilia extends React.Component {
                     nombreFoto: 'Subir Foto Alumno'
                 },
             },
+            oidAlumno: '',
             spinnerAlumno: false,
-            cantPasos: 2,
+            cantPasos: 0,
             pasoActual: 0,
             formularios: [],
-            tabs: []
+            tabs: [],
+            validar: false
         }
         this.formulariosRef = [];
+        this.formulariosBase = []
+
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
@@ -68,7 +72,6 @@ class CompletarFamilia extends React.Component {
             .then(Component => {
                 this.setState(state => {
                     const idFormulario = state.formularios.length;
-                    const paso = "paso" + idFormulario;
                     //FIXME: warning shortid
                     return {
                         formularios: state.formularios.concat(
@@ -93,9 +96,9 @@ class CompletarFamilia extends React.Component {
     }
 
     async componentDidMount() {
-        //TODO: ver en tuto para extraer los familiares a crear o hacerlo en otro metodo
-        const tipos = ['Padre', 'Hermano'];
-        tipos.map(async tipo => await this.addFormulario(tipo))
+        //TODO: ver si es necesario sino sacar
+        const formularios = this.formulariosBase;
+        formularios.map(async tipo => await this.addFormulario(tipo))
     }
 
     handleChangeAlumno(event) {
@@ -175,11 +178,38 @@ class CompletarFamilia extends React.Component {
 
     //TODO: implementar que recolecte los estados y arme las llamadas
     registrar() {
-        console.log("Registrar Familiares")
-        console.log("formRef", this.formulariosRef)
-        if (this.formulariosRef.length > 0) {
-            console.log("afsafsa", this.formulariosRef[0].state)
+        //TODO: si no hay sub formularios que notif que no hubieron cambios
+        let registro;
+        let creaciones = [];
+        if (this.formulariosValidos()) {
+            console.log("Formularios Válidos")
+            const formularios = this.formulariosRef;
+            creaciones = formularios.map(form => {
+                return form.registrarPersona(this.state.oidAlumno);
+            })
+        } else {
+            console.log("Hay un Formulario Inválido. Revise Nuevamente!")
+            //TODO: notif
+            this.setState({ validar: true })
+            registro = Promise.resolve(false);
         }
+        //TODO: ver analisis registro
+        if (creaciones.length > 0) {
+            registro = Promise.all(creaciones).then(registraron => {
+                console.log("adasd",registraron)
+                const huboRegistro = registraron.every(idRegistro => {
+                    console.log("idRegistro", idRegistro)
+                    return idRegistro !== false
+                })
+                if (huboRegistro) {
+                    return true;
+                }else {
+                    return false;
+                }
+            })
+        }
+        console.log("termina registrar, ver que haya guardado bien de todos los otros registros")
+        return registro;
     }
 
     searchAlumno = async () => {
@@ -191,7 +221,7 @@ class CompletarFamilia extends React.Component {
             return;
         }
 
-        fetch(urlBase + '/completar-familia/alumno/dni/' + dniAlumno)
+        fetch(urlBase + '/alumno/dni/' + dniAlumno)
             .then(response => {
                 return response.json().then(data => {
                     console.log("Completar Familia - Status Search Alumno", response.status)
@@ -208,12 +238,14 @@ class CompletarFamilia extends React.Component {
             .then(data => {
                 console.log("Alumno Encontrado ", data);
                 const datos = data.alumno;
-                //TODO: extraer familiares y agregar sus componentes correspondientes
-                //TODO: si no tiene, notif
+                //TODO: extraer familiares y agregar sus componentes correspondientes                
+                //TODO: si no tiene familiares, notif
                 this.setState(state => {
-                    return {
-                        datosAlumno: this.extraeDatosAlumno(state, datos)
-                    }
+                    let nuevoEstado = {};
+                    Object.assign(nuevoEstado, this.reiniciarTransaccion());
+                    Object.assign(nuevoEstado, { datosAlumno: this.extraeDatosAlumno(state, datos) });
+                    Object.assign(nuevoEstado, { oidAlumno: data.alumno._id })
+                    return nuevoEstado
                 })
             })
             .catch(err => {
@@ -223,25 +255,25 @@ class CompletarFamilia extends React.Component {
                     console.log("Error Search Alumno: ", err.message)
                 }
                 this.setState(state => {
-                    return {
-                        datosAlumno: this.reiniciarFormulario(state)
-                    }
+                    let nuevoEstado = {};
+                    Object.assign(nuevoEstado, this.reiniciarTransaccion());
+                    Object.assign(nuevoEstado, { datosAlumno: this.reiniciarFormulario(state) });
+                    return nuevoEstado
                 })
-
             })
     }
 
     render() {
-        const { alertaRegistro, modalFormNuevo, datosAlumno, spinnerAlumno, formularios, tabs } = this.state;
+        const { alertaRegistro, modalFormNuevo, datosAlumno, spinnerAlumno, formularios, tabs, validar } = this.state;
         let componentes, navLinks;
         if (formularios.length === 0) {
-            componentes = <div>Cargando...</div>;
-            navLinks = <div>Cargando...</div>;
+            componentes = <div className="mb-2">Agregue un nuevo Familiar</div>;
+            navLinks = <div className="mx-2">No existen Familiares</div>;
         } else {
             componentes = formularios;
             navLinks = tabs;
         }
-        console.log(componentes)
+        //console.log(componentes)
 
         return (
             <div className="col" role="main">
@@ -263,8 +295,8 @@ class CompletarFamilia extends React.Component {
                 {/* < !--Formulario--> */}
                 <div className="row m-3 p-3 rounded-lg no-gutters contFormulario">
                     <div className="col">
-                        {/*<form className={formulario.validar ? "was-validated" : ""} noValidate> */}
-                        <form noValidate> {/*TODO: ver si lo recorto para que cada parte tenga su validacion*/}
+                        <form className={validar ? "was-validated" : ""} noValidate>
+                            {/*<form noValidate> {/*TODO: ver si lo recorto para que cada parte tenga su validacion*/}
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card shadow">
                                 <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_alumno">
@@ -443,6 +475,26 @@ class CompletarFamilia extends React.Component {
             Object.assign(vacio, aux);
         })
         return vacio;
+    }
+
+    reiniciarTransaccion() {
+        return {
+            cantPasos: 0,
+            pasoActual: 0,
+            formularios: [],
+            tabs: [],
+            validar: false
+        }
+    }
+
+    formulariosValidos() {
+        const formularios = this.formulariosRef;
+        const validos = formularios.every(form => {
+            console.log(form, "|", form.esValido())
+            return form.esValido();
+        })
+        console.log("Todos los Formularios son válidos?", validos)
+        return validos;
     }
 }
 

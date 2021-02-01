@@ -146,7 +146,7 @@ class FormularioHermano extends React.Component {
             return;
         }
 
-        fetch(this.urlBase + '/completar-familia/hermano/' + dniHermano)
+        fetch(this.urlBase + '/hermano/' + dniHermano)
             .then(response => {
                 return response.json().then(data => {
                     if (response.status === 404) {
@@ -176,7 +176,7 @@ class FormularioHermano extends React.Component {
                 console.log(err)
                 if (err instanceof NoExisteHermano) {
                     //console.error("Hermano: ", err);
-                    fetch(this.urlBase + '/completar-familia/persona/' + dniHermano)
+                    fetch(this.urlBase + '/persona/' + dniHermano)
                         .then(response => {
                             return response.json().then(data => {
                                 console.log("Status Search Persona Hermano", response.status)
