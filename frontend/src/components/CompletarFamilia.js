@@ -193,7 +193,7 @@ class CompletarFamilia extends React.Component {
             this.setState({ validar: true })
             registro = Promise.resolve(false);
         }
-        //TODO: ver analisis registro
+        //TODO: se pueden registrar algunos y otros no
         if (creaciones.length > 0) {
             registro = Promise.all(creaciones).then(registraron => {
                 console.log("Registros Realizados", registraron)
@@ -489,8 +489,10 @@ class CompletarFamilia extends React.Component {
 
     formulariosValidos() {
         const formularios = this.formulariosRef;
+        let id = 0;
         const validos = formularios.every(form => {
-            console.log(form, "|", form.esValido())
+            console.log("Form id:", id, "esValido?", form.esValido())
+            id += 1;
             return form.esValido();
         })
         console.log("Todos los Formularios son válidos?", validos)

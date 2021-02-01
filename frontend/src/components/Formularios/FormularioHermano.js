@@ -74,6 +74,8 @@ class FormularioHermano extends React.Component {
 
         this.urlBase = this.props.urlBase;
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.esValido = this.esValido.bind(this);
+        this.registrarPersona = this.registrarPersona.bind(this);
     }
 
     validarCampo(target) {
@@ -232,6 +234,138 @@ class FormularioHermano extends React.Component {
             })
     }
 
+    esValido() {
+        let datosHermano = Object.values(this.state.campo);
+        const formValido = datosHermano.every(campo => {
+            //console.log(campo, " valido? ", campo.valido)
+            return campo.valido;
+        })
+        return formValido;
+    }
+
+    registrarPersona(oidAlumno) {
+        const { existeHermano, oidHermano, hermanoCompleto } = this.state;
+        const estado = this.state;
+        let idHermano;
+        if (!existeHermano) {
+            //Tanto si es hermano completo como rol, se crea de la misma manera
+            console.log("Crea Hermano", hermanoCompleto ? 'Completo' : 'Rol')
+            idHermano = this.crearHermano(estado, hermanoCompleto, oidAlumno)
+                .catch(err => {
+                    console.log("Error en Crear Hermano:", err.message);
+                    //TODO:notif
+                    return false;
+                })
+
+        } else if (existeHermano) {
+            console.log("El hermano existe, se asocia con el alumno");
+            idHermano = this.asociarHermano(oidHermano, oidAlumno)
+                .catch(err => {
+                    console.log("Error en Asociar Hermano:", err.message);
+                    //TODO:notif
+                    return false;
+                })
+        }
+        return idHermano;
+    }
+
+    async crearHermano(estado, esCompleto, oidAlumno) {
+        let idHermano;
+        const urlCompleto = '/hermano';
+        const urlRol = '/hermano/persona/';
+        let url;
+        let metodo = 'PUT';
+        let datos = {
+            hermano: {
+                fechaNacimiento: estado.campo.fechaNacimiento.valor,
+                escuelaActual: estado.campo.escuelaActual.valor,
+                grado: estado.campo.grado.valor,
+            },
+            oidAlumno
+        }
+
+        if (esCompleto) {
+            url = this.urlBase + urlCompleto;
+            metodo = 'POST';
+            const persona = {
+                hermano: {
+                    dni: estado.campo.dni.valor,
+                    nombre: estado.campo.nombre.valor,
+                    apellido: estado.campo.apellido.valor,
+                    genero: estado.campo.genero.valor,
+                }
+            }
+            Object.assign(datos.hermano, persona.hermano);
+        } else {
+            url = this.urlBase + urlRol + estado.oidPersona;
+        }
+        console.log("datos enviados", datos)
+        idHermano = await fetch(url, {
+            method: metodo,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datos)
+        })
+            .then(response => {
+                //Si es necesario se pueden agregar errores personalizados segun el tipo de creacion
+                return response.json().then(data => {
+                    if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 404) {
+                        throw new NoExistePersona(data.message)
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                });
+            })
+            .then(data => {
+                console.log("Respuesta Creación Hermano ", esCompleto ? 'Completo' : 'Rol', data)
+                if (data.response.hermano.hasOwnProperty("_id")) {
+                    return data.response.hermano._id;
+                } else {
+                    throw new Error("Crear hermano respondio sin oid");
+                }
+            })
+        return idHermano;
+    }
+
+    async asociarHermano(oidHermano, oidAlumno) {
+        let params = new URLSearchParams('');
+        params.append("oidAlumno", oidAlumno);
+        var url = `${this.urlBase}/asociar-hermano/${oidHermano}`;
+        //console.log("URL asociar", (url +'?'+ params));
+        let exito = await fetch(url + '?' + params, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                return response.json().then(data => {
+                    if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 404) {
+                        throw new NoExistePersona(data.message);
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                })
+            })
+            .then(data => {
+                console.log("Respuesta Asociación Hermano", data)
+                if (data.response.valido) {
+                    return data.response.valido
+                } else if (!data.response.valido) {
+                    throw new Error(data.response.message);
+                    //TODO: notif
+                }
+            })
+        return exito;
+    }
+
     render() {
         const { campo, spinner } = this.state;
 
@@ -368,10 +502,9 @@ class FormularioHermano extends React.Component {
                                         <div className="form-group row no-gutters mb-2 align-items-center">
                                             <label className="col-auto px-3 py-1 my-1 mr-3" id="etiq_grado" htmlFor="grado">Grado</label>
                                             <div className="col-sm">
-                                                <input type="number" id="grado" name="grado" className="form-control"
+                                                <input type="text" id="grado" name="grado" className="form-control"
                                                     value={campo.grado.valor} onChange={this.handleInputChange}
-                                                    min={"1"} max={"5"} aria-labelledby="etiq_grado"
-                                                    disabled={!campo.grado.habilitado} />
+                                                    aria-labelledby="etiq_grado" disabled={!campo.grado.habilitado} />
                                                 <div className="invalid-feedback">
                                                     {campo.grado.msjError}
                                                 </div>
