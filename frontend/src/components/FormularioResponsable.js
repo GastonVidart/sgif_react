@@ -45,8 +45,7 @@ class FormularioResponsable extends Component {
                         <Alerta
                             datos={this.state.datos}
                             funciones={
-                                {
-                                    siguiente: this.props.pasoSiguiente,
+                                {                                    
                                     registrar: this.props.registrar
                                 }
                             }

@@ -9,15 +9,14 @@ export default function Alerta({ datos, funciones }) {
         setSpinner(false);
         setShow(false);
     }
+
     const handleShow = () => {
-        console.log(funciones.siguiente())
-        if (funciones.siguiente()) {
-            setSpinner(false);
-            setShow(true)
-        }
+        setSpinner(false);
+        setShow(true)
     };
 
     const handleAceptar = () => {
+        //TODO: extraerlo para que entre como prop
         setSpinner(true);
         funciones.registrar().then(exito => {
             if (exito) {

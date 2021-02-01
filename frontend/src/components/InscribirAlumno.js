@@ -371,6 +371,27 @@ class InscribirAlumno extends React.Component {
     }
 
     registrar() {
+        let exito = Promise.resolve(false);
+        if (this.formularioValido()) {
+            console.log("Registrar: Formulario Válido")            
+            exito = this.registrarPersona();
+            return exito;
+        } else {
+            console.log("Formulario Inválido")
+            this.setState(state => {
+                let paso = "paso" + state.pasoActual;
+                return {
+                    [paso]: {
+                        ...state[paso],
+                        validar: true
+                    }
+                }
+            })
+            return exito;
+        }
+    }
+
+    registrarPersona() {
         const estado = this.state;
         let exito = Promise.resolve(false);
 
@@ -586,8 +607,7 @@ class InscribirAlumno extends React.Component {
                     pasoActual={this.state.pasoActual}
                     handleInputChange={this.handleChangeResponsable}
                     formulario={this.state.paso1}
-                    searchResponsable={this.searchResponsable}
-                    pasoSiguiente={() => this.pasoSiguiente()}
+                    searchResponsable={this.searchResponsable}                    
                     pasoPrevio={() => this.pasoPrevio()}
                     registrar={this.registrar}
                 />
@@ -642,7 +662,6 @@ class InscribirAlumno extends React.Component {
                     //TODO: llevar a una func
                     fetch('http://localhost:5000/insc-alumno/persona/' + dniResp)
                         .then(response => {
-                            console.log(response)
                             return response.json().then(data => {
                                 console.log("Status Search Persona Responsable", response.status)
                                 if (response.status === 404) {
@@ -843,6 +862,9 @@ class InscribirAlumno extends React.Component {
             }
 
             if (state.pasoActual === 0) {
+                //TODO: sobreescribe valor recibido en tipoDni
+                //TODO: reinciar foto 'subir foto'
+                //TODO: reiniciar y habilitar cuil cuit despues de buscar persona
                 valorAux = clave === 'fechaIngreso' ? this.fechaDefault() : clave === 'tipoDni' ? 'DNI' : '';
             }
             habilitadoAux = clave === "legajo" ? false : true;
@@ -871,6 +893,7 @@ class InscribirAlumno extends React.Component {
         //console.log("Intersecccion Claves Persona", clavesUtilesPersona);
 
         clavesUtilesPersona.forEach(clave => {
+            //TODO: quitarfecha
             if (clave.includes("fecha")) {
                 valorRecibido = datosPersona[clave].substr(0, 10);
             } else {
@@ -881,6 +904,7 @@ class InscribirAlumno extends React.Component {
                     ...state.paso1.inputs[clave],
                     valor: valorRecibido,
                     valido: true
+                    //TODO: habilitado:false
                 }
             };
             Object.assign(persona, aux);
@@ -892,6 +916,7 @@ class InscribirAlumno extends React.Component {
     extraeDatosResponsable(state, datos) {
         const datosResponsable = datos.responsable;
         const clavesResponsableRec = Object.keys(datosResponsable);
+        //TODO: refactor this.state->state
         const clavesFormulario = Object.keys(this.state.paso1.inputs);
 
         //Se hace la interseccion de solo las claves que se necesitan                

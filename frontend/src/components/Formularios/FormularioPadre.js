@@ -316,7 +316,7 @@ class FormularioPadre extends React.Component {
     esValido() {
         let datosPadre = Object.values(this.state.campo);        
         const formValido = datosPadre.every(campo => {
-            console.log(campo, " valido? ", campo.valido)
+            //console.log(campo, " valido? ", campo.valido)
             return campo.valido;
         })
         return formValido;
@@ -343,8 +343,7 @@ class FormularioPadre extends React.Component {
                     console.log("Error en Asociar Padre:", err.message);
                     //TODO:notif
                     return false;
-                })
-            //Promise.resolve(estado.paso1.oidResponsable)
+                })            
         }
         return idPadre;
     }

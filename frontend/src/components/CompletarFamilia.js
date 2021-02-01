@@ -55,12 +55,10 @@ class CompletarFamilia extends React.Component {
             validar: false
         }
         this.formulariosRef = [];
-        this.formulariosBase = []
-
+        this.formulariosBase = [];
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
-        this.handleSelect = this.handleSelect.bind(this);
-        this.siguiente = this.siguiente.bind(this);
+        this.handleSelect = this.handleSelect.bind(this);        
         this.registrar = this.registrar.bind(this);
         this.addFormulario = this.addFormulario.bind(this);
     }
@@ -169,11 +167,6 @@ class CompletarFamilia extends React.Component {
         this.setState({
             pasoActual: idTab
         })
-    }
-
-    //TODO: implementar form valido
-    siguiente() {
-        return true;
     }
 
     //TODO: implementar que recolecte los estados y arme las llamadas
@@ -286,10 +279,11 @@ class CompletarFamilia extends React.Component {
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between ml-2 mt-2">
                         {/*TODO: refactor alerta */}
-                        <Alerta datos={alertaRegistro} funciones={{
-                            siguiente: this.siguiente,
-                            registrar: this.registrar
-                        }} />
+                        <Alerta
+                            datos={alertaRegistro}
+                            funciones={{
+                                registrar: this.registrar
+                            }} />
                     </div>
                 </div >
                 {/* < !--Formulario--> */}
