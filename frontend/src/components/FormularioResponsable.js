@@ -1,5 +1,5 @@
 import * as Icon from 'react-feather';
-import Alerta from './Alerta';
+import AlertaInscribirAlumno from './AlertaInscribirAlumno';
 
 const { Component } = require("react");
 
@@ -8,13 +8,6 @@ class FormularioResponsable extends Component {
     constructor(props) {
         super(props);
         this.idPaso = 1;
-
-        this.state = {
-            datos: {
-                title: 'Está seguro de que desea finalizar?',
-                texto: 'Si finaliza, se guardarán los cambios realizados.'
-            }
-        }
     }
 
     render() {
@@ -42,14 +35,7 @@ class FormularioResponsable extends Component {
                         <button type="button" className="btn btn-primary mr-1 boton" onClick={this.props.pasoPrevio}>
                             <Icon.ArrowLeft width={"1.3rem"} height={"1.3rem"} />
                         </button>
-                        <Alerta
-                            datos={this.state.datos}
-                            funciones={
-                                {                                    
-                                    registrar: this.props.registrar
-                                }
-                            }
-                        />
+                        <AlertaInscribirAlumno registrar={this.props.registrar} />
                     </div>
                 </div >
 

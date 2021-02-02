@@ -63,8 +63,7 @@ class FormularioHermano extends React.Component {
             oidHermano: '',
             oidPersona: '',
             existeHermano: false,
-            hermanoCompleto: true, //Define si se esta creando un hermano por completo, o solo el rol            
-            //TODO: ver si la validacion se aplica a cada formulario o en gral
+            hermanoCompleto: true, //Define si se esta creando un hermano por completo, o solo el rol                        
             validar: false,
             requeridos: ["dni", "nombre", "apellido", "genero", "fechaNacimiento"],
 

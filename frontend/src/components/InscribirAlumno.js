@@ -12,20 +12,22 @@ class InscribirAlumno extends React.Component {
     constructor(props) {
         super(props);
 
+        const { esReinscripcion, alumno } = this.props;
+
         this.state = {
             paso0: {
                 inputs: {
                     dni: {
-                        valor: '',
+                        valor: esReinscripcion ? alumno.dni : '',
                         valido: false,
                         msjError: "Ingrese un DNI",
-                        habilitado: true
+                        habilitado: !esReinscripcion
                     },
                     tipoDni: {
-                        valor: 'DNI',
+                        valor: esReinscripcion ? alumno.tipoDni : 'DNI',
                         valido: true,
                         msjError: "Seleccione un Tipo de DNI",
-                        habilitado: true
+                        habilitado: !esReinscripcion
                     },
                     nombre: {
                         valor: '',
@@ -101,22 +103,22 @@ class InscribirAlumno extends React.Component {
                         habilitado: false
                     },
                     estadoInscripcion: {
-                        valor: '',
+                        valor: esReinscripcion ? alumno.anioCorrespondiente : '',
                         valido: true,
                         msjError: "Estado Inscripción Inválido",
                         habilitado: false
                     } //TODO: se muestra en un flotante cuando se hace el get por dni                    
                 },
-                oidAlumno: '',
+                oidAlumno: esReinscripcion ? alumno.oidAlumno : '',
                 oidPersona: '',
-                existeAlumno: false,
                 alumnoCompleto: true, //Define si se esta creando un alumno por completo, o solo el rol
                 nombreFoto: 'Subir Foto Alumno',
                 validar: false,
                 requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "lugarNacimiento", "nombreEscuelaAnt", "anioCorrespondiente"],
-                spinner: false
+                spinner: false,
+                reinscribir: esReinscripcion,
+                primeraCarga: true
             },
-
             paso1: {
                 inputs: {
                     dni: {
@@ -255,6 +257,7 @@ class InscribirAlumno extends React.Component {
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
         this.handleChangeResponsable = this.handleChangeResponsable.bind(this);
+        this.handleCompletarFamilia = this.handleCompletarFamilia.bind(this);
         this.pasoSiguiente = this.pasoSiguiente.bind(this);
         this.pasoPrevio = this.pasoPrevio.bind(this);
         this.registrar = this.registrar.bind(this);
@@ -361,19 +364,10 @@ class InscribirAlumno extends React.Component {
         return validoAux && validoHTML;
     }
 
-    handleSubmit = (event) => {
-        event.preventDefault();
-        const { alumno, responsable } = this.state;
-        alert(`Datos Ingresados \n
-            Alumno: ${alumno} \n 
-            Responsable: ${responsable}`)
-        console.error("Implementar")
-    }
-
     registrar() {
         let exito = Promise.resolve(false);
         if (this.formularioValido()) {
-            console.log("Registrar: Formulario Válido")            
+            console.log("Registrar: Formulario Válido")
             exito = this.registrarPersona();
             return exito;
         } else {
@@ -397,13 +391,13 @@ class InscribirAlumno extends React.Component {
 
         console.log("Finaliza Registro");
 
-        const existeAlumno = estado.paso0.existeAlumno;
+        const reinscribir = estado.paso0.reinscribir;
         const alumnoCompleto = estado.paso0.alumnoCompleto;
         const existeResponsable = estado.paso1.existeResponsable;
         const responsableCompleto = estado.paso1.responsableCompleto;
         let idResponsable;
 
-        if (!existeAlumno) {
+        if (!reinscribir) {
             //TODO: si existe ver que se hace con el responsable, si solo se muestra y listo                
             if (!existeResponsable) {
 
@@ -438,14 +432,52 @@ class InscribirAlumno extends React.Component {
 
             return exito;
 
-        } else {
-            console.log("El alumno existe, se reinscribe")
-            //TODO: reinscribir, que llame al endpoint que lo hace
-            //TODO: para el otro componente, mandar un flag de si es solo la transac o parte de reinscr
-            //TODO: en la reinscr solo tiene que estar disponible el nuevo año a inscribir y que sea mayor o igual al que ya tiene
-            //TODO: que devuelva true despues de reinscr asi cambia de pantalla y notifique tmb            
+        } else {                        
+            exito = this.reinscribirAlumno().catch(err => {
+                console.log("Error en Reinscribir Alumno:", err.message);
+                //TODO:notif
+                return false;
+            });
             return exito;
         }
+    }
+
+    async reinscribirAlumno() {
+        let params = new URLSearchParams('');
+        const pasoActual = this.state.paso0;
+        const { oidAlumno } = pasoActual;
+        const anioCorrespondiente = pasoActual.inputs.anioCorrespondiente.valor;
+        params.append("anio", anioCorrespondiente);
+        var url = `http://localhost:5000/insc-alumno/alumno/${oidAlumno}`;
+        //console.log("URL asociar", (url +'?'+ params));            
+        let exito = await fetch(url + '?' + params, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                return response.json().then(data => {
+                    if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 404) {
+                        throw new NoExistePersona(data.message);
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                })
+            })
+            .then(data => {
+                console.log("Respuesta Reinscripción Alumno", data)
+                if (data.response) {
+                    return data.response
+                } else if (!data.response) {
+                    throw new Error(data.response.message);
+                    //TODO: notif
+                }
+            })
+        return exito;
     }
 
     async crearAlumno(estadoPrevio, esCompleto, oidResponsable) {
@@ -592,6 +624,13 @@ class InscribirAlumno extends React.Component {
     }
 
     render() {
+        const { esReinscripcion } = this.props;
+        //Se cargan los datos del alumno que se esta reinscribiendo
+        //FIXME: Warning: Cannot update during an existing state transition (such as within `render`). Render methods should be a pure function of props and state
+        if (esReinscripcion && this.state.paso0.primeraCarga) {
+            this.searchAlumno();
+        }
+
         return (
             <React.Fragment>
                 {/*TODO: validar fecha inscripcion*/}
@@ -601,13 +640,16 @@ class InscribirAlumno extends React.Component {
                     formulario={this.state.paso0}
                     searchAlumno={this.searchAlumno}
                     pasoSiguiente={() => this.pasoSiguiente()}
+                    esReinscripcion={this.props.esReinscripcion}
+                    completarFamilia={this.handleCompletarFamilia}
+                    registrar={this.registrar}
                 />
 
                 <FormularioResponsable
                     pasoActual={this.state.pasoActual}
                     handleInputChange={this.handleChangeResponsable}
                     formulario={this.state.paso1}
-                    searchResponsable={this.searchResponsable}                    
+                    searchResponsable={this.searchResponsable}
                     pasoPrevio={() => this.pasoPrevio()}
                     registrar={this.registrar}
                 />
@@ -756,13 +798,14 @@ class InscribirAlumno extends React.Component {
                                 paso0: {
                                     ...state.paso0,
                                     inputs,
-                                    existeAlumno: true,
-                                    oidAlumno: datos._id
+                                    oidAlumno: datos._id,
+                                    reinscribir: true,
+                                    primeraCarga: false
                                 }
                             };
                         })
                         console.log("oid Alumno", this.state.paso0.oidAlumno)
-                        //TODO: buscar responsable y mostrarlo - puse que no, ver
+                        //TODO: buscar responsable y mostrarlo - puse que no
                     } else {
                         //Inscripcion
                         fetch('http://localhost:5000/insc-alumno/persona/' + dniAlumno)
@@ -787,8 +830,8 @@ class InscribirAlumno extends React.Component {
                                             ...state.paso0,
                                             inputs,
                                             oidPersona: datos._id,
-                                            alumnoCompleto: false,
-                                            existeAlumno: false
+                                            reinscribir: false,
+                                            alumnoCompleto: false
                                         }
                                     };
                                 })
@@ -804,8 +847,8 @@ class InscribirAlumno extends React.Component {
                                             paso0: {
                                                 ...state.paso0,
                                                 inputs,
-                                                alumnoCompleto: true,
-                                                existeAlumno: false
+                                                reinscribir: false,
+                                                alumnoCompleto: true
                                             }
                                         }
                                     })
@@ -817,14 +860,32 @@ class InscribirAlumno extends React.Component {
                         console.log("Operacion válida, op", operacion);
                     }
                 } else {
-                    //TODO: mostrar message con flotante
+                    //TODO: notif
                     console.log("Operacion inválida, message ", message);
                 }
                 //TODO: controlar multiples clicks? bloquear boton con disable
 
             })
-            //TODO: flotante error
+            //TODO: notif
             .catch((err) => console.error("Error: ", err));
+    }
+
+    handleCompletarFamilia() {
+        if (this.state.paso0.reinscribir) {
+            const paso0 = this.state.paso0;
+            const alumno = {
+                //TODO: se podria guardar todo el estado, por si pierde conexion
+                //TODO: refactor datos editables, si no se guarda todo el estado
+                dni: paso0.inputs.dni.valor,
+                tipoDni: paso0.inputs.tipoDni.valor,
+                oidAlumno: paso0.oidAlumno,
+                anioCorrespondiente: paso0.inputs.anioCorrespondiente.valor
+            }
+            this.props.completarFam(alumno)
+        } else {
+            //TODO: notif
+            console.log("Debe buscar un alumno primero")
+        }
     }
 
     //TODO: probar
@@ -963,7 +1024,7 @@ class InscribirAlumno extends React.Component {
         //console.log("Intersecccion Claves", clavesUtiles);
 
         const inputs = { ...state.paso0.inputs };
-        let aux, valorRecibido;
+        let aux, valorRecibido, habilitadoAux;
 
         //Reinicio los datos del formulario        
         Object.assign(inputs, this.reiniciarFormulario(state));
@@ -976,12 +1037,13 @@ class InscribirAlumno extends React.Component {
             } else {
                 valorRecibido = datos[clave];
             }
+            habilitadoAux = clave === "anioCorrespondiente" ? true : false;
             aux = {
                 [clave]: {
                     ...state.paso0.inputs[clave],
                     valor: valorRecibido,
                     valido: true,
-                    habilitado: false
+                    habilitado: habilitadoAux
                 }
             };
             Object.assign(inputs, aux);

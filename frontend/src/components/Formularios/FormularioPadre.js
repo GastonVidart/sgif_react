@@ -5,7 +5,7 @@ import { NoExistePadre, BadRequest, NoExistePersona } from '../../utils/Errores'
 class FormularioPadre extends React.Component {
     constructor(props) {
         super(props);
-        //TODO: incializar aca con lo que viene de props
+        //TODO: incializar aca
         this.state = {
             campo: {
                 dni: {
@@ -92,8 +92,7 @@ class FormularioPadre extends React.Component {
                     msjError: "Partida de Nacimiento Inválida",
                     habilitado: false,
                     nombre: 'Subir Partida de Nacimiento'
-                },
-                //TODO: ver si va valido y msj de error*/
+                },                
                 bautismo: {
                     valor: false,
                     habilitado: false
@@ -113,10 +112,9 @@ class FormularioPadre extends React.Component {
                 egresoSecundario: {
                     valor: false,
                     habilitado: false
-                },
-                //TODO: ver si lo pongo en el form (componente) o en la barra de navegación o que se extraiga de ahi
+                },                
                 relacionParentesco: {
-                    valor: '',
+                    valor: 'Padre',
                     habilitado: false,
                     valido: true,
                     msjError: "Parentezco inválido",
@@ -125,8 +123,7 @@ class FormularioPadre extends React.Component {
             oidPadre: '',
             oidPersona: '',
             existePadre: false,
-            padreCompleto: true, //Define si se esta creando un padre por completo, o solo el rol            
-            //TODO: ver si la validacion se aplica a cada formulario o en gral
+            padreCompleto: true, //Define si se esta creando un padre por completo, o solo el rol                        
             validar: false,
             requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "nacionalidad", "telefono"],
             booleanos: ["bautismo", "comunion", "confirmacion", "egresoPrimario", "egresoSecundario"],
@@ -201,7 +198,7 @@ class FormularioPadre extends React.Component {
             }
         })
 
-        //TODO: manejo de genero
+        //Manejo de genero
         if (id === 'genero') {
             this.setState(state => {
                 return {
@@ -314,7 +311,7 @@ class FormularioPadre extends React.Component {
     }
 
     esValido() {
-        let datosPadre = Object.values(this.state.campo);        
+        let datosPadre = Object.values(this.state.campo);
         const formValido = datosPadre.every(campo => {
             //console.log(campo, " valido? ", campo.valido)
             return campo.valido;
@@ -343,7 +340,7 @@ class FormularioPadre extends React.Component {
                     console.log("Error en Asociar Padre:", err.message);
                     //TODO:notif
                     return false;
-                })            
+                })
         }
         return idPadre;
     }
@@ -461,9 +458,8 @@ class FormularioPadre extends React.Component {
         const { campo, spinner } = this.state;
 
         return (
-            <div>
-                {/*TODO: padre/madre */}
-                <h4 className="card-title my-2 titSeccion" id="datos_alumno ">Datos Padre</h4>
+            <div>                
+                <h4 className="card-title my-2 titSeccion" id="datos_alumno ">Datos {campo.relacionParentesco.valor}</h4>
                 <div className="row no-gutters">
                     <div className="col-11">
                         <div className="form-row">
@@ -863,7 +859,7 @@ class FormularioPadre extends React.Component {
             }
 
             //TODO: sobreescribe valor recibido en tipoDni
-            valorAux = clave === 'tipoDni' ? 'DNI' : '';
+            valorAux = clave === 'tipoDni' ? 'DNI' : clave === 'relacionParentesco' ? 'Padre' : '';
 
             valorAux = this.state.booleanos.includes(clave) ? false : '';
 

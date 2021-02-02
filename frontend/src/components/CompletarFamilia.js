@@ -1,6 +1,7 @@
 import React from "react";
+import shortid from "shortid";
 import * as Icon from 'react-feather';
-import Alerta from "./Alerta";
+import AlertaCompletarFamilia from "./AlertaCompletarFamilia";
 import { Col, Nav, Row, Tab, TabContainer } from "react-bootstrap";
 import ModalFormNuevo from "./ModalFormNuevo";
 import { NoExistePersona, BadRequest } from "../utils/Errores";
@@ -11,7 +12,10 @@ class CompletarFamilia extends React.Component {
 
     constructor(props) {
         super(props);
-        //TODO: cuando viene de la otra llamar a search alumno o hacer otra funcio, pero con oid asi inicializa aca   
+
+        //Extrae de los props los datos necesarios para hacer reinscripcion
+        const { alumno, esReinscripcion } = this.props;
+
         this.state = {
             alertaRegistro: {
                 title: 'Desea finalizar el registro?',
@@ -22,15 +26,18 @@ class CompletarFamilia extends React.Component {
                 texto: 'Si finaliza el registro se guardarán los cambios realizados hasta el momento.',
                 tipos: ['Padre', 'Hermano']
             },
+            //TODO: refactor dni
             datosAlumno: {
                 dni: {
-                    valor: '',
+                    valor: esReinscripcion ? alumno.dni : '',
                     valido: false,
                     msjError: "Ingrese un DNI",
+                    habilitado: !esReinscripcion
                 },
                 tipoDni: {
-                    valor: 'DNI',
+                    valor: esReinscripcion ? alumno.dni : 'DNI',
                     msjError: "Seleccione un Tipo de DNI",
+                    habilitado: !esReinscripcion
                 },
                 nombre: {
                     valor: '',
@@ -46,19 +53,20 @@ class CompletarFamilia extends React.Component {
                     nombreFoto: 'Subir Foto Alumno'
                 },
             },
-            oidAlumno: '',
+            oidAlumno: esReinscripcion ? alumno.oidAlumno : '',
             spinnerAlumno: false,
             cantPasos: 0,
             pasoActual: 0,
             formularios: [],
             tabs: [],
-            validar: false
+            validar: false,
+            primeraCarga: true
         }
         this.formulariosRef = [];
         this.formulariosBase = [];
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
-        this.handleSelect = this.handleSelect.bind(this);        
+        this.handleSelect = this.handleSelect.bind(this);
         this.registrar = this.registrar.bind(this);
         this.addFormulario = this.addFormulario.bind(this);
     }
@@ -74,11 +82,12 @@ class CompletarFamilia extends React.Component {
                     return {
                         formularios: state.formularios.concat(
                             <Tab.Pane eventKey={idFormulario}>
-                                <Component.default urlBase={urlBase} ref={(formulario) => { this.formulariosRef.push(formulario) }} />
+                                <Component.default key={shortid.generate()} urlBase={urlBase} 
+                                ref={(formulario) => { this.formulariosRef.push(formulario) }} />
                             </Tab.Pane>),
                         tabs: state.tabs.concat(
                             <Nav.Item>
-                                <Nav.Link eventKey={idFormulario}>{tipo}</Nav.Link>
+                                <Nav.Link key={shortid.generate()} eventKey={idFormulario}>{tipo}</Nav.Link>
                             </Nav.Item>
                         ),
                         cantPasos: state.cantPasos + 1
@@ -256,8 +265,72 @@ class CompletarFamilia extends React.Component {
             })
     }
 
+    searchReinscripto = async () => {
+        const oidAlumno = this.state.oidAlumno;
+        console.log("Search Alumno oid:", oidAlumno);
+        if (oidAlumno === '' || oidAlumno === undefined) {
+            //TODO: notif
+            console.log("OID Alumno Vacío")
+            return;
+        }
+
+        fetch(urlBase + '/alumno/oid/' + oidAlumno)
+            .then(response => {
+                return response.json().then(data => {
+                    console.log("Completar Familia - Status Search Alumno OID", response.status)
+                    if (response.status === 404) {
+                        throw new NoExistePersona(data.message)
+                    } else if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                })
+            })
+            .then(data => {
+                console.log("Alumno a Reinscribir Encontrado ", data);
+                const datos = data.alumno;
+                //TODO: extraer familiares y agregar sus componentes correspondientes, no estaba en transac              
+                //TODO: si no tiene familiares, notif
+                this.setState(state => {
+                    let nuevoEstado = {};
+                    Object.assign(nuevoEstado, this.reiniciarTransaccion());
+                    Object.assign(nuevoEstado, { datosAlumno: this.extraeDatosAlumno(state, datos) });
+                    Object.assign(nuevoEstado, { oidAlumno: data.alumno._id })
+                    return nuevoEstado
+                })
+            })
+            .catch(err => {
+                if (err instanceof NoExistePersona) {
+                    console.log("Completar Familia: ", err.message)
+                } else {
+                    console.log("Error Search Alumno: ", err.message)
+                }
+                this.setState(state => {
+                    let nuevoEstado = {};
+                    Object.assign(nuevoEstado, this.reiniciarTransaccion());
+                    Object.assign(nuevoEstado, { datosAlumno: this.reiniciarFormulario(state) });
+                    return nuevoEstado
+                })
+
+                //Vuelve a la transaccion anterior
+                //TODO:notif
+                this.props.inscripcion();
+            })
+    }
+
     render() {
-        const { alertaRegistro, modalFormNuevo, datosAlumno, spinnerAlumno, formularios, tabs, validar } = this.state;
+        const { alertaRegistro, modalFormNuevo, datosAlumno, spinnerAlumno, formularios, tabs, validar, primeraCarga } = this.state;
+        const { inscripcion, esReinscripcion } = this.props;
+
+        //Se cargan los datos del alumno que se esta reinscribiendo
+        //FIXME: Warning: Cannot update during an existing state transition (such as within `render`). Render methods should be a pure function of props and state
+        if (esReinscripcion && primeraCarga) {
+            this.searchReinscripto();
+            this.setState({ primeraCarga: false })
+        }
+
         let componentes, navLinks;
         if (formularios.length === 0) {
             componentes = <div className="mb-2">Agregue un nuevo Familiar</div>;
@@ -266,7 +339,7 @@ class CompletarFamilia extends React.Component {
             componentes = formularios;
             navLinks = tabs;
         }
-        //console.log(componentes)
+        //console.log(componentes)        
 
         return (
             <div className="col" role="main">
@@ -278,19 +351,23 @@ class CompletarFamilia extends React.Component {
 
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between ml-2 mt-2">
-                        {/*TODO: refactor alerta */}
-                        <Alerta
+                        <button type="button" className={`btn btn-primary mr-1 boton ${esReinscripcion ? '' : 'd-none'}`} onClick={inscripcion}>
+                            <Icon.ArrowLeft width={"1.3rem"} height={"1.3rem"} />
+                        </button>
+                        <AlertaCompletarFamilia
                             datos={alertaRegistro}
+                            reinscripcion={esReinscripcion}
                             funciones={{
-                                registrar: this.registrar
-                            }} />
+                                registrar: this.registrar,
+                                inscribir: inscripcion
+                            }}
+                        />
                     </div>
                 </div >
                 {/* < !--Formulario--> */}
                 <div className="row m-3 p-3 rounded-lg no-gutters contFormulario">
                     <div className="col">
                         <form className={validar ? "was-validated" : ""} noValidate>
-                            {/*<form noValidate> {/*TODO: ver si lo recorto para que cada parte tenga su validacion*/}
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card shadow">
                                 <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="datos_alumno">
@@ -323,7 +400,7 @@ class CompletarFamilia extends React.Component {
                                                                 <input className="form-control" type="text" id="dni" name="dni"
                                                                     placeholder="Ingrese un Dni" alt="IngresoDni" required
                                                                     value={datosAlumno.dni.valor} onChange={this.handleChangeAlumno}
-                                                                    aria-labelledby="etiq_dni" aria-required="true"
+                                                                    aria-labelledby="etiq_dni" aria-required="true" disabled={!datosAlumno.dni.habilitado}
                                                                 />
                                                                 <div className="invalid-feedback">
                                                                     {datosAlumno.dni.msjError}
@@ -332,7 +409,8 @@ class CompletarFamilia extends React.Component {
                                                                     <label className="d-none" id="etiq_tipo_dni" htmlFor="tipoDni">Tipo DNI</label>
                                                                     <select id="tipoDni" name="tipoDni" className="form-control" required
                                                                         value={datosAlumno.tipoDni.valor} onChange={this.handleChangeAlumno}
-                                                                        aria-labelledby="etiq_tipo_dni" aria-required="true" aria-expanded="false">
+                                                                        aria-labelledby="etiq_tipo_dni" aria-required="true" aria-expanded="false"
+                                                                        disabled={!datosAlumno.dni.habilitado}>
                                                                         <option value="DNI">DNI</option>
                                                                         <option value="LC">LC</option>
                                                                     </select>

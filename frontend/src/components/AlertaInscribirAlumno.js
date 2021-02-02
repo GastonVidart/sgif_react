@@ -1,9 +1,13 @@
 import { Modal } from 'react-bootstrap';
 import { useState } from "react";
 
-export default function Alerta({ datos, funciones }) {
+export default function AlertaInscribirAlumno({ registrar }) {
     const [show, setShow] = useState(false);
     const [spinner, setSpinner] = useState(false);
+    const [datos, setDatos] = useState({
+        title: 'Está seguro de que desea finalizar?',
+        texto: 'Si finaliza, se guardarán los cambios realizados.'
+    })
 
     const handleClose = () => {
         setSpinner(false);
@@ -15,10 +19,9 @@ export default function Alerta({ datos, funciones }) {
         setShow(true)
     };
 
-    const handleAceptar = () => {
-        //TODO: extraerlo para que entre como prop
-        setSpinner(true);
-        funciones.registrar().then(exito => {
+    const handleAceptar = () => {        
+        setSpinner(true);        
+        registrar().then(exito => {
             if (exito) {
                 window.location.href = '/';
                 //TODO: notif exito (ya lo haria registrar)
