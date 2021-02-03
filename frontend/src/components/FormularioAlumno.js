@@ -46,7 +46,7 @@ class FormularioAlumno extends React.Component {
                             <Icon.ArrowRight width={"1.3rem"} height={"1.3rem"} className="ml-1" />
                         </button>
                         <div className={formulario.reinscribir ? '' : 'd-none'}>
-                            <AlertaInscribirAlumno registrar={this.props.registrar} />
+                            <AlertaInscribirAlumno registrar={this.props.registrar} addNotificacion={this.props.addNotificacion} />
                         </div>
                     </div>
                 </div >

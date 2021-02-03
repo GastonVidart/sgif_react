@@ -20,18 +20,15 @@ export default function AlertaCompletarFamilia({ datos, reinscripcion, funciones
         funciones.registrar().then(exito => {
             if (exito) {
                 if (!reinscripcion) {
-                    this.props.history.push("/");
+                    window.location.href = '/';
+                    //FIXME: notif exito/alerta - problema con location-href
                 } else {
                     funciones.inscribir();
-                }
-                //TODO: notif exito (ya lo haria registrar)
-            } else {
-                //TODO: notif error (se puede hacer catch del error) y mostrar (ya lo haria registrar)
+                }                
+            } else {                
                 handleClose();
                 if (reinscripcion) {
                     funciones.inscribir();
-                    console.error("Hubo un error al completar familia, se vuelve a la transacción principal")
-                    //TODO: notif error
                 }
             }
         });

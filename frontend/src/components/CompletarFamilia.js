@@ -5,6 +5,7 @@ import AlertaCompletarFamilia from "./AlertaCompletarFamilia";
 import { Col, Nav, Row, Tab, TabContainer } from "react-bootstrap";
 import ModalFormNuevo from "./ModalFormNuevo";
 import { NoExistePersona, BadRequest } from "../utils/Errores";
+import { Tipo } from "./Notificacion";
 
 const urlBase = 'http://localhost:5000/completar-familia';
 
@@ -60,10 +61,9 @@ class CompletarFamilia extends React.Component {
             formularios: [],
             tabs: [],
             validar: false,
-            primeraCarga: true
         }
         this.formulariosRef = [];
-        this.formulariosBase = [];
+        //this.formulariosBase = [];
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
@@ -78,16 +78,16 @@ class CompletarFamilia extends React.Component {
             .then(Component => {
                 this.setState(state => {
                     const idFormulario = state.formularios.length;
-                    //FIXME: warning shortid
                     return {
                         formularios: state.formularios.concat(
-                            <Tab.Pane eventKey={idFormulario}>
-                                <Component.default key={shortid.generate()} urlBase={urlBase} 
-                                ref={(formulario) => { this.formulariosRef.push(formulario) }} />
+                            <Tab.Pane key={shortid.generate()} eventKey={idFormulario}>
+                                <Component.default urlBase={urlBase}
+                                    ref={(formulario) => { this.formulariosRef.push(formulario) }}
+                                    addNotificacion={this.props.addNotificacion} />
                             </Tab.Pane>),
                         tabs: state.tabs.concat(
-                            <Nav.Item>
-                                <Nav.Link key={shortid.generate()} eventKey={idFormulario}>{tipo}</Nav.Link>
+                            <Nav.Item key={shortid.generate()}>
+                                <Nav.Link eventKey={idFormulario}>{tipo}</Nav.Link>
                             </Nav.Item>
                         ),
                         cantPasos: state.cantPasos + 1
@@ -104,8 +104,14 @@ class CompletarFamilia extends React.Component {
 
     async componentDidMount() {
         //TODO: ver si es necesario sino sacar
-        const formularios = this.formulariosBase;
-        formularios.map(async tipo => await this.addFormulario(tipo))
+        /*const formularios = this.formulariosBase;
+        formularios.map(async tipo => await this.addFormulario(tipo))*/
+
+        const { esReinscripcion } = this.props;
+        //Se cargan los datos del alumno que se esta reinscribiendo        
+        if (esReinscripcion) {
+            this.searchReinscripto();
+        }
     }
 
     handleChangeAlumno(event) {
@@ -178,11 +184,19 @@ class CompletarFamilia extends React.Component {
         })
     }
 
-    //TODO: implementar que recolecte los estados y arme las llamadas
     registrar() {
-        //TODO: si no hay sub formularios que notif que no hubieron cambios
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
         let registro;
         let creaciones = [];
+        if (this.state.oidAlumno === '') {
+            mensajeNotif = "Debe Buscar un Alumno Existente.";
+            addNotificacion(Tipo.Error, mensajeNotif);
+            console.error("Error:", mensajeNotif);
+            this.setState({ validar: true })
+            return Promise.resolve(false);
+        }
+
         if (this.formulariosValidos()) {
             console.log("Formularios Válidos")
             const formularios = this.formulariosRef;
@@ -190,12 +204,17 @@ class CompletarFamilia extends React.Component {
                 return form.registrarPersona(this.state.oidAlumno);
             })
         } else {
-            console.log("Hay un Formulario Inválido. Revise Nuevamente!")
-            //TODO: notif
+            if (this.formulariosRef.length > 0) {
+                mensajeNotif = "Hay un Formulario Inválido. Revise Nuevamente!";
+            } else {
+                mensajeNotif = "Debe registrar al menos un familiar";
+            }
+            //FIXME: problemas cuando el alumno si tiene familiares
+            addNotificacion(Tipo.Error, mensajeNotif);
+            console.error("Error:", mensajeNotif);
             this.setState({ validar: true })
             registro = Promise.resolve(false);
         }
-        //TODO: se pueden registrar algunos y otros no
         if (creaciones.length > 0) {
             registro = Promise.all(creaciones).then(registraron => {
                 console.log("Registros Realizados", registraron)
@@ -204,29 +223,36 @@ class CompletarFamilia extends React.Component {
                     return idRegistro !== false
                 })
                 if (huboRegistro) {
+                    mensajeNotif = "Registro Familiares Exitoso.";
+                    addNotificacion(Tipo.Exito, mensajeNotif);
+                    console.log("Notificación:", mensajeNotif);
+                    this.setState({ validar: true })
                     return true;
                 } else {
+                    //FIXME: poner una var que diga si registro o no en cada componente, de ahi se revisan todos y se vuele a intentar en los que no anduvo                    
                     return false;
                 }
             })
         }
-        console.log("termina registrar, ver que haya guardado bien de todos los otros registros")
         return registro;
     }
 
     searchAlumno = async () => {
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
         const dniAlumno = this.state.datosAlumno.dni.valor;
         console.log("Search Alumno dni:", dniAlumno);
         if (dniAlumno === '') {
-            //TODO: notif
-            console.log("Dni Alumno Vacío")
+            mensajeNotif = "Dni Alumno Vacío.";
+            addNotificacion(Tipo.Alerta, mensajeNotif);
+            console.log("Notificación:", mensajeNotif);
             return;
         }
 
         fetch(urlBase + '/alumno/dni/' + dniAlumno)
             .then(response => {
                 return response.json().then(data => {
-                    console.log("Completar Familia - Status Search Alumno", response.status)
+                    //console.log("Completar Familia - Status Search Alumno", response.status)
                     if (response.status === 404) {
                         throw new NoExistePersona(data.message)
                     } else if (response.status === 400) {
@@ -238,10 +264,10 @@ class CompletarFamilia extends React.Component {
                 })
             })
             .then(data => {
-                console.log("Alumno Encontrado ", data);
+                //console.log("Alumno Encontrado ", data);
                 const datos = data.alumno;
                 //TODO: extraer familiares y agregar sus componentes correspondientes                
-                //TODO: si no tiene familiares, notif
+                //TODO: notif, si no tiene familiares
                 this.setState(state => {
                     let nuevoEstado = {};
                     Object.assign(nuevoEstado, this.reiniciarTransaccion());
@@ -249,28 +275,40 @@ class CompletarFamilia extends React.Component {
                     Object.assign(nuevoEstado, { oidAlumno: data.alumno._id })
                     return nuevoEstado
                 })
+                mensajeNotif = "Alumno encontrado con el DNI ingresado.";
+                addNotificacion(Tipo.Exito, mensajeNotif);
+                console.log("Notificación:", mensajeNotif, "oid Alumno", data.alumno._id);
             })
             .catch(err => {
                 if (err instanceof NoExistePersona) {
-                    console.log("Completar Familia: ", err.message)
+                    mensajeNotif = err.message
                 } else {
-                    console.log("Error Search Alumno: ", err.message)
+                    mensajeNotif = "Error Search Alumno: " + err.message;
                 }
                 this.setState(state => {
                     let nuevoEstado = {};
                     Object.assign(nuevoEstado, this.reiniciarTransaccion());
-                    Object.assign(nuevoEstado, { datosAlumno: this.reiniciarFormulario(state) });
+                    Object.assign(nuevoEstado, {
+                        datosAlumno: this.reiniciarFormulario(state),
+                        oidAlumno: ''
+                    });
                     return nuevoEstado
                 })
+
+                addNotificacion(Tipo.Error, mensajeNotif);
+                console.error("Error: ", err);
             })
     }
 
     searchReinscripto = async () => {
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
         const oidAlumno = this.state.oidAlumno;
         console.log("Search Alumno oid:", oidAlumno);
         if (oidAlumno === '' || oidAlumno === undefined) {
-            //TODO: notif
-            console.log("OID Alumno Vacío")
+            mensajeNotif = "OID Alumno Vacío";
+            addNotificacion(Tipo.Alerta, mensajeNotif);
+            console.log("Notificación:", mensajeNotif);
             return;
         }
 
@@ -303,9 +341,9 @@ class CompletarFamilia extends React.Component {
             })
             .catch(err => {
                 if (err instanceof NoExistePersona) {
-                    console.log("Completar Familia: ", err.message)
+                    mensajeNotif = err.message
                 } else {
-                    console.log("Error Search Alumno: ", err.message)
+                    mensajeNotif = "Error Search Alumno: " + err.message;
                 }
                 this.setState(state => {
                     let nuevoEstado = {};
@@ -314,22 +352,16 @@ class CompletarFamilia extends React.Component {
                     return nuevoEstado
                 })
 
+                addNotificacion(Tipo.Error, mensajeNotif);
+                console.error("Error: ", err);
                 //Vuelve a la transaccion anterior
-                //TODO:notif
                 this.props.inscripcion();
             })
     }
 
     render() {
-        const { alertaRegistro, modalFormNuevo, datosAlumno, spinnerAlumno, formularios, tabs, validar, primeraCarga } = this.state;
+        const { alertaRegistro, modalFormNuevo, datosAlumno, spinnerAlumno, formularios, tabs, validar } = this.state;
         const { inscripcion, esReinscripcion } = this.props;
-
-        //Se cargan los datos del alumno que se esta reinscribiendo
-        //FIXME: Warning: Cannot update during an existing state transition (such as within `render`). Render methods should be a pure function of props and state
-        if (esReinscripcion && primeraCarga) {
-            this.searchReinscripto();
-            this.setState({ primeraCarga: false })
-        }
 
         let componentes, navLinks;
         if (formularios.length === 0) {
@@ -351,7 +383,11 @@ class CompletarFamilia extends React.Component {
 
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between ml-2 mt-2">
-                        <button type="button" className={`btn btn-primary mr-1 boton ${esReinscripcion ? '' : 'd-none'}`} onClick={inscripcion}>
+                        <button type="button" className={`btn btn-secondary boton botonSecundario mr-1 ${!esReinscripcion ? '' : 'd-none'}`}
+                            onClick={() => { window.location.href = '/'; }}>
+                            Cancelar
+                        </button>
+                        <button type="button" className={`btn btn-primary boton botonSecundario  mr-1 ${esReinscripcion ? '' : 'd-none'}`} onClick={inscripcion}>
                             <Icon.ArrowLeft width={"1.3rem"} height={"1.3rem"} />
                         </button>
                         <AlertaCompletarFamilia
@@ -519,13 +555,15 @@ class CompletarFamilia extends React.Component {
         //Extraigo datos
         clavesUtiles.forEach(clave => {
             //TODO: extraer de esquema o generar nombre foto 
-            aux = {
-                [clave]: {
-                    ...state.datosAlumno[clave],
-                    valor: datos[clave],
-                }
-            };
-            Object.assign(datosRecibidos, aux);
+            if (datos[clave] !== null) {
+                aux = {
+                    [clave]: {
+                        ...state.datosAlumno[clave],
+                        valor: datos[clave],
+                    }
+                };
+                Object.assign(datosRecibidos, aux);
+            }
         })
         return datosRecibidos;
     }
@@ -561,13 +599,16 @@ class CompletarFamilia extends React.Component {
 
     formulariosValidos() {
         const formularios = this.formulariosRef;
+        let validos = false;
         let id = 0;
-        const validos = formularios.every(form => {
-            console.log("Form id:", id, "esValido?", form.esValido())
-            id += 1;
-            return form.esValido();
-        })
-        console.log("Todos los Formularios son válidos?", validos)
+        if (formularios.length > 0) {
+            validos = formularios.every(form => {
+                console.log("Form id:", id, "esValido?", form.esValido())
+                id += 1;
+                return form.esValido();
+            })
+        }
+        //console.log("Todos los Formularios son válidos?", validos)
         return validos;
     }
 }

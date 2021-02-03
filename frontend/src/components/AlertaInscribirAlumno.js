@@ -1,7 +1,8 @@
 import { Modal } from 'react-bootstrap';
 import { useState } from "react";
+import { Tipo } from "./Notificacion";
 
-export default function AlertaInscribirAlumno({ registrar }) {
+export default function AlertaInscribirAlumno({ registrar, addNotificacion }) {
     const [show, setShow] = useState(false);
     const [spinner, setSpinner] = useState(false);
     const [datos, setDatos] = useState({
@@ -19,16 +20,21 @@ export default function AlertaInscribirAlumno({ registrar }) {
         setShow(true)
     };
 
-    const handleAceptar = () => {        
-        setSpinner(true);        
+    const handleAceptar = () => {
+        let mensajeNotif;
+        setSpinner(true);
         registrar().then(exito => {
-            if (exito) {
+            if (exito) {                     
                 window.location.href = '/';
-                //TODO: notif exito (ya lo haria registrar)
+                //FIXME: notif exito - problema con location-href
             } else {
-                //TODO: notif error (se puede hacer catch del error) y mostrar (ya lo haria registrar)
                 handleClose();
             }
+        }).catch(err => {
+            mensajeNotif = err.message;
+            addNotificacion(Tipo.Error, mensajeNotif);
+            console.error("Error:", mensajeNotif);
+            handleClose();
         });
     }
 
