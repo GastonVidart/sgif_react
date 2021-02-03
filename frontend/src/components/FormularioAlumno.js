@@ -2,6 +2,7 @@ import Sacramento from "./Sacramento";
 import React from 'react';
 
 import * as Icon from 'react-feather';
+import AlertaInscribirAlumno from "./AlertaInscribirAlumno";
 
 class FormularioAlumno extends React.Component {
     constructor(props) {
@@ -20,7 +21,7 @@ class FormularioAlumno extends React.Component {
             return null;
         }
 
-        const formulario = this.props.formulario;
+        const { formulario, completarFamilia, esReinscripcion } = this.props;
         const campo = formulario.inputs;
 
         return (
@@ -35,11 +36,18 @@ class FormularioAlumno extends React.Component {
 
                     {/* <!--BOTONES IFAZ-- > */}
                     <div className="d-flex justify-content-between ml-2 mt-2">
-                        <button type="button" className="btn btn-primary mr-1 boton">Completar Familia</button>
-                        <button type="button" className="btn btn-primary boton" onClick={this.props.pasoSiguiente}>
+                        <button type="button" className="btn btn-primary mr-1 boton" disabled={!formulario.reinscribir}
+                            onClick={completarFamilia}>
+                            Completar Familia
+                        </button>
+                        <button type="button" className={`btn btn-primary boton ${formulario.reinscribir ? 'd-none' : ''}`}
+                            onClick={this.props.pasoSiguiente} disabled={formulario.reinscribir}>
                             Continuar
                             <Icon.ArrowRight width={"1.3rem"} height={"1.3rem"} className="ml-1" />
                         </button>
+                        <div className={formulario.reinscribir ? '' : 'd-none'}>
+                            <AlertaInscribirAlumno registrar={this.props.registrar} addNotificacion={this.props.addNotificacion} />
+                        </div>
                     </div>
                 </div >
 
@@ -59,9 +67,9 @@ class FormularioAlumno extends React.Component {
                                                         <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_dni" htmlFor="dni">DNI</label>
                                                         {/*className= "... ml-3 ..." */}
                                                         <div className="col-auto ml-md-3 mr-3 order-md-12">
-                                                            <button type="button" className="btn btn-primary boton"
+                                                            <button type="button" className="btn btn-primary boton" disabled={esReinscripcion}
                                                                 id="dni" aria-labelledby="etiq_dni" onClick={this.props.searchAlumno}>
-                                                                <div className = {!formulario.spinner ? '' : 'd-none'}>
+                                                                <div className={!formulario.spinner ? '' : 'd-none'}>
                                                                     Buscar
                                                                     <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-1" />
                                                                 </div>
@@ -79,14 +87,14 @@ class FormularioAlumno extends React.Component {
                                                                 <input className="form-control" type="text" id="dni" name="dni"
                                                                     placeholder="Ingrese un Dni" alt="IngresoDni" required
                                                                     value={campo.dni.valor} onChange={this.props.handleInputChange}
-                                                                    aria-labelledby="etiq_dni" aria-required="true"
+                                                                    aria-labelledby="etiq_dni" aria-required="true" disabled={esReinscripcion}
                                                                 />
                                                                 <div className="invalid-feedback">
                                                                     {campo.dni.msjError}
                                                                 </div>
                                                                 <div className="input-group-append">
                                                                     <label className="d-none" id="etiq_tipo_dni" htmlFor="tipoDni">Tipo DNI</label>
-                                                                    <select id="tipoDni" name="tipoDni" className="form-control" required
+                                                                    <select id="tipoDni" name="tipoDni" className="form-control" required disabled={esReinscripcion}
                                                                         value={campo.tipoDni.valor} onChange={this.props.handleInputChange}
                                                                         aria-labelledby="etiq_tipo_dni" aria-required="true" aria-expanded="false">
                                                                         <option value="DNI">DNI</option>

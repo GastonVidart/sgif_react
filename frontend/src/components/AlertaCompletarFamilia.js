@@ -1,7 +1,7 @@
 import { Modal } from 'react-bootstrap';
 import { useState } from "react";
 
-export default function Alerta({ datos, funciones }) {
+export default function AlertaCompletarFamilia({ datos, reinscripcion, funciones }) {
     const [show, setShow] = useState(false);
     const [spinner, setSpinner] = useState(false);
 
@@ -9,23 +9,27 @@ export default function Alerta({ datos, funciones }) {
         setSpinner(false);
         setShow(false);
     }
+
     const handleShow = () => {
-        console.log(funciones.siguiente())
-        if (funciones.siguiente()) {
-            setSpinner(false);
-            setShow(true)
-        }
+        setSpinner(false);
+        setShow(true)
     };
 
-    const handleAceptar = () => {
+    const handleAceptar = () => {        
         setSpinner(true);
         funciones.registrar().then(exito => {
             if (exito) {
-                window.location.href = '/';
-                //TODO: notif exito (ya lo haria registrar)
-            } else {
-                //TODO: notif error (se puede hacer catch del error) y mostrar (ya lo haria registrar)
+                if (!reinscripcion) {
+                    window.location.href = '/';
+                    //FIXME: notif exito/alerta - problema con location-href
+                } else {
+                    funciones.inscribir();
+                }                
+            } else {                
                 handleClose();
+                if (reinscripcion) {
+                    funciones.inscribir();
+                }
             }
         });
     }

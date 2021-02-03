@@ -1,6 +1,7 @@
 import React from 'react';
 import * as Icon from 'react-feather';
 import { NoExisteHermano, BadRequest, NoExistePersona } from '../../utils/Errores';
+import { Tipo } from '../Notificacion';
 
 class FormularioHermano extends React.Component {
 
@@ -63,8 +64,7 @@ class FormularioHermano extends React.Component {
             oidHermano: '',
             oidPersona: '',
             existeHermano: false,
-            hermanoCompleto: true, //Define si se esta creando un hermano por completo, o solo el rol            
-            //TODO: ver si la validacion se aplica a cada formulario o en gral
+            hermanoCompleto: true, //Define si se esta creando un hermano por completo, o solo el rol                        
             validar: false,
             requeridos: ["dni", "nombre", "apellido", "genero", "fechaNacimiento"],
 
@@ -140,11 +140,14 @@ class FormularioHermano extends React.Component {
     }
 
     searchHermano = async () => {
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
         const dniHermano = this.state.campo.dni.valor;
         console.log("Search Hermano dni:", dniHermano);
         if (dniHermano === '') {
-            //TODO:notif
-            console.log("Dni Hermano Vacío")
+            mensajeNotif = "Dni Hermano Vacío.";
+            addNotificacion(Tipo.Alerta, mensajeNotif);
+            console.log("Notificación:", mensajeNotif);
             return;
         }
 
@@ -162,7 +165,7 @@ class FormularioHermano extends React.Component {
                 })
             })
             .then(data => {
-                console.log("Hermano Encontrado ", data);
+                //console.log("Hermano Encontrado ", data);
                 const datos = data.hermano;
                 this.setState(state => {
                     const campo = { ...state.campo };
@@ -173,9 +176,11 @@ class FormularioHermano extends React.Component {
                         oidHermano: data.hermano._id
                     };
                 })
+                mensajeNotif = "Hermano encontrado.";
+                addNotificacion(Tipo.Exito, mensajeNotif);
+                console.log("Notificación:", mensajeNotif, "oid Hermano", data.hermano._id);
             })
-            .catch(err => {
-                console.log(err)
+            .catch(err => {                
                 if (err instanceof NoExisteHermano) {
                     //console.error("Hermano: ", err);
                     fetch(this.urlBase + '/persona/' + dniHermano)
@@ -191,9 +196,8 @@ class FormularioHermano extends React.Component {
                                 }
                                 return data;
                             })
-                            //TODO: notif
                         }).then(data => {
-                            console.log("Persona Encontrada ", data)
+                            //console.log("Persona Encontrada ", data)
                             const datos = data.persona;
                             this.setState(function (state) {
                                 const campo = { ...state.campo };
@@ -206,13 +210,13 @@ class FormularioHermano extends React.Component {
                                     existeHermano: false
                                 };
                             })
-                            //TODO: notif
-                            console.log("Hermano id Persona", this.state.oidPersona)
+                            mensajeNotif = "Persona encontrada.";
+                            addNotificacion(Tipo.Exito, mensajeNotif);
+                            console.log("Notificación:", mensajeNotif, "oid Persona", datos._id);
                         })
                         .catch(error => {
                             if (error instanceof NoExistePersona) {
-                                //console.error("Padre - Persona: ", error)
-                                console.log("Puede crear un hermano nuevo")
+                                //console.error("Padre - Persona: ", error)                                
                                 this.setState(state => {
                                     const campo = { ...state.campo };
                                     Object.assign(campo, this.reiniciarFormulario(state));
@@ -222,14 +226,19 @@ class FormularioHermano extends React.Component {
                                         existeHermano: false
                                     }
                                 })
-                                //TODO: notif
+                                mensajeNotif = "Puede crear un hermano nuevo.";
+                                addNotificacion(Tipo.Exito, mensajeNotif);
+                                console.log("Notificación:", mensajeNotif);
                             } else {
-                                console.log("Error Buscar Hermano: ", error)
+                                mensajeNotif = error.message;
+                                addNotificacion(Tipo.Error, mensajeNotif);
+                                console.error("Error:", mensajeNotif);
                             }
                         })
                 } else {
-                    //TODO: notif
-                    console.log("Error Buscar Hermano: ", err)
+                    mensajeNotif = err.message;
+                    addNotificacion(Tipo.Error, mensajeNotif);
+                    console.error("Error:", mensajeNotif);
                 }
             })
     }
@@ -244,6 +253,8 @@ class FormularioHermano extends React.Component {
     }
 
     registrarPersona(oidAlumno) {
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
         const { existeHermano, oidHermano, hermanoCompleto } = this.state;
         const estado = this.state;
         let idHermano;
@@ -252,8 +263,9 @@ class FormularioHermano extends React.Component {
             console.log("Crea Hermano", hermanoCompleto ? 'Completo' : 'Rol')
             idHermano = this.crearHermano(estado, hermanoCompleto, oidAlumno)
                 .catch(err => {
-                    console.log("Error en Crear Hermano:", err.message);
-                    //TODO:notif
+                    mensajeNotif = err.message;
+                    addNotificacion(Tipo.Error, mensajeNotif);
+                    console.error("Error en Crear Hermano:", mensajeNotif);
                     return false;
                 })
 
@@ -261,8 +273,9 @@ class FormularioHermano extends React.Component {
             console.log("El hermano existe, se asocia con el alumno");
             idHermano = this.asociarHermano(oidHermano, oidAlumno)
                 .catch(err => {
-                    console.log("Error en Asociar Hermano:", err.message);
-                    //TODO:notif
+                    mensajeNotif = err.message;
+                    addNotificacion(Tipo.Error, mensajeNotif);
+                    console.error("Error en Asociar Hermano:", mensajeNotif);
                     return false;
                 })
         }
@@ -332,6 +345,8 @@ class FormularioHermano extends React.Component {
     }
 
     async asociarHermano(oidHermano, oidAlumno) {
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
         let params = new URLSearchParams('');
         params.append("oidAlumno", oidAlumno);
         var url = `${this.urlBase}/asociar-hermano/${oidHermano}`;
@@ -355,12 +370,14 @@ class FormularioHermano extends React.Component {
                 })
             })
             .then(data => {
-                console.log("Respuesta Asociación Hermano", data)
+                //console.log("Respuesta Asociación Hermano", data)
                 if (data.response.valido) {
+                    mensajeNotif = "Hermano Asociado.";
+                    addNotificacion(Tipo.Exito, mensajeNotif);
+                    console.log("Notificación:", mensajeNotif);
                     return data.response.valido
                 } else if (!data.response.valido) {
                     throw new Error(data.response.message);
-                    //TODO: notif
                 }
             })
         return exito;

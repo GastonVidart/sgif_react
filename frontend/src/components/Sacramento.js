@@ -1,6 +1,7 @@
 const { Component } = require("react");
 
 class Sacramento extends Component {
+    //FIXME: arreglar checbox checked
     render() {
         const nombreS = this.props.nombre;
         const subNom = nombreS.substring(0, 3);

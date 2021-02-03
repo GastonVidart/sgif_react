@@ -4,6 +4,7 @@ import '../css/formulario.css';
 import FormularioAlumno from "./FormularioAlumno";
 import FormularioResponsable from "./FormularioResponsable";
 import { NoExisteResponsable, NoExistePersona, BadRequest } from "../utils/Errores";
+import { Tipo } from "./Notificacion";
 
 class InscribirAlumno extends React.Component {
     //Componente principal para formulario con multiples partes
@@ -12,20 +13,22 @@ class InscribirAlumno extends React.Component {
     constructor(props) {
         super(props);
 
+        const { esReinscripcion, alumno } = this.props;
+
         this.state = {
             paso0: {
                 inputs: {
                     dni: {
-                        valor: '',
+                        valor: esReinscripcion ? alumno.dni : '',
                         valido: false,
                         msjError: "Ingrese un DNI",
-                        habilitado: true
+                        habilitado: !esReinscripcion
                     },
                     tipoDni: {
-                        valor: 'DNI',
+                        valor: esReinscripcion ? alumno.tipoDni : 'DNI',
                         valido: true,
                         msjError: "Seleccione un Tipo de DNI",
-                        habilitado: true
+                        habilitado: !esReinscripcion
                     },
                     nombre: {
                         valor: '',
@@ -101,22 +104,21 @@ class InscribirAlumno extends React.Component {
                         habilitado: false
                     },
                     estadoInscripcion: {
-                        valor: '',
+                        valor: esReinscripcion ? alumno.anioCorrespondiente : '',
                         valido: true,
                         msjError: "Estado Inscripción Inválido",
                         habilitado: false
-                    } //TODO: se muestra en un flotante cuando se hace el get por dni                    
+                    }
                 },
-                oidAlumno: '',
+                oidAlumno: esReinscripcion ? alumno.oidAlumno : '',
                 oidPersona: '',
-                existeAlumno: false,
                 alumnoCompleto: true, //Define si se esta creando un alumno por completo, o solo el rol
                 nombreFoto: 'Subir Foto Alumno',
                 validar: false,
                 requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "lugarNacimiento", "nombreEscuelaAnt", "anioCorrespondiente"],
-                spinner: false
+                spinner: false,
+                reinscribir: esReinscripcion
             },
-
             paso1: {
                 inputs: {
                     dni: {
@@ -160,7 +162,7 @@ class InscribirAlumno extends React.Component {
                         valido: true,
                         msjError: "Implementar",
                         habilitado: false
-                    }, //TODO: agregar a formulario                    
+                    },
                     cuitCuil: {
                         valor: '',
                         valido: false,
@@ -255,9 +257,18 @@ class InscribirAlumno extends React.Component {
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
         this.handleChangeResponsable = this.handleChangeResponsable.bind(this);
+        this.handleCompletarFamilia = this.handleCompletarFamilia.bind(this);
         this.pasoSiguiente = this.pasoSiguiente.bind(this);
         this.pasoPrevio = this.pasoPrevio.bind(this);
         this.registrar = this.registrar.bind(this);
+    }
+
+    componentDidMount() {
+        const { esReinscripcion } = this.props;
+        //Se cargan los datos del alumno que se esta reinscribiendo
+        if (esReinscripcion) {
+            this.searchAlumno();
+        }
     }
 
     //Cambio el estado segun el input que se haya modificado.
@@ -266,7 +277,7 @@ class InscribirAlumno extends React.Component {
         const target = event.target;
         const { id, value, type } = target;
 
-        console.log("Alumno id target", id);
+        //console.log("Alumno id target", id);
 
         valido = this.validarCampo(target);
 
@@ -314,7 +325,7 @@ class InscribirAlumno extends React.Component {
         const target = event.target;
         const { id, value, type } = target;
 
-        console.log("Responsable id target", id);
+        //console.log("Responsable id target", id);
 
         valido = this.validarCampo(target);
 
@@ -361,28 +372,46 @@ class InscribirAlumno extends React.Component {
         return validoAux && validoHTML;
     }
 
-    handleSubmit = (event) => {
-        event.preventDefault();
-        const { alumno, responsable } = this.state;
-        alert(`Datos Ingresados \n
-            Alumno: ${alumno} \n 
-            Responsable: ${responsable}`)
-        console.error("Implementar")
+    registrar() {
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
+        let exito = Promise.resolve(false);
+        if (this.formularioValido()) {
+            console.log("Registrar: Formulario Válido")
+            exito = this.registrarPersona();
+            return exito;
+        } else {
+            this.setState(state => {
+                let paso = "paso" + state.pasoActual;
+                return {
+                    [paso]: {
+                        ...state[paso],
+                        validar: true
+                    }
+                }
+            })
+            mensajeNotif = "Formulario Inválido.";
+            addNotificacion(Tipo.Error, mensajeNotif);
+            console.error("Error:", mensajeNotif);
+            return exito;
+        }
     }
 
-    registrar() {
+    registrarPersona() {
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
         const estado = this.state;
         let exito = Promise.resolve(false);
 
         console.log("Finaliza Registro");
 
-        const existeAlumno = estado.paso0.existeAlumno;
+        const reinscribir = estado.paso0.reinscribir;
         const alumnoCompleto = estado.paso0.alumnoCompleto;
         const existeResponsable = estado.paso1.existeResponsable;
         const responsableCompleto = estado.paso1.responsableCompleto;
         let idResponsable;
 
-        if (!existeAlumno) {
+        if (!reinscribir) {
             //TODO: si existe ver que se hace con el responsable, si solo se muestra y listo                
             if (!existeResponsable) {
 
@@ -401,30 +430,65 @@ class InscribirAlumno extends React.Component {
                 console.log("Id Responsable: ", idResp);
                 return this.crearAlumno(estado, alumnoCompleto, idResp)
                     .then(data => {
-                        //TODO: notif lo que dice abajo
-                        console.log("Inscripción Exitosa!", data)
+                        //FIXME: al alerta
+                        mensajeNotif = "Inscripción Exitosa! " + data;
+                        addNotificacion(Tipo.Exito, mensajeNotif);
+                        console.log("Notificación:", mensajeNotif);
                         return true;
                     })
                     .catch(err => {
-                        console.log("Error Inscribir Alumno: ", err)
-                        return false;
+                        throw new Error(err.message);
                     })
 
             }).catch(err => {
-                console.log("ERROR: ", err)
                 throw new Error(err.message);
             })
 
             return exito;
 
         } else {
-            console.log("El alumno existe, se reinscribe")
-            //TODO: reinscribir, que llame al endpoint que lo hace
-            //TODO: para el otro componente, mandar un flag de si es solo la transac o parte de reinscr
-            //TODO: en la reinscr solo tiene que estar disponible el nuevo año a inscribir y que sea mayor o igual al que ya tiene
-            //TODO: que devuelva true despues de reinscr asi cambia de pantalla y notifique tmb            
+            exito = this.reinscribirAlumno().catch(err => {
+                throw new Error(err.message);
+            });
             return exito;
         }
+    }
+
+    async reinscribirAlumno() {
+        let params = new URLSearchParams('');
+        const pasoActual = this.state.paso0;
+        const { oidAlumno } = pasoActual;
+        const anioCorrespondiente = pasoActual.inputs.anioCorrespondiente.valor;
+        params.append("anio", anioCorrespondiente);
+        var url = `http://localhost:5000/insc-alumno/alumno/${oidAlumno}`;
+        //console.log("URL asociar", (url +'?'+ params));            
+        let exito = await fetch(url + '?' + params, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                return response.json().then(data => {
+                    if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 404) {
+                        throw new NoExistePersona(data.message);
+                    } else if (response.status === 500) {
+                        throw new Error(data.message)
+                    }
+                    return data;
+                })
+            })
+            .then(data => {
+                console.log("Respuesta Reinscripción Alumno", data)
+                if (data.response) {
+                    return data.response
+                } else if (!data.response) {
+                    throw new Error(data.response.message);
+                }
+            })
+        return exito;
     }
 
     async crearAlumno(estadoPrevio, esCompleto, oidResponsable) {
@@ -580,6 +644,10 @@ class InscribirAlumno extends React.Component {
                     formulario={this.state.paso0}
                     searchAlumno={this.searchAlumno}
                     pasoSiguiente={() => this.pasoSiguiente()}
+                    esReinscripcion={this.props.esReinscripcion}
+                    completarFamilia={this.handleCompletarFamilia}
+                    registrar={this.registrar}
+                    addNotificacion={this.props.addNotificacion}
                 />
 
                 <FormularioResponsable
@@ -587,32 +655,35 @@ class InscribirAlumno extends React.Component {
                     handleInputChange={this.handleChangeResponsable}
                     formulario={this.state.paso1}
                     searchResponsable={this.searchResponsable}
-                    pasoSiguiente={() => this.pasoSiguiente()}
                     pasoPrevio={() => this.pasoPrevio()}
                     registrar={this.registrar}
+                    addNotificacion={this.props.addNotificacion}
                 />
-                {/*TODO: mostrar notifs*/}
             </React.Fragment>
         )
     }
 
     searchResponsable = async () => {
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
         const dniResp = this.state.paso1.inputs.dni.valor;
         console.log("dniResp", dniResp);
 
         if (dniResp === '') {
-            //TODO: notif
-            console.log("Dni Responsable Vacío")
+            mensajeNotif = "Dni Responsable Vacío.";
+            addNotificacion(Tipo.Alerta, mensajeNotif);
+            console.log("Notificación:", mensajeNotif);
             return
         }
 
         fetch('http://localhost:5000/insc-alumno/responsable/' + dniResp)
             .then(response => {
-                //TODO: manejo de estados de error aca https://developer.mozilla.org/es/docs/Web/API/Response/status
                 //TODO: cuando no tiene conexión loading https://getbootstrap.com/docs/4.5/components/spinners/
                 return response.json().then(data => {
                     console.log("Status Search Responsable", response.status)
-                    if (response.status === 404) {
+                    if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 404) {
                         throw new NoExisteResponsable(data.message);
                     } else if (response.status === 500) {
                         throw new Error(data.message);
@@ -621,7 +692,6 @@ class InscribirAlumno extends React.Component {
                 })
             })
             .then(data => {
-                console.log("Responsable Encontrado ", data);
                 const datos = data.responsable;
                 this.setState(function (state) {
                     const inputs = { ...state.paso1.inputs };
@@ -635,26 +705,26 @@ class InscribirAlumno extends React.Component {
                         }
                     };
                 })
+                mensajeNotif = "Responsable Encontrado.";
+                addNotificacion(Tipo.Exito, mensajeNotif);
+                console.log("Notificación:", mensajeNotif, "oid Responsable", this.state.paso0.oidAlumno);
             })
             .catch(err => {
                 if (err instanceof NoExisteResponsable) {
-                    console.error("Responsable: ", err)
-                    //TODO: llevar a una func
+                    //REFACTOR: llevar a una func
                     fetch('http://localhost:5000/insc-alumno/persona/' + dniResp)
                         .then(response => {
-                            console.log(response)
                             return response.json().then(data => {
-                                console.log("Status Search Persona Responsable", response.status)
+                                //console.log("Status Search Persona Responsable", response.status)
                                 if (response.status === 404) {
                                     throw new NoExistePersona(data.message);
                                 } else if (response.status === 500) {
                                     throw new Error(data.message);
                                 }
                                 return data;
-                            })
-                            //TODO: notif
+                            })                            
                         }).then(data => {
-                            console.log("Persona Encontrada ", data)
+                            //console.log("Persona Encontrada ", data)
                             const datos = data.persona;
                             this.setState(function (state) {
                                 const inputs = { ...state.paso1.inputs };
@@ -670,8 +740,9 @@ class InscribirAlumno extends React.Component {
                                     }
                                 };
                             })
-                            //TODO: notif
-                            console.log("id Persona", this.state.paso1.oidPersona)
+                            mensajeNotif = "Persona encontrada. Operación: Registrar Responsable.";
+                            addNotificacion(Tipo.Exito, mensajeNotif);
+                            console.log("Notificación:", mensajeNotif, " oid Persona", datos._id);
                         })
                         .catch(error => {
                             if (error instanceof NoExistePersona) {
@@ -689,24 +760,33 @@ class InscribirAlumno extends React.Component {
                                         }
                                     }
                                 })
-                                //TODO: notif
+                                mensajeNotif = "No existe una persona con el DNI ingresado. Operación: Registrar Responsable.";
+                                addNotificacion(Tipo.Exito, mensajeNotif);
+                                console.log("Notificación:", mensajeNotif);
                             } else {
-                                console.log("Error Buscar Responsable: ", error)
+                                mensajeNotif = error.message;
+                                addNotificacion(Tipo.Error, mensajeNotif);
+                                console.error("Error:", mensajeNotif);
                             }
                         })
                 } else {
+                    mensajeNotif = err.message;
+                    addNotificacion(Tipo.Error, mensajeNotif);
                     console.error("Error: ", err)
                 }
             })
     }
 
     searchAlumno = async () => {
+        const { addNotificacion, esReinscripcion } = this.props;
+        let mensajeNotif;
         const dniAlumno = this.state.paso0.inputs.dni.valor;
         console.log("dniAlum", dniAlumno);
         if (dniAlumno === '') {
-            //TODO: notif
-            console.log("Dni Alumno Vacío")
-            return
+            mensajeNotif = "Dni Alumno Vacío.";
+            addNotificacion(Tipo.Alerta, mensajeNotif);
+            console.log("Notificación:", mensajeNotif);
+            return;
         }
 
         //this.toggleSpinner();
@@ -715,14 +795,16 @@ class InscribirAlumno extends React.Component {
             .then(response => {
                 return response.json().then(data => {
                     console.log("Status Search Alumno", response.status)
-                    if (response.status === 500) {
+                    if (response.status === 400) {
+                        throw new BadRequest(data.message);
+                    } else if (response.status === 500) {
                         throw new Error(data.message);
                     }
                     return data;
                 })
             })
             .then(data => {
-                console.log("Respuesta Búsqueda Alumno:", data);
+                //console.log("Respuesta Búsqueda Alumno:", data);
                 const datos = data.response.alumnoDB;
                 const valida = data.response.valido;
                 const { operacion, message } = data.response
@@ -730,26 +812,29 @@ class InscribirAlumno extends React.Component {
                 if (valida) {
                     if (data.response.operacion === "Reinscribir") {
                         this.setState(function (state) {
-                            console.log("Alumno encontrado. Operacion: ", operacion);
                             const inputs = { ...state.paso0.inputs };
                             Object.assign(inputs, this.extraeDatosAlumno(state, datos));
                             return {
                                 paso0: {
                                     ...state.paso0,
                                     inputs,
-                                    existeAlumno: true,
-                                    oidAlumno: datos._id
+                                    oidAlumno: datos._id,
+                                    reinscribir: true
                                 }
                             };
                         })
-                        console.log("oid Alumno", this.state.paso0.oidAlumno)
-                        //TODO: buscar responsable y mostrarlo - puse que no, ver
+                        if (!esReinscripcion) {
+                            mensajeNotif = "Alumno encontrado. Operación: " + operacion + ".";
+                            addNotificacion(Tipo.Exito, mensajeNotif);
+                            console.log("Notificación:", mensajeNotif, "oid Alumno", this.state.paso0.oidAlumno);
+                            //TODO: buscar responsable y mostrarlo - puse que no
+                        }
                     } else {
                         //Inscripcion
                         fetch('http://localhost:5000/insc-alumno/persona/' + dniAlumno)
                             .then(response => {
                                 return response.json().then(data => {
-                                    console.log("Status Search Persona Alumno", response.status)
+                                    //console.log("Status Search Persona Alumno", response.status)
                                     if (response.status === 404) {
                                         throw new NoExistePersona(data.message);
                                     } else if (response.status === 500) {
@@ -758,7 +843,7 @@ class InscribirAlumno extends React.Component {
                                     return data
                                 })
                             }).then(data => {
-                                console.log("Persona Encontrada ", data)
+                                //console.log("Persona Encontrada ", data)
                                 const datos = data.persona;
                                 this.setState(function (state) {
                                     const inputs = { ...state.paso0.inputs };
@@ -768,16 +853,17 @@ class InscribirAlumno extends React.Component {
                                             ...state.paso0,
                                             inputs,
                                             oidPersona: datos._id,
-                                            alumnoCompleto: false,
-                                            existeAlumno: false
+                                            reinscribir: false,
+                                            alumnoCompleto: false
                                         }
                                     };
                                 })
-                                //TODO: notif
+                                mensajeNotif = "Persona encontrada. Operación: " + operacion + ".";
+                                addNotificacion(Tipo.Exito, mensajeNotif);
+                                console.log("Notificación:", mensajeNotif, "oid Persona", datos._id);
                             })
                             .catch(error => {
                                 if (error instanceof NoExistePersona) {
-                                    console.error("Alumno - Persona: ", error)
                                     this.setState(state => {
                                         const inputs = { ...state.paso0.inputs };
                                         Object.assign(inputs, this.reiniciarFormulario(state));
@@ -785,27 +871,54 @@ class InscribirAlumno extends React.Component {
                                             paso0: {
                                                 ...state.paso0,
                                                 inputs,
-                                                alumnoCompleto: true,
-                                                existeAlumno: false
+                                                reinscribir: false,
+                                                alumnoCompleto: true
                                             }
                                         }
                                     })
-                                    //TODO: notif
+                                    mensajeNotif = message;
+                                    addNotificacion(Tipo.Exito, mensajeNotif);
+                                    console.log("Notificación:", mensajeNotif);
                                 } else {
-                                    console.log("Error Buscar Alumno: ", error)
+                                    mensajeNotif = error.message;
+                                    addNotificacion(Tipo.Error, mensajeNotif);
+                                    console.error("Error:", mensajeNotif);
                                 }
                             })
-                        console.log("Operacion válida, op", operacion);
                     }
                 } else {
-                    //TODO: mostrar message con flotante
-                    console.log("Operacion inválida, message ", message);
+                    mensajeNotif = "Alumno encontrado. Operación inválida, " + message;
+                    addNotificacion(Tipo.Error, mensajeNotif);
+                    console.log("Notificación:", mensajeNotif);
                 }
                 //TODO: controlar multiples clicks? bloquear boton con disable
-
             })
-            //TODO: flotante error
-            .catch((err) => console.error("Error: ", err));
+            .catch((err) => {
+                mensajeNotif = err.message;
+                addNotificacion(Tipo.Error, mensajeNotif);
+                console.error("Error: ", err)
+            });
+    }
+
+    handleCompletarFamilia() {
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
+        if (this.state.paso0.reinscribir) {
+            const paso0 = this.state.paso0;
+            const alumno = {
+                //TODO: se podria guardar todo el estado, por si pierde conexion
+                //TODO: refactor datos editables, si no se guarda todo el estado
+                dni: paso0.inputs.dni.valor,
+                tipoDni: paso0.inputs.tipoDni.valor,
+                oidAlumno: paso0.oidAlumno,
+                anioCorrespondiente: paso0.inputs.anioCorrespondiente.valor
+            }
+            this.props.completarFam(alumno)
+        } else {
+            mensajeNotif = "Debe buscar un alumno primero";
+            addNotificacion(Tipo.Error, mensajeNotif);
+            console.error("Error: ", mensajeNotif)
+        }
     }
 
     //TODO: probar
@@ -843,6 +956,8 @@ class InscribirAlumno extends React.Component {
             }
 
             if (state.pasoActual === 0) {
+                //TODO: sobreescribe valor recibido en tipoDni
+                //TODO: reinciar foto 'subir foto'                
                 valorAux = clave === 'fechaIngreso' ? this.fechaDefault() : clave === 'tipoDni' ? 'DNI' : '';
             }
             habilitadoAux = clave === "legajo" ? false : true;
@@ -871,16 +986,12 @@ class InscribirAlumno extends React.Component {
         //console.log("Intersecccion Claves Persona", clavesUtilesPersona);
 
         clavesUtilesPersona.forEach(clave => {
-            if (clave.includes("fecha")) {
-                valorRecibido = datosPersona[clave].substr(0, 10);
-            } else {
-                valorRecibido = datosPersona[clave];
-            }
             aux = {
                 [clave]: {
                     ...state.paso1.inputs[clave],
-                    valor: valorRecibido,
-                    valido: true
+                    valor: datosPersona[clave],
+                    valido: true,
+                    habilitado: false
                 }
             };
             Object.assign(persona, aux);
@@ -892,7 +1003,7 @@ class InscribirAlumno extends React.Component {
     extraeDatosResponsable(state, datos) {
         const datosResponsable = datos.responsable;
         const clavesResponsableRec = Object.keys(datosResponsable);
-        const clavesFormulario = Object.keys(this.state.paso1.inputs);
+        const clavesFormulario = Object.keys(state.paso1.inputs);
 
         //Se hace la interseccion de solo las claves que se necesitan                
         const clavesUtilesResponsable = clavesFormulario.filter(x => clavesResponsableRec.includes(x));
@@ -906,9 +1017,7 @@ class InscribirAlumno extends React.Component {
         Object.assign(inputs, this.extraeDatosPersona(state, datos));
 
         clavesUtilesResponsable.forEach(clave => {
-            if (datosResponsable[clave] === null) {
-                valorRecibido = '';
-            } else {
+            if (datosResponsable[clave] !== null) {
                 if (clave.includes("fecha")) {
                     valorRecibido = datosResponsable[clave].substr(0, 10);
                 } else {
@@ -931,40 +1040,45 @@ class InscribirAlumno extends React.Component {
 
     extraeDatosAlumno(state, datos) {
         const clavesRecibidas = Object.keys(datos);
-        const clavesFormulario = Object.keys(this.state.paso0.inputs);
+        const clavesFormulario = Object.keys(state.paso0.inputs);
 
         //Se hace la interseccion de solo las claves que se necesitan        
         const clavesUtiles = clavesFormulario.filter(x => clavesRecibidas.includes(x));
         //console.log("Intersecccion Claves", clavesUtiles);
 
         const inputs = { ...state.paso0.inputs };
-        let aux, valorRecibido;
+        let aux, valorRecibido, habilitadoAux;
 
         //Reinicio los datos del formulario        
         Object.assign(inputs, this.reiniciarFormulario(state));
 
         //Guardo en el estado los datos recibidos necesarios
         clavesUtiles.forEach(clave => {
-            //TODO: para la foto
-            if (clave.includes("fecha")) {
-                valorRecibido = datos[clave].substr(0, 10);
-            } else {
-                valorRecibido = datos[clave];
-            }
-            aux = {
-                [clave]: {
-                    ...state.paso0.inputs[clave],
-                    valor: valorRecibido,
-                    valido: true,
-                    habilitado: false
+            if (datos[clave] !== null) {
+                //TODO: para la foto
+                if (clave.includes("fecha")) {
+                    valorRecibido = datos[clave].substr(0, 10);
+                } else {
+                    valorRecibido = datos[clave];
                 }
-            };
-            Object.assign(inputs, aux);
+                habilitadoAux = clave === "anioCorrespondiente" ? true : false;
+                aux = {
+                    [clave]: {
+                        ...state.paso0.inputs[clave],
+                        valor: valorRecibido,
+                        valido: true,
+                        habilitado: habilitadoAux
+                    }
+                };
+                Object.assign(inputs, aux);
+            }
         });
         return inputs;
     }
 
     pasoSiguiente() {
+        const { addNotificacion } = this.props;
+        let mensajeNotif;
         if (this.formularioValido()) {
             console.log("Formulario Válido")
             this.setState(function (state) {
@@ -978,7 +1092,6 @@ class InscribirAlumno extends React.Component {
             });
             return true;
         } else {
-            console.log("Formulario Inválido")
             this.setState(state => {
                 let paso = "paso" + state.pasoActual;
                 return {
@@ -988,6 +1101,9 @@ class InscribirAlumno extends React.Component {
                     }
                 }
             })
+            mensajeNotif = "Formulario Inválido.";
+            addNotificacion(Tipo.Error, mensajeNotif);
+            console.error("Error:", mensajeNotif);
             return false;
         }
     }
