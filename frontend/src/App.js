@@ -9,11 +9,7 @@ import InscribirAlumno from './components/InscribirAlumno';
 import CompletarFamilia from './components/CompletarFamilia';
 import NotasTrimestrales from './components/NotasTrimestrales';
 import AltaCurso from './components/AltaCurso';
-
-import Footer from './components/Footer';
-
 import './css/main.css'
-import Navbar from "./components/navbar";
 
 const Route = require('react-router-dom').Route;
 
@@ -33,7 +29,6 @@ class App extends Component {
                         <Route exact path="/alta-curso" component={AltaCurso} />
                     </BrowserRouter>                    
                 </div>
-                {/*<Footer />*/}
             </React.Fragment>
         )
     }
