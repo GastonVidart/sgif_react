@@ -38,7 +38,7 @@ export default function Notificacion({ id, tipo, mensaje, delNotificacion }) {
             {/*TODO: animacion de entrada */}
             <Toast className="notificacion" show={show} onClose={handleClose} animation={true} autohide delay={1000 * miliSeg}>
                 <ToastHeader className={handleTipo()} >
-                    <strong class="mr-auto">{tipo}</strong>
+                    <strong className="mr-auto">{tipo}</strong>
                     {/*<small>11 mins ago</small>*/}
                 </ToastHeader>
                 <Toast.Body>

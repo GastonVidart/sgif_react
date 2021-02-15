@@ -388,7 +388,7 @@ class FormularioHermano extends React.Component {
 
         return (
             <div >
-                <h4 className="card-title my-2 titSeccion" id="datos_alumno ">Datos Hermano</h4>
+                <h4 className="card-title my-2 titSeccion" id="datos_hermano ">Datos Hermano</h4>
                 <div className="row no-gutters">
                     <div className="col-11">
                         <div className="form-row">

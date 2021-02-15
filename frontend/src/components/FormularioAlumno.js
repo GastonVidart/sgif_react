@@ -292,12 +292,14 @@ class FormularioAlumno extends React.Component {
                             <div className="row no-gutters px-3 mb-3 card shadow">
                                 <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="sacramentos">
                                     <h3 className="card-title titSeccion" id="sacramentos">Sacramentos</h3>
-                                    {/* TODO: ver para que actualice dentro del arreglo sacramento
-                                    * TODO: pasar estados sacramentos y funciones
-                                    * value={this.state.alumno.fechaIngreso} onChange={this.handleInputChange} */}
-                                    <Sacramento nombre={"Bautismo"} />
-                                    <Sacramento nombre={"Comunión"} />
-                                    <Sacramento nombre={"Confirmación"} />
+                                    <Sacramento nombre={"Bautismo"} sacramento={campo.bautismo}
+                                        handleInputChange={this.props.handleSacramento} />
+
+                                    <Sacramento nombre={"Comunión"} sacramento={campo.comunion}
+                                        handleInputChange={this.props.handleSacramento} />
+
+                                    <Sacramento nombre={"Confirmación"} sacramento={campo.confirmacion}
+                                        handleInputChange={this.props.handleSacramento} />
                                 </div>
                             </div>
                         </form>

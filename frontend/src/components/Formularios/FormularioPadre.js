@@ -126,7 +126,7 @@ class FormularioPadre extends React.Component {
             existePadre: false,
             padreCompleto: true, //Define si se esta creando un padre por completo, o solo el rol                        
             validar: false,
-            requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "nacionalidad", "telefono"],
+            requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "nacionalidad", "telefono", "ocupacion"],
             booleanos: ["bautismo", "comunion", "confirmacion", "egresoPrimario", "egresoSecundario"],
 
             //TODO: implementar spinner
@@ -478,7 +478,7 @@ class FormularioPadre extends React.Component {
 
         return (
             <div>
-                <h4 className="card-title my-2 titSeccion" id="datos_alumno ">Datos {campo.relacionParentesco.valor}</h4>
+                <h4 className="card-title my-2 titSeccion" id="datos_padre ">Datos {campo.relacionParentesco.valor}</h4>
                 <div className="row no-gutters">
                     <div className="col-11">
                         <div className="form-row">
@@ -644,7 +644,7 @@ class FormularioPadre extends React.Component {
                                             <div className="col-md">
                                                 <input type="text" id="ocupacion" name="ocupacion" className="form-control"
                                                     value={campo.ocupacion.valor} onChange={this.handleInputChange}
-                                                    aria-labelledby="etiq_ocupacion" disabled={!campo.ocupacion.habilitado} required />
+                                                    aria-labelledby="etiq_ocupacion" disabled={!campo.ocupacion.habilitado} required aria-required="true"/>
                                                 <div className="invalid-feedback">
                                                     {campo.ocupacion.msjError}
                                                 </div>
