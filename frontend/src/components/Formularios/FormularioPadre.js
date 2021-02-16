@@ -128,15 +128,19 @@ class FormularioPadre extends React.Component {
             validar: false,
             requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "nacionalidad", "telefono", "ocupacion"],
             booleanos: ["bautismo", "comunion", "confirmacion", "egresoPrimario", "egresoSecundario"],
-
-            //TODO: implementar spinner
-            spinner: false
+            spinner: false,
+            idForm: this.props.id
         }
 
         this.urlBase = this.props.urlBase;
         this.handleInputChange = this.handleInputChange.bind(this);
         this.esValido = this.esValido.bind(this);
         this.registrarPersona = this.registrarPersona.bind(this);
+        this.getId = this.getId.bind(this);
+    }
+
+    getId(){
+        return this.state.idForm;
     }
 
     validarCampo(target) {
@@ -229,6 +233,8 @@ class FormularioPadre extends React.Component {
             return;
         }
 
+        this.toggleSpinner();
+
         fetch(this.urlBase + '/padre/' + dniPadre)
             .then(response => {
                 return response.json().then(data => {
@@ -254,6 +260,7 @@ class FormularioPadre extends React.Component {
                         oidPadre: data.padre._id
                     };
                 })
+                this.toggleSpinner();
                 mensajeNotif = "Padre encontrado.";
                 addNotificacion(Tipo.Exito, mensajeNotif);
                 console.log("Notificación:", mensajeNotif, "oid Padre", data.padre._id);
@@ -288,6 +295,7 @@ class FormularioPadre extends React.Component {
                                     existePadre: false
                                 };
                             })
+                            this.toggleSpinner();
                             mensajeNotif = "Persona encontrada.";
                             addNotificacion(Tipo.Exito, mensajeNotif);
                             console.log("Notificación:", mensajeNotif, "oid Persona", datos._id);
@@ -304,21 +312,32 @@ class FormularioPadre extends React.Component {
                                         existePadre: false
                                     }
                                 })
+                                this.toggleSpinner();
                                 mensajeNotif = "Puede crear un padre nuevo.";
                                 addNotificacion(Tipo.Exito, mensajeNotif);
                                 console.log("Notificación:", mensajeNotif);
                             } else {
+                                this.toggleSpinner();
                                 mensajeNotif = error.message;
                                 addNotificacion(Tipo.Error, mensajeNotif);
                                 console.error("Error:", mensajeNotif);
                             }
                         })
                 } else {
+                    this.toggleSpinner();
                     mensajeNotif = err.message;
                     addNotificacion(Tipo.Error, mensajeNotif);
                     console.error("Error:", mensajeNotif);
                 }
             })
+    }
+
+    toggleSpinner() {
+        this.setState(state => {
+            return {
+                spinner: !state.spinner
+            }
+        })
     }
 
     esValido() {
@@ -588,14 +607,13 @@ class FormularioPadre extends React.Component {
                             <div className="col-lg  ml-lg-3">
                                 <div className="form-group row no-gutters mb-2 align-items-center">
                                     <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_lnac" htmlFor="nacionalidad">Nacionalidad</label>
-                                    <div className="col-sm">
+                                    <div className="col-xl">
                                         <input type="text" id="nacionalidad" name="nacionalidad" className="form-control"
                                             value={campo.nacionalidad.valor} onChange={this.handleInputChange}
                                             required aria-labelledby="etiq_lnac" aria-required="true" disabled={!campo.nacionalidad.habilitado} />
                                         <div className="invalid-feedback">
                                             {campo.nacionalidad.msjError}
-                                        </div>
-                                        {/*TODO: poner breakpoint antes */}
+                                        </div>                                        
                                     </div>
                                 </div>
                             </div>
@@ -644,7 +662,7 @@ class FormularioPadre extends React.Component {
                                             <div className="col-md">
                                                 <input type="text" id="ocupacion" name="ocupacion" className="form-control"
                                                     value={campo.ocupacion.valor} onChange={this.handleInputChange}
-                                                    aria-labelledby="etiq_ocupacion" disabled={!campo.ocupacion.habilitado} required aria-required="true"/>
+                                                    aria-labelledby="etiq_ocupacion" disabled={!campo.ocupacion.habilitado} required aria-required="true" />
                                                 <div className="invalid-feedback">
                                                     {campo.ocupacion.msjError}
                                                 </div>
@@ -705,18 +723,18 @@ class FormularioPadre extends React.Component {
                             <div className="col-9 card-body pt-2 pb-0" role="group" aria-labelledby="datos_complementarios">
                                 <h5 className="card-title titSeccion" id="datos_complementarios" >Datos Complementarios</h5>
                                 <div className="form-row">
-                                    <div className="col-lg">
+                                    <div className="col-lg mr-lg-2">
                                         <div className="form-group row no-gutters mb-2 align-items-center">
-                                            <label className="col px-3 py-1 my-1 mr-3 align-self-start"
+                                            <label className="col px-3 py-1 my-1 mr-2 align-self-start"
                                                 id="etiq_egresoPrimario" htmlFor="egresoPrimario">Egresó Primario de la institución</label>
                                             <input type="checkbox" id="egresoPrimario" name="egresoPrimario" className="checkbox"
                                                 aria-labelledby="etiq_egresoPrimario" checked={campo.egresoPrimario.valor} onChange={this.handleInputChange}
                                                 disabled={!campo.egresoPrimario.habilitado} />
                                         </div>
                                     </div>
-                                    <div className="col-lg ml-lg-3">
+                                    <div className="col-lg">
                                         <div className="form-group row no-gutters mb-2 align-items-center">
-                                            <label className="col px-3 py-1 my-1 mr-3 align-self-start"
+                                            <label className="col px-3 py-1 my-1 mr-2 align-self-start"
                                                 id="etiq_egresoSecundario" htmlFor="egresoSecundario">Egresó Secundario de la institución</label>
                                             <input type="checkbox" id="egresoSecundario" name="egresoSecundario" className="checkbox"
                                                 aria-labelledby="etiq_egresoSecundario" checked={campo.egresoSecundario.valor} onChange={this.handleInputChange}
@@ -724,29 +742,28 @@ class FormularioPadre extends React.Component {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="form-row">
-                                    {/*TODO: ver separacion entre eltos, reducir */}
-                                    <div className="col-lg">
+                                <div className="form-row">                                    
+                                    <div className="col-lg-auto col-lg mr-2">
                                         <div className="form-group row no-gutters mb-2 align-items-center">
-                                            <label className="px-3 py-1 my-1 mr-3 align-self-start"
+                                            <label className="px-3 py-1 my-1 mr-2 align-self-start"
                                                 id="etiq_bautismo" htmlFor="bautismo">Bautismo</label>
                                             <input type="checkbox" id="bautismo" name="bautismo" className="checkbox"
                                                 aria-labelledby="etiq_bautismo" checked={campo.bautismo.valor} onChange={this.handleInputChange}
                                                 disabled={!campo.bautismo.habilitado} />
                                         </div>
                                     </div>
-                                    <div className="col-lg">
+                                    <div className="col-lg-auto col-lg mr-2">
                                         <div className="form-group row no-gutters mb-2 align-items-center">
-                                            <label className=" px-3 py-1 my-1 mr-3 align-self-start"
+                                            <label className=" px-3 py-1 my-1 mr-2 align-self-start"
                                                 id="etiq_comunion" htmlFor="comunion">Comunión</label>
                                             <input type="checkbox" id="comunion" name="comunion" className="checkbox"
                                                 aria-labelledby="etiq_comunion" checked={campo.comunion.valor} onChange={this.handleInputChange}
                                                 disabled={!campo.comunion.habilitado} />
                                         </div>
                                     </div>
-                                    <div className="col-xl">
+                                    <div className="col-lg-auto mr-2">
                                         <div className="form-group row no-gutters mb-2 align-items-center">
-                                            <label className=" px-3 py-1 my-1 mr-3 align-self-start"
+                                            <label className=" px-3 py-1 my-1 mr-2 align-self-start"
                                                 id="etiq_confirmacion" htmlFor="confirmacion">Confirmación</label>
                                             <input type="checkbox" id="confirmacion" name="confirmacion" className="checkbox"
                                                 aria-labelledby="etiq_confirmacion" checked={campo.confirmacion.valor} onChange={this.handleInputChange}
@@ -871,16 +888,36 @@ class FormularioPadre extends React.Component {
         clavesFormulario.forEach(clave => {
             validoAux = true;
             //Datos en required, al vaciarlos tienen que estar en false
-            //TODO: ver msj de error, pq ahora lo mantiene            
+            //TODO: ver reiniciar msj de error, pq ahora lo mantiene            
             const requeridos = this.state.requeridos;
+            let auxPartidaN = {};
+
             if (requeridos.includes(clave)) {
                 validoAux = false;
             }
 
-            //TODO: sobreescribe valor recibido en tipoDni
-            valorAux = clave === 'tipoDni' ? 'DNI' : clave === 'relacionParentesco' ? 'Padre' : this.state.booleanos.includes(clave) ? false : '';
+            switch (clave) {
+                case 'tipoDni':
+                    //TODO: padre no tiene tipoDni
+                    valorAux = 'DNI';
+                    break;
+                case 'relacionParentesco':
+                    valorAux = 'Padre';
+                    break;
+                case 'partidaNacimiento':
+                    auxPartidaN = {
+                        nombre: 'Subir Partida de Nacimiento'
+                    }
+                    break;
+                default:
+                    valorAux = '';
+                    break;
+            }
 
-            //TODO: reinciar partida de nac con 'subir partida' en nombre            
+            if (this.state.booleanos.includes(clave)) {
+                valorAux = false;
+            }
+
             aux = {
                 [clave]: {
                     ...state.campo[clave],
@@ -889,6 +926,7 @@ class FormularioPadre extends React.Component {
                     habilitado: true
                 }
             }
+            Object.assign(aux[clave], auxPartidaN);
             Object.assign(vacio, aux);
         })
         return vacio;

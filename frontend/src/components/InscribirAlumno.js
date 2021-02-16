@@ -5,8 +5,10 @@ import FormularioAlumno from "./FormularioAlumno";
 import FormularioResponsable from "./FormularioResponsable";
 import { NoExisteResponsable, NoExistePersona, BadRequest } from "../utils/Errores";
 import { Tipo } from "./Notificacion";
+import PantallaCarga from "./PantallaCarga";
 
 const sacramentos = ["bautismo", "comunion", "confirmacion"];
+const urlBase = 'http://localhost:5000/insc-alumno';
 
 class InscribirAlumno extends React.Component {
     //Componente principal para formulario con multiples partes
@@ -153,7 +155,8 @@ class InscribirAlumno extends React.Component {
                         valor: null,
                         valido: true,
                         msjError: "Foto Incorrecta",
-                        habilitado: false
+                        habilitado: false,
+                        nombre: 'Subir Foto Alumno'
                     },
                     anioCorrespondiente: {
                         valor: '',
@@ -170,8 +173,7 @@ class InscribirAlumno extends React.Component {
                 },
                 oidAlumno: esReinscripcion ? alumno.oidAlumno : '',
                 oidPersona: '',
-                alumnoCompleto: true, //Define si se esta creando un alumno por completo, o solo el rol
-                nombreFoto: 'Subir Foto Alumno',
+                alumnoCompleto: true, //Define si se esta creando un alumno por completo, o solo el rol                
                 validar: false,
                 requeridos: ["dni", "nombre", "apellido", "genero", "email", "fechaNacimiento", "lugarNacimiento", "nombreEscuelaAnt", "anioCorrespondiente"],
                 spinner: false,
@@ -311,6 +313,7 @@ class InscribirAlumno extends React.Component {
             },
             cantPasos: 2,
             pasoActual: 0,
+            inscrValida: esReinscripcion
         };
 
         this.handleChangeAlumno = this.handleChangeAlumno.bind(this);
@@ -323,10 +326,19 @@ class InscribirAlumno extends React.Component {
     }
 
     componentDidMount() {
-        const { esReinscripcion } = this.props;
+        const { esReinscripcion, } = this.props;
         //Se cargan los datos del alumno que se esta reinscribiendo
         if (esReinscripcion) {
             this.searchAlumno();
+        } else {
+            this.validarFechaInscripcion().then(validoInsc => {
+                this.setState({
+                    inscrValida: validoInsc
+                })
+                if (!validoInsc) {
+                    this.props.history.push("/");
+                }
+            })
         }
     }
 
@@ -352,10 +364,10 @@ class InscribirAlumno extends React.Component {
                             "foto": {
                                 ...estadoPrevio.paso0.inputs.foto,
                                 valor: URL.createObjectURL(archivo),
-                                valido: valido
+                                valido: valido,
+                                nombre: archivo.name
                             }
-                        },
-                        nombreFoto: archivo.name
+                        }
                     }
                 }));
             }
@@ -561,7 +573,7 @@ class InscribirAlumno extends React.Component {
         const { oidAlumno } = pasoActual;
         const anioCorrespondiente = pasoActual.inputs.anioCorrespondiente.valor;
         params.append("anio", anioCorrespondiente);
-        var url = `http://localhost:5000/insc-alumno/alumno/${oidAlumno}`;
+        var url = `${urlBase}/alumno/${oidAlumno}`;
         //console.log("URL asociar", (url +'?'+ params));            
         let exito = await fetch(url + '?' + params, {
             method: 'PUT',
@@ -593,7 +605,6 @@ class InscribirAlumno extends React.Component {
     }
 
     async crearAlumno(estadoPrevio, esCompleto, oidResponsable) {
-        const urlBase = 'http://localhost:5000/insc-alumno';
         const urlCompleto = '/alumno';
         const urlRol = '/alumno/persona/';
         let url;
@@ -605,7 +616,7 @@ class InscribirAlumno extends React.Component {
         let alumnoAux = {}, personaAux = {};
 
         clavesAlumno.forEach(clave => {
-            //TODO: foto , no estan modelados aca
+            //TODO: foto , no esta modelado aca
             Object.assign(alumnoAux, { [clave]: inputs[clave].valor })
         })
 
@@ -677,7 +688,6 @@ class InscribirAlumno extends React.Component {
 
     async crearResponsable(estadoPrevio, esCompleto) {
         let idResponsable;
-        const urlBase = 'http://localhost:5000/insc-alumno';
         const urlCompleto = '/responsable';
         const urlRol = '/responsable/persona/';
         let url;
@@ -690,7 +700,7 @@ class InscribirAlumno extends React.Component {
         const clavesPersona = ["dni", "nombre", "apellido", "genero"];
         let responsableAux = {}, personaAux = {};
 
-        clavesResponsable.forEach(clave => {            
+        clavesResponsable.forEach(clave => {
             Object.assign(responsableAux, { [clave]: inputs[clave].valor })
         })
 
@@ -747,7 +757,7 @@ class InscribirAlumno extends React.Component {
     render() {
         return (
             <React.Fragment>
-                {/*TODO: validar fecha inscripcion*/}
+                <PantallaCarga inscrValida={this.state.inscrValida} />
                 <FormularioAlumno
                     pasoActual={this.state.pasoActual}
                     handleInputChange={this.handleChangeAlumno}
@@ -759,6 +769,7 @@ class InscribirAlumno extends React.Component {
                     registrar={this.registrar}
                     addNotificacion={this.props.addNotificacion}
                     handleSacramento={this.handleChangeSacramento}
+                    inscrValida={this.state.inscrValida}
                 />
 
                 <FormularioResponsable
@@ -769,12 +780,50 @@ class InscribirAlumno extends React.Component {
                     pasoPrevio={() => this.pasoPrevio()}
                     registrar={this.registrar}
                     addNotificacion={this.props.addNotificacion}
+                    inscrValida={this.state.inscrValida}
                 />
             </React.Fragment>
         )
     }
 
+    validarFechaInscripcion = async () => {
+        const { addNotificacion } = this.props;
+        let mensajeNotif, tipoNotif;
+        let valida = false;
+        valida = await fetch(urlBase + '/validar-fecha')
+            .then(response => {
+                return response.json().then(data => {
+                    if (response.status === 500) {
+                        throw new Error(data.message);
+                    }
+                    return data;
+                })
+            })
+            .then(data => {
+                const valido = data.response.valido;
+                let msjClg;
+                if (valido) {
+                    tipoNotif = Tipo.Exito;
+                    msjClg = "Notificación:";
+                } else {
+                    tipoNotif = Tipo.Error;
+                    msjClg = "Error:";
+                }
+                mensajeNotif = data.response.message;
+                addNotificacion(tipoNotif, mensajeNotif);
+                console.log(msjClg, mensajeNotif);
+                return valido;
+            })
+            .catch(err => {
+                mensajeNotif = err.message;
+                addNotificacion(Tipo.Error, mensajeNotif);
+                console.log("Error:", mensajeNotif);
+            })
+        return valida;
+    }
+
     searchResponsable = async () => {
+        //TODO: que el search vacie todo siempre
         const { addNotificacion } = this.props;
         let mensajeNotif;
         const dniResp = this.state.paso1.inputs.dni.valor;
@@ -787,9 +836,10 @@ class InscribirAlumno extends React.Component {
             return
         }
 
-        fetch('http://localhost:5000/insc-alumno/responsable/' + dniResp)
+        this.toggleSpinner();
+
+        fetch(urlBase + '/responsable/' + dniResp)
             .then(response => {
-                //TODO: cuando no tiene conexión loading https://getbootstrap.com/docs/4.5/components/spinners/
                 return response.json().then(data => {
                     console.log("Status Search Responsable", response.status)
                     if (response.status === 400) {
@@ -816,6 +866,7 @@ class InscribirAlumno extends React.Component {
                         }
                     };
                 })
+                this.toggleSpinner();
                 mensajeNotif = "Responsable Encontrado.";
                 addNotificacion(Tipo.Exito, mensajeNotif);
                 console.log("Notificación:", mensajeNotif, "oid Responsable", this.state.paso0.oidAlumno);
@@ -823,7 +874,7 @@ class InscribirAlumno extends React.Component {
             .catch(err => {
                 if (err instanceof NoExisteResponsable) {
                     //REFACTOR: llevar a una func
-                    fetch('http://localhost:5000/insc-alumno/persona/' + dniResp)
+                    fetch(urlBase + '/persona/' + dniResp)
                         .then(response => {
                             return response.json().then(data => {
                                 //console.log("Status Search Persona Responsable", response.status)
@@ -851,6 +902,7 @@ class InscribirAlumno extends React.Component {
                                     }
                                 };
                             })
+                            this.toggleSpinner();
                             mensajeNotif = "Persona encontrada. Operación: Registrar Responsable.";
                             addNotificacion(Tipo.Exito, mensajeNotif);
                             console.log("Notificación:", mensajeNotif, " oid Persona", datos._id);
@@ -871,16 +923,19 @@ class InscribirAlumno extends React.Component {
                                         }
                                     }
                                 })
+                                this.toggleSpinner();
                                 mensajeNotif = "No existe una persona con el DNI ingresado. Operación: Registrar Responsable.";
                                 addNotificacion(Tipo.Exito, mensajeNotif);
                                 console.log("Notificación:", mensajeNotif);
                             } else {
+                                this.toggleSpinner();
                                 mensajeNotif = error.message;
                                 addNotificacion(Tipo.Error, mensajeNotif);
                                 console.error("Error:", mensajeNotif);
                             }
                         })
                 } else {
+                    this.toggleSpinner();
                     mensajeNotif = err.message;
                     addNotificacion(Tipo.Error, mensajeNotif);
                     console.error("Error: ", err)
@@ -889,6 +944,7 @@ class InscribirAlumno extends React.Component {
     }
 
     searchAlumno = async () => {
+        //TODO: que el search vacie todo siempre
         const { addNotificacion, esReinscripcion } = this.props;
         let mensajeNotif;
         const dniAlumno = this.state.paso0.inputs.dni.valor;
@@ -900,9 +956,9 @@ class InscribirAlumno extends React.Component {
             return;
         }
 
-        //this.toggleSpinner();
+        this.toggleSpinner();
 
-        fetch('http://localhost:5000/insc-alumno/alumno/' + dniAlumno)
+        fetch(urlBase + '/alumno/' + dniAlumno)
             .then(response => {
                 return response.json().then(data => {
                     console.log("Status Search Alumno", response.status)
@@ -939,9 +995,10 @@ class InscribirAlumno extends React.Component {
                             addNotificacion(Tipo.Exito, mensajeNotif);
                             console.log("Notificación:", mensajeNotif, "oid Alumno", this.state.paso0.oidAlumno);
                         }
+                        this.toggleSpinner();
                     } else {
                         //Inscripcion
-                        fetch('http://localhost:5000/insc-alumno/persona/' + dniAlumno)
+                        fetch(urlBase + '/persona/' + dniAlumno)
                             .then(response => {
                                 return response.json().then(data => {
                                     //console.log("Status Search Persona Alumno", response.status)
@@ -968,6 +1025,7 @@ class InscribirAlumno extends React.Component {
                                         }
                                     };
                                 })
+                                this.toggleSpinner();
                                 mensajeNotif = "Persona encontrada. Operación: " + operacion + ".";
                                 addNotificacion(Tipo.Exito, mensajeNotif);
                                 console.log("Notificación:", mensajeNotif, "oid Persona", datos._id);
@@ -986,10 +1044,12 @@ class InscribirAlumno extends React.Component {
                                             }
                                         }
                                     })
+                                    this.toggleSpinner();
                                     mensajeNotif = message;
                                     addNotificacion(Tipo.Exito, mensajeNotif);
                                     console.log("Notificación:", mensajeNotif);
                                 } else {
+                                    this.toggleSpinner();
                                     mensajeNotif = error.message;
                                     addNotificacion(Tipo.Error, mensajeNotif);
                                     console.error("Error:", mensajeNotif);
@@ -997,13 +1057,14 @@ class InscribirAlumno extends React.Component {
                             })
                     }
                 } else {
+                    this.toggleSpinner();
                     mensajeNotif = "Alumno encontrado. Operación inválida, " + message;
                     addNotificacion(Tipo.Error, mensajeNotif);
                     console.log("Notificación:", mensajeNotif);
                 }
-                //TODO: controlar multiples clicks? bloquear boton con disable
             })
             .catch((err) => {
+                this.toggleSpinner();
                 mensajeNotif = err.message;
                 addNotificacion(Tipo.Error, mensajeNotif);
                 console.error("Error: ", err)
@@ -1031,17 +1092,14 @@ class InscribirAlumno extends React.Component {
         }
     }
 
-    //TODO: probar
     toggleSpinner() {
         let paso = "paso";
         this.setState(state => {
-            console.log(state);
-            paso = paso + state.pasoActual;
-            console.log(paso);
-            const spinnerPrevio = state[paso].spinner;
+            const idPaso = paso + state.pasoActual;
+            const spinnerPrevio = state[idPaso].spinner;
             return {
-                [paso]: {
-                    ...state[paso],
+                [idPaso]: {
+                    ...state[idPaso],
                     spinner: !spinnerPrevio
                 }
             }
@@ -1071,7 +1129,7 @@ class InscribirAlumno extends React.Component {
                 }
                 clavesSacrs.forEach(claveSacr => {
                     valorAux = claveSacr === 'fueTomado' ? false : '';
-                    habilitadoAux = claveSacr === 'fueTomado' ? true : false;
+                    habilitadoAux = claveSacr === 'fueTomado';
                     auxSacr = {
                         [claveSacr]: {
                             ...state[pasoActual].inputs[clave][claveSacr],
@@ -1085,16 +1143,34 @@ class InscribirAlumno extends React.Component {
                 Object.assign(vacio, aux);
             } else {
                 const requeridos = this.state[pasoActual].requeridos;
+                let auxFoto = {};
+                habilitadoAux = true;
+
                 if (requeridos.includes(clave)) {
                     validoAux = false;
                 }
 
                 if (state.pasoActual === 0) {
-                    //TODO: sobreescribe valor recibido en tipoDni
-                    //TODO: reinciar foto 'subir foto'
-                    valorAux = clave === 'fechaIngreso' ? this.fechaDefault() : clave === 'tipoDni' ? 'DNI' : '';
+                    switch (clave) {
+                        case 'fechaIngreso':
+                            valorAux = this.fechaDefault();
+                            break;
+                        case 'tipoDni':                            
+                            valorAux = 'DNI';
+                            break;
+                        case 'foto':
+                            auxFoto = {
+                                nombre: 'Subir Foto Alumno'
+                            }
+                            break;
+                        case 'legajo':
+                            habilitadoAux = false;
+                            break;
+                        default:
+                            valorAux = '';
+                            break;
+                    }
                 }
-                habilitadoAux = clave === "legajo" ? false : true;
 
                 aux = {
                     [clave]: {
@@ -1104,6 +1180,7 @@ class InscribirAlumno extends React.Component {
                         habilitado: habilitadoAux
                     }
                 }
+                Object.assign(aux[clave], auxFoto);
                 Object.assign(vacio, aux);
             }
         })
@@ -1194,9 +1271,9 @@ class InscribirAlumno extends React.Component {
                 if (clave.includes("fecha")) {
                     valorRecibido = datos[clave].substr(0, 10);
                 } else {
-                    valorRecibido = datos[clave];
+                    valorRecibido = clave === "tipoDni" ? datos[clave].toUpperCase() : datos[clave];
                 }
-                habilitadoAux = clave === "anioCorrespondiente" ? true : false;
+                habilitadoAux = clave === "anioCorrespondiente" ? true : false;                
                 aux = {
                     [clave]: {
                         ...state.paso0.inputs[clave],
@@ -1228,7 +1305,7 @@ class InscribirAlumno extends React.Component {
                     }
                 })
 
-                const campos = Object.keys(sacr);                
+                const campos = Object.keys(sacr);
                 campos.forEach(campo => {
                     if (campo === "tipo") {
                         clave = "fueTomado";

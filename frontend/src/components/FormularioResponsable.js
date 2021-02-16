@@ -13,7 +13,7 @@ class FormularioResponsable extends Component {
     render() {
         //Control sobre si se tiene que mostrar o no esta parte del formulario        
 
-        if (this.props.pasoActual !== this.idPaso) {
+        if (this.props.pasoActual !== this.idPaso || !this.props.inscrValida) {
             return null;
         }
 
@@ -35,7 +35,7 @@ class FormularioResponsable extends Component {
                         <button type="button" className="btn btn-primary mr-1 boton" onClick={this.props.pasoPrevio}>
                             <Icon.ArrowLeft width={"1.3rem"} height={"1.3rem"} />
                         </button>
-                        <AlertaInscribirAlumno registrar={this.props.registrar} addNotificacion={this.props.addNotificacion}/>
+                        <AlertaInscribirAlumno registrar={this.props.registrar} addNotificacion={this.props.addNotificacion} />
                     </div>
                 </div >
 
@@ -45,27 +45,32 @@ class FormularioResponsable extends Component {
                         <form className={formulario.validar ? "was-validated" : ""}>
                             {/* <!--shadow-sm--> */}
                             <div className="row no-gutters px-3 mb-3 card">
-                                <div className="col-10 card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos"> {/*<!--test-->*/}
+                                <div className="col-10 card-body pt-2 pb-0" role="group" aria-labelledby="datos_basicos">
                                     <h3 className="card-title mb-1 titSeccion" id="datos_basicos">Datos Básicos</h3>
 
                                     <div className="form-row">
                                         <div className="col-lg-8">
                                             <div className="form-group row no-gutters align-items-center">
                                                 <label className="col-auto px-3 py-1 my-0 mr-3 requerido" htmlFor="dni">DNI</label>
-                                                <div className="col">
+                                                <div className="col-auto ml-md-3 mr-3 order-md-12">
+                                                    <button type="button" className="btn btn-primary boton"
+                                                        id="dni" onClick={this.props.searchResponsable} disabled={formulario.spinner}>
+                                                        <div className={!formulario.spinner ? '' : 'd-none'}>
+                                                            Buscar
+                                                            <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-md-1" />
+                                                        </div>
+                                                        <div className={`spinner-border spinner-border-sm text-light my-1 ${formulario.spinner ? '' : 'd-none'}`} role="status">
+                                                            <span className="sr-only">Loading...</span>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                                <div className="col-xs col-md">
                                                     <input className="form-control" type="text" id="dni" name="dni"
                                                         placeholder="Ingrese un Dni" alt="IngresoDni" required aria-required="true"
                                                         value={campo.dni.valor} onChange={this.props.handleInputChange} />
                                                     <div className="invalid-feedback">
                                                         {campo.dni.msjError}
                                                     </div>
-                                                </div>
-                                                <div className="col-auto ml-2 mr-1">
-                                                    <button type="button" className="btn btn-primary boton"
-                                                        id="dni" onClick={this.props.searchResponsable}>
-                                                        <div className="d-sm-block d-none">Buscar</div>
-                                                        <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-md-1" />
-                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

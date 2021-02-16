@@ -34,8 +34,7 @@ export default function Notificacion({ id, tipo, mensaje, delNotificacion }) {
 
     return (
         <div aria-live="assertive" aria-atomic="true" role="alert">
-            {/*autohide delay={3000} animation={true default}*/}
-            {/*TODO: animacion de entrada */}
+            {/*autohide delay={3000} animation={true default}*/}            
             <Toast className="notificacion" show={show} onClose={handleClose} animation={true} autohide delay={1000 * miliSeg}>
                 <ToastHeader className={handleTipo()} >
                     <strong className="mr-auto">{tipo}</strong>
