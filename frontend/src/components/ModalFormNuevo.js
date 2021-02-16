@@ -2,7 +2,7 @@ import { Modal } from 'react-bootstrap';
 import { useState } from "react";
 import { Plus } from 'react-feather';
 
-export default function ModalFormNuevo({ datos, funciones }) {
+export default function ModalFormNuevo({ datos, funciones, deshabilitado }) {
     const [show, setShow] = useState(false);
     const [spinner, setSpinner] = useState(false);
     const [tipo, setTipo] = useState('Padre');
@@ -12,12 +12,9 @@ export default function ModalFormNuevo({ datos, funciones }) {
         setShow(false);
     }
 
-    const handleShow = () => {
-        //TODO: todos los otros formularios deben ser validos o que no haya ninguno        
-        //if (funciones.siguiente()) {
+    const handleShow = () => {                    
         setSpinner(false);
-        setShow(true)
-        //}
+        setShow(true)        
     };
 
     const handleAceptar = () => {
@@ -32,7 +29,7 @@ export default function ModalFormNuevo({ datos, funciones }) {
 
     return (
         <>
-            <button type="button" className="btn btn-primary mr-1 boton" onClick={handleShow} >
+            <button type="button" className="btn btn-primary mr-1 boton" onClick={handleShow} disabled={deshabilitado}>
                 <Plus width={"1.2rem"} height={"1.2rem"} />
             </button>
 

@@ -27,9 +27,6 @@ export default function AlertaCompletarFamilia({ datos, reinscripcion, funciones
                 }                
             } else {                
                 handleClose();
-                if (reinscripcion) {
-                    funciones.inscribir();
-                }
             }
         });
     }

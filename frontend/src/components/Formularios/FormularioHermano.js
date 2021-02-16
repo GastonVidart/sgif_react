@@ -58,7 +58,7 @@ class FormularioHermano extends React.Component {
                     msjError: "Grado Inválido",
                     habilitado: false
                 },
-                //TODO: ver que pasa aca
+                //TODO: arreglo hermanos?
                 //hermanos: [{ type: Schema.Types.ObjectId, ref: 'Persona' }]
             },
             oidHermano: '',
@@ -67,15 +67,19 @@ class FormularioHermano extends React.Component {
             hermanoCompleto: true, //Define si se esta creando un hermano por completo, o solo el rol                        
             validar: false,
             requeridos: ["dni", "nombre", "apellido", "genero", "fechaNacimiento"],
-
-            //TODO: implementar spinner
-            spinner: false
+            spinner: false,
+            idForm: this.props.id
         }
 
         this.urlBase = this.props.urlBase;
         this.handleInputChange = this.handleInputChange.bind(this);
         this.esValido = this.esValido.bind(this);
         this.registrarPersona = this.registrarPersona.bind(this);
+        this.getId = this.getId.bind(this);
+    }
+
+    getId() {
+        return this.state.idForm;
     }
 
     validarCampo(target) {
@@ -151,6 +155,8 @@ class FormularioHermano extends React.Component {
             return;
         }
 
+        this.toggleSpinner();
+
         fetch(this.urlBase + '/hermano/' + dniHermano)
             .then(response => {
                 return response.json().then(data => {
@@ -176,11 +182,12 @@ class FormularioHermano extends React.Component {
                         oidHermano: data.hermano._id
                     };
                 })
+                this.toggleSpinner();
                 mensajeNotif = "Hermano encontrado.";
                 addNotificacion(Tipo.Exito, mensajeNotif);
                 console.log("Notificación:", mensajeNotif, "oid Hermano", data.hermano._id);
             })
-            .catch(err => {                
+            .catch(err => {
                 if (err instanceof NoExisteHermano) {
                     //console.error("Hermano: ", err);
                     fetch(this.urlBase + '/persona/' + dniHermano)
@@ -210,6 +217,7 @@ class FormularioHermano extends React.Component {
                                     existeHermano: false
                                 };
                             })
+                            this.toggleSpinner();
                             mensajeNotif = "Persona encontrada.";
                             addNotificacion(Tipo.Exito, mensajeNotif);
                             console.log("Notificación:", mensajeNotif, "oid Persona", datos._id);
@@ -226,21 +234,32 @@ class FormularioHermano extends React.Component {
                                         existeHermano: false
                                     }
                                 })
+                                this.toggleSpinner();
                                 mensajeNotif = "Puede crear un hermano nuevo.";
                                 addNotificacion(Tipo.Exito, mensajeNotif);
                                 console.log("Notificación:", mensajeNotif);
                             } else {
+                                this.toggleSpinner();
                                 mensajeNotif = error.message;
                                 addNotificacion(Tipo.Error, mensajeNotif);
                                 console.error("Error:", mensajeNotif);
                             }
                         })
                 } else {
+                    this.toggleSpinner();
                     mensajeNotif = err.message;
                     addNotificacion(Tipo.Error, mensajeNotif);
                     console.error("Error:", mensajeNotif);
                 }
             })
+    }
+
+    toggleSpinner() {
+        this.setState(state => {
+            return {
+                spinner: !state.spinner
+            }
+        })
     }
 
     esValido() {
@@ -388,7 +407,7 @@ class FormularioHermano extends React.Component {
 
         return (
             <div >
-                <h4 className="card-title my-2 titSeccion" id="datos_alumno ">Datos Hermano</h4>
+                <h4 className="card-title my-2 titSeccion" id="datos_hermano ">Datos Hermano</h4>
                 <div className="row no-gutters">
                     <div className="col-11">
                         <div className="form-row">
@@ -618,7 +637,7 @@ class FormularioHermano extends React.Component {
                 validoAux = false;
             }
 
-            //TODO: sobreescribe valor recibido en tipoDni
+            //TODO: hermano no tiene tipoDni
             valorAux = clave === 'tipoDni' ? 'DNI' : '';
 
             aux = {

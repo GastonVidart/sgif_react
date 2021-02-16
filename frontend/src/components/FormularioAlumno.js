@@ -17,7 +17,7 @@ class FormularioAlumno extends React.Component {
     render() {
         //Control sobre si se tiene que mostrar o no esta parte del formulario        
 
-        if (this.props.pasoActual !== this.idPaso) {
+        if (this.props.pasoActual !== this.idPaso || !this.props.inscrValida) {
             return null;
         }
 
@@ -68,7 +68,7 @@ class FormularioAlumno extends React.Component {
                                                         {/*className= "... ml-3 ..." */}
                                                         <div className="col-auto ml-md-3 mr-3 order-md-12">
                                                             <button type="button" className="btn btn-primary boton" disabled={esReinscripcion}
-                                                                id="dni" aria-labelledby="etiq_dni" onClick={this.props.searchAlumno}>
+                                                                id="dni" aria-labelledby="etiq_dni" onClick={this.props.searchAlumno} disabled={formulario.spinner}>
                                                                 <div className={!formulario.spinner ? '' : 'd-none'}>
                                                                     Buscar
                                                                     <Icon.Search width={"1.2rem"} height={"1.2rem"} className="ml-1" />
@@ -197,14 +197,13 @@ class FormularioAlumno extends React.Component {
                                                 <div className="col-lg">
                                                     <div className="form-group row no-gutters mb-2 align-items-center">
                                                         <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_lnac" htmlFor="lugarNacimiento">Lugar de Nacimiento</label>
-                                                        <div className="col-sm">
+                                                        <div className="col-xl">
                                                             <input type="text" id="lugarNacimiento" name="lugarNacimiento" className="form-control"
                                                                 value={campo.lugarNacimiento.valor} onChange={this.props.handleInputChange}
                                                                 required aria-labelledby="etiq_lnac" aria-required="true" disabled={!campo.lugarNacimiento.habilitado} />
                                                             <div className="invalid-feedback">
                                                                 {campo.lugarNacimiento.msjError}
-                                                            </div>
-                                                            {/*TODO: poner breakpoint antes */}
+                                                            </div>                                                            
                                                         </div>
                                                     </div>
                                                 </div>
@@ -217,7 +216,7 @@ class FormularioAlumno extends React.Component {
                                                 <div className="custom-file">
                                                     <input type="file" className="custom-file-input" id="fotoAlumno"
                                                         aria-describedby="etiq_falumno" onChange={this.props.handleInputChange} disabled={!campo.foto.habilitado} />
-                                                    <label className="custom-file-label" id="etiq_falumno" htmlFor="fotoAlumno">{formulario.nombreFoto}</label>
+                                                    <label className="custom-file-label" id="etiq_falumno" htmlFor="fotoAlumno">{campo.foto.nombre}</label>
                                                     <div className="invalid-feedback">
                                                         {campo.foto.msjError}
                                                     </div>
@@ -292,12 +291,14 @@ class FormularioAlumno extends React.Component {
                             <div className="row no-gutters px-3 mb-3 card shadow">
                                 <div className="col card-body pt-2 pb-0" role="group" aria-labelledby="sacramentos">
                                     <h3 className="card-title titSeccion" id="sacramentos">Sacramentos</h3>
-                                    {/* TODO: ver para que actualice dentro del arreglo sacramento
-                                    * TODO: pasar estados sacramentos y funciones
-                                    * value={this.state.alumno.fechaIngreso} onChange={this.handleInputChange} */}
-                                    <Sacramento nombre={"Bautismo"} />
-                                    <Sacramento nombre={"Comunión"} />
-                                    <Sacramento nombre={"Confirmación"} />
+                                    <Sacramento nombre={"Bautismo"} sacramento={campo.bautismo}
+                                        handleInputChange={this.props.handleSacramento} />
+
+                                    <Sacramento nombre={"Comunión"} sacramento={campo.comunion}
+                                        handleInputChange={this.props.handleSacramento} />
+
+                                    <Sacramento nombre={"Confirmación"} sacramento={campo.confirmacion}
+                                        handleInputChange={this.props.handleSacramento} />
                                 </div>
                             </div>
                         </form>

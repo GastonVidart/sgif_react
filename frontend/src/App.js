@@ -73,12 +73,12 @@ class App extends Component {
 
     delNotificacion(index) {
         //console.log(`Eliminando Notificación ${index}...`);
-        this.setState(state => {
-            [...state.notificaciones].splice(index, 1);
+        this.setState(state => {            
+            [...state.notificaciones].splice(index, 1);            
             return {
                 notificaciones: new Set(state.notificaciones)
             }
-        })
+        })        
     }
 
     render() {
