@@ -1,58 +1,53 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+
+import tAltaCurso from '../services/alta-curso'
 
 import Button from '@material-ui/core/Button';
 
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+
 
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import DayCheckbox from './dayCheckBox';
 
-import addRow from './TableDictados'
 
-export default function FormDialog({ addRow }) {
-    const [open, setOpen] = React.useState(false);
-    const [profesor, setProfesor] = React.useState('');
-    const [materia, setMateria] = React.useState('');
-    const [horario, setHorario] = React.useState('');
-    const [programa, setPrograma] = React.useState('');
-    const [filename, setFileName] = React.useState("Subir Programa");
+export default function FormDialog({ materias, horarios, addRow }) {
+    const [open, setOpen] = useState(false);
+    const [profesores, setProfesores] = useState([]);
+    
+    const [profesor, setProfesor] = useState();
+    const [materia, setMateria] = useState('');
+
+    const [horario, setHorario] = useState();
+    const [programa, setPrograma] = useState('');
+
+    const [diaSelected, setDiaSelected] = useState();
+    const [bloque, setBloque] = useState([]);
+
 
     const handleClickOpen = () => {
         setOpen(true);
     };
 
     const handleClose = () => {
-        for (const property in dia) {
-            if (dia[property]) {
+        addRow(profesor, materia, diaSelected, horario, programa);
 
-                addRow(profesor, materia, property, horario, programa)
-                break;
-            }
-        }
         setOpen(false);
     };
 
+    useEffect(() => {
+        tAltaCurso(`http://localhost:5000/alta-curso/profesor?materia=${materia}`, { method: "GET" })
+        .then( v => {
+            if (v.ok) {
+                setProfesores([...v.response]);
+            } else {
+                setProfesores([]);
+            }})
+    }, [materia])
 
-    // START checkbox
-    const [dia, setDia] = React.useState({
-        lunes: false,
-        mates: false,
-        miercoles: false,
-        jueves: false,
-        viernes: false,
-    });
-
-
-
-    const handleChange = (event) => {
-        setDia({ ...dia, [event.target.name]: event.target.checked });
-    };
-    // END checkbox
 
     const shortRoute = (nameFile) => {
         let nameShort = nameFile.substring(12)
@@ -60,128 +55,77 @@ export default function FormDialog({ addRow }) {
         setPrograma(nameShort)        
     }
 
+  
 
-    return (
-        <div>
-            <div className="d-flex justify-content-between">
-                <button type="button" className="btn btn-primary mr-1 boton" onClick={handleClickOpen}>Registrar Dictado</button>
+  return (
+    <div>
+        <div className="d-flex justify-content-between">
+            <button type="button" className="btn btn-primary mr-1 boton" onClick={handleClickOpen}>Registrar Dictado</button>
+        </div>
+      <Dialog fullWidth={true} open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <DialogTitle>Registro Dictado Nuevo</DialogTitle>
+        <DialogContent>
+            <div className="form-row">
+                <div className="col">
+                    <div className="form-group row no-gutters mb-2 align-items-center">
+                        <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_anio" htmlFor="dni">Materia</label>
+                        <div className="col col-md-4">
+                        <select name="materia" id="materia" className="form-control" required aria-required="true"
+                            onChange={(e) => setMateria(e.target.value)}>
+                                <option value="N/A">N/A</option>
+                            {materias.length > 0 && materias.map( (opc, i) => {
+                                return(
+                                    <option key={i}>{opc.nombre}</option>
+                                )
+                            })}
+                        </select>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <Dialog fullWidth={true} open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-                <DialogTitle>Registro Dictado Nuevo</DialogTitle>
-                <DialogContent>
-                    <form className="was-validated">
 
-                        <div className="form-row">
-                            <div className="col">
-                                <div className="form-group row no-gutters mb-2 align-items-center">
-                                    <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_anio" htmlFor="dni">Materia</label>
-                                    <div className="col col-md-4">
-                                        <input className="form-control" type="text" id="anio" name="anio"
-                                            placeholder="Nombre Materia" alt="Año del curso" required
-                                            onChange={e => setMateria(e.target.value)}
-                                            aria-labelledby="etiq_anio" aria-required="true" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="form-row" style={{ "marginTop": "10px" }}>
-                            <div className="col">
-                                <div className="form-group row no-gutters mb-2 align-items-center">
-                                    <label className="col-auto px-3 py-1 my-1 mr-3 requerido" id="etiq_anio" htmlFor="dni">Seleccione el día</label>
-                                </div>
-                                <div style={{ "marginLeft": "10px" }}>
-                                    <FormGroup row>
-                                        <FormControlLabel
-                                            label="Lunes"
-                                            control={
-                                                <Checkbox
-                                                    checked={dia.lunes}
-                                                    onChange={handleChange}
-                                                    name="lunes"
-                                                    color="primary"
-                                                />
-                                            }
-                                        />
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    checked={dia.martes}
-                                                    onChange={handleChange}
-                                                    name="martes"
-                                                    color="primary"
-                                                />
-                                            }
-                                            label="Martes"
-                                        />
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    checked={dia.miercoles}
-                                                    onChange={handleChange}
-                                                    name="miercoles"
-                                                    color="primary"
-                                                />
-                                            }
-                                            label="Miercoles"
-                                        />
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    checked={dia.jueves}
-                                                    onChange={handleChange}
-                                                    name="jueves"
-                                                    color="primary"
-                                                />
-                                            }
-                                            label="Jueves"
-                                        />
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    checked={dia.viernes}
-                                                    onChange={handleChange}
-                                                    name="viernes"
-                                                    color="primary"
-                                                />
-                                            }
-                                            label="Viernes"
-                                        />
-                                    </FormGroup>
-                                </div>
-                            </div>
-                        </div>
+            <DayCheckbox horarios={horarios} upData={(bloque, dia) => {
+                setBloque(bloque);
+                setDiaSelected(dia);
+            }}/>
 
-                        <div className="form-row">
-                            <div className="col-sm">
-                                <div className="form-group row no-gutters align-items-center">
-                                    <label className="col-auto px-3 py-1 my-0 mr-3 requerido" htmlFor="horario">Seleccionar Horario</label>
-                                    <div className="col-sm">
-                                        <select name="horario" id="horario" className="form-control" required aria-required="true"
-                                            onChange={e => setHorario(e.target.value)}
-                                        >
-                                            <option value="8:00">8:00</option>
-                                            <option value="9:00">9:00</option>
-                                            <option value="10:00">10:00</option>
-                                            <option value="11:00">11:00</option>
-                                            <option value="12:00">12:00</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div className="form-row">
+                <div className="col-sm">
+                    <div className="form-group row no-gutters align-items-center">
+                        <label className="col-auto px-3 py-1 my-0 mr-3 requerido" htmlFor="horario">Seleccionar Horario</label>
+                        <div className="col-sm">
+                            <select name="horario" id="horario" className="form-control" required aria-required="true"
+                                onChange={e => setHorario(e.target.value.split(','))}
+                                >
+                                <option value="N/A">N/A</option>
+                                {bloque.length > 0 && bloque.map( (opc, i) => {
+                                    return(
+                                        <option key={i} value={[opc._id, opc.bloqueHorario.horaInicio]}>{opc.bloqueHorario.horaInicio}</option>
+                                    )
+                                })}
+                            </select>
 
-                        <div className="form-row">
-                            <div className="col-sm">
-                                <div className="form-group row no-gutters align-items-center">
-                                    <label className="col-auto px-3 py-1 my-0 mr-3 requerido" htmlFor="profesor">Seleccionar Profesor</label>
-                                    <div className="col-sm">
-                                        <select name="profesor" id="profesor" className="form-control" required aria-required="true"
-                                            onChange={e => setProfesor(e.target.value)}
-                                        >
-                                            <option value="Rafaela Mazu">Rafaela Mazu</option>
-                                            <option value="Gabriela Aranda">Gabriela Aranda</option>
-                                            <option value="Andrés Flores">Andrés Flores</option>
-                                        </select>
+                        </div>
+                  </div>
+              </div>
+            </div>
+            <div className="form-row">
+                <div className="col-sm">
+                    <div className="form-group row no-gutters align-items-center">
+                        <label className="col-auto px-3 py-1 my-0 mr-3 requerido" htmlFor="profesor">Seleccionar Profesor</label>
+                        <div className="col-sm">
+                            <select name="profesor" id="profesor" className="form-control" required aria-required="true"
+                                onChange={ e => setProfesor(e.target.value.split(','))}
+                                >
+                                <option value="N/A">N/A</option>
+                                {profesores.length > 0 && profesores.map( opc => {
+                                    return(
+                                        <option value={ [opc._id, opc.nombre, opc.apellido] }>{opc.nombre} {opc.apellido}</option>
+                                    )
+                                })}
+                            </select>
+
+
                                     </div>
                                 </div>
                             </div>

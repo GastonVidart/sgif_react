@@ -9,10 +9,10 @@ import InscribirAlumno from './components/InscribirAlumno';
 import CompletarFamilia from './components/CompletarFamilia';
 import NotasTrimestrales from './components/NotasTrimestrales';
 import AltaCurso from './components/AltaCurso';
+
 import Notificacion from './components/Notificacion'
 
 import Footer from './components/Footer';
-
 import './css/main.css'
 
 const Route = require('react-router-dom').Route;
@@ -113,7 +113,6 @@ class App extends Component {
                 <div aria-live="polite" aria-atomic="true" className="cont-notificacion" >
                     {notificaciones}
                 </div>
-                {/*<Footer />*/}
             </React.Fragment>
         )
     }
