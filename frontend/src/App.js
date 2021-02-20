@@ -11,8 +11,6 @@ import NotasTrimestrales from './components/NotasTrimestrales';
 import AltaCurso from './components/AltaCurso';
 
 import Notificacion from './components/Notificacion'
-
-import Footer from './components/Footer';
 import './css/main.css'
 
 const Route = require('react-router-dom').Route;
