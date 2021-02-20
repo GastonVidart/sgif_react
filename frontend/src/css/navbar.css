@@ -17,13 +17,15 @@
     background: linear-gradient(0deg, rgba(3, 40, 82, 1) 0%, rgba(24, 90, 169, 0.91) 29%, rgba(24, 90, 169, 0.3) 100%);*/
 }
 
-li:hover {
+li:hover a{
     color: rgb(255, 255, 255);
     background-color: rgb(24 90 169);
 }
 
-li a:hover {
-    color: white;
+li:hover{
+    color: rgb(255, 255, 255);
+    background-color: rgb(24 90 169);
+    cursor: pointer;
 }
 
 li a:focus {

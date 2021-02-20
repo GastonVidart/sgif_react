@@ -134,6 +134,8 @@ function AltaCurso(){
                                                                 )
                                                             })}
                                                         </select>
+=======
+
                                                     </div>
                                                 </div>
                                             </div>

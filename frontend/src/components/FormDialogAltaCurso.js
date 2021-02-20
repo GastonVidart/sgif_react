@@ -51,7 +51,8 @@ export default function FormDialog({ materias, horarios, addRow }) {
 
     const shortRoute = (nameFile) => {
         let nameShort = nameFile.substring(12)
-        setPrograma(nameShort)
+        setFileName(nameShort)
+        setPrograma(nameShort)        
     }
 
   
@@ -83,7 +84,6 @@ export default function FormDialog({ materias, horarios, addRow }) {
                 </div>
             </div>
 
-            {/* ACA ESTABA EL CHECKBOX */}
             <DayCheckbox horarios={horarios} upData={(bloque, dia) => {
                 setBloque(bloque);
                 setDiaSelected(dia);
@@ -104,11 +104,11 @@ export default function FormDialog({ materias, horarios, addRow }) {
                                     )
                                 })}
                             </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
+                        </div>
+                  </div>
+              </div>
+            </div>
             <div className="form-row">
                 <div className="col-sm">
                     <div className="form-group row no-gutters align-items-center">
@@ -124,33 +124,38 @@ export default function FormDialog({ materias, horarios, addRow }) {
                                     )
                                 })}
                             </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div className="col-lg-3 ml-3 d-flex align-items-center">
-                <div className="form-group row no-gutters mb-2 justify-content-center">
-                    <div>
-                        <label className="custom-file-label" id="etiq_programa" htmlFor="programa">Subir Programa</label>
-                    </div>
-                    <div className="custom-file">
-                        <input type="file" className="custom-file-input" id="programa"
-                            aria-describedby="etiq_programa" onChange={ e => shortRoute(e.target.value)} 
-                        />
-                    </div>
-                </div>
-            </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancelar
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="form-row">
+                            <div className="col-lg-6 d-flex align-items-center">
+                                <div className="form-group row no-gutters mb-2 justify-content-center">
+                                    <div>
+                                        <label className="custom-file-label" id="etiq_programa" htmlFor="programa">{filename}</label>
+                                    </div>
+                                    <div className="custom-file">
+                                        <input type="file" className="custom-file-input" id="programa"
+                                            aria-describedby="etiq_programa" onChange={e => shortRoute(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Cancelar
           </Button>
-          <Button onClick={handleClose} color="primary">
-            Aceptar
+                    <Button onClick={handleClose} color="primary">
+                        Aceptar
           </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
+                </DialogActions>
+            </Dialog>
+        </div>
+    );
 }
