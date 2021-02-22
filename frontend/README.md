@@ -27,7 +27,8 @@ La release del backend se encuentra en: https://github.com/maxxCeballos/sgif/rel
   5. Actualizar ATLAS_URI en /backend/.env
   6. Ejecutar `$ npm start`
 
-    Aclaración paso 5: Comunicarse con los desarrolladores, para que se le envíen los datos de acceso a MongoAtlas. O conectar a una base Mongo, considerar los datos de prueba, que no se van a poseer.
+    Aclaración paso 5: Comunicarse con los desarrolladores, para que se le envíen los datos de acceso a MongoAtlas.    
+    O conectar a una base Mongo, considerar los datos de prueba, que no se van a poseer.
 
 ### Iniciando el Frontend
   1. Descargar Release v1.1.0
