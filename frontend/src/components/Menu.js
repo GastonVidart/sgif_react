@@ -10,6 +10,7 @@ class Menu extends React.Component {
     }
 
     render() {
+        {/*TODO: ver largo final pagina */}
         return (
             < nav className="col-md-auto shadow" role="navigation" >
                 <ul>

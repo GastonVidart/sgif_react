@@ -116,17 +116,15 @@ label {
     align-items: center;    
 }
 
+.botonSecundario {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+}
+
 .requerido::after{
     content: '*';
     /*color: #e02b27;    */
     color: black;
     margin: 0 0 0 2px;
 }
-
-/*:invalid{
-    border-color: red;
-}
-
-:valid{
-    border-color: red;
-}*/
